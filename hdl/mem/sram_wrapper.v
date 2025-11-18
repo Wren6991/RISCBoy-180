@@ -5,6 +5,8 @@
 //
 // * WIDTH must be a multiple of 8.
 // * DEPTH must be a power of 2, >= 128.
+// * Write enable granularity is 8 bits (implemented using GWEN, so WEN can be
+//   tied low to save routing).
 
 `default_nettype none
 
@@ -51,8 +53,8 @@ if (DEPTH == 128) begin: g_d128
 			.VSS  (VSS),
 			.CLK  (clk),
 			.CEN  (cs_n),
-			.GWEN (we_n),
-			.WEN  (be_n),
+			.GWEN (we_n || be_n[x]),
+			.WEN  (8'h00),
 			.A    (addr),
 			.D    (wdata[x * 8 +: 8]),
 			.Q    (rdata[x * 8 +: 8])
@@ -69,8 +71,8 @@ if (DEPTH == 256) begin: g_d256
 			.VSS  (VSS),
 			.CLK  (clk),
 			.CEN  (cs_n),
-			.GWEN (we_n),
-			.WEN  (be_n),
+			.GWEN (we_n || be_n[x]),
+			.WEN  (8'h00),
 			.A    (addr),
 			.D    (wdata[x * 8 +: 8]),
 			.Q    (rdata[x * 8 +: 8])
@@ -87,8 +89,8 @@ if (DEPTH == 512) begin: g_d512
 			.VSS  (VSS),
 			.CLK  (clk),
 			.CEN  (cs_n),
-			.GWEN (we_n),
-			.WEN  (be_n),
+			.GWEN (we_n || be_n[x]),
+			.WEN  (8'h00),
 			.A    (addr),
 			.D    (wdata[x * 8 +: 8]),
 			.Q    (rdata[x * 8 +: 8])
@@ -131,8 +133,8 @@ if (DEPTH > 512) begin: g_dg512
 				.VSS  (VSS),
 				.CLK  (clk),
 				.CEN  (cs_n || !ramsel_aph[y]),
-				.GWEN (we_n),
-				.WEN  (be_n),
+				.GWEN (we_n || be_n[x]),
+				.WEN  (8'h00),
 				.A    (addr[8:0]),
 				.D    (wdata[x * 8 +: 8]),
 				.Q    (rdata_per_ram[y][x * 8 +: 8])

@@ -119,8 +119,6 @@ module chip_core #(
     wire sys_reset_done = rst_n_cpu;
     wire hart_reset_done = rst_n_cpu;
 
-    // Yes we do want SBA. Segger RTT is too nice to ignore!
-
     wire        dbg_req_halt;
     wire        dbg_req_halt_on_reset;
     wire        dbg_req_resume;
@@ -135,18 +133,9 @@ module chip_core #(
     wire        dbg_instr_caught_exception;
     wire        dbg_instr_caught_ebreak;
 
-    wire [31:0] dbg_sbus_addr;
-    wire        dbg_sbus_write;
-    wire [1:0]  dbg_sbus_size;
-    wire        dbg_sbus_vld;
-    wire        dbg_sbus_rdy;
-    wire        dbg_sbus_err;
-    wire [31:0] dbg_sbus_wdata;
-    wire [31:0] dbg_sbus_rdata;
-
     hazard3_dm #(
         .N_HARTS  (1),
-        .HAVE_SBA (1)
+        .HAVE_SBA (0)
     ) dm_u (
         .clk                         (clk),
         .rst_n                       (rst_n_sync),
@@ -180,14 +169,14 @@ module chip_core #(
         .hart_instr_caught_exception (dbg_instr_caught_exception),
         .hart_instr_caught_ebreak    (dbg_instr_caught_ebreak),
 
-        .sbus_addr                   (dbg_sbus_addr),
-        .sbus_write                  (dbg_sbus_write),
-        .sbus_size                   (dbg_sbus_size),
-        .sbus_vld                    (dbg_sbus_vld),
-        .sbus_rdy                    (dbg_sbus_rdy),
-        .sbus_err                    (dbg_sbus_err),
-        .sbus_wdata                  (dbg_sbus_wdata),
-        .sbus_rdata                  (dbg_sbus_rdata)
+        .sbus_addr                   (/* unused */),
+        .sbus_write                  (/* unused */),
+        .sbus_size                   (/* unused */),
+        .sbus_vld                    (/* unused */),
+        .sbus_rdy                    (1'b1),
+        .sbus_err                    (1'b1),
+        .sbus_wdata                  (/* unused */),
+        .sbus_rdata                  (32'd0)
     );
 
     // ------------------------------------------------------------------------
@@ -320,14 +309,14 @@ module chip_core #(
         .dbg_instr_caught_exception (dbg_instr_caught_exception),
         .dbg_instr_caught_ebreak    (dbg_instr_caught_ebreak),
 
-        .dbg_sbus_addr              (dbg_sbus_addr),
-        .dbg_sbus_write             (dbg_sbus_write),
-        .dbg_sbus_size              (dbg_sbus_size),
-        .dbg_sbus_vld               (dbg_sbus_vld),
-        .dbg_sbus_rdy               (dbg_sbus_rdy),
-        .dbg_sbus_err               (dbg_sbus_err),
-        .dbg_sbus_wdata             (dbg_sbus_wdata),
-        .dbg_sbus_rdata             (dbg_sbus_rdata),
+        .dbg_sbus_addr              (32'd0),
+        .dbg_sbus_write             (1'b0),
+        .dbg_sbus_size              (2'h0),
+        .dbg_sbus_vld               (1'b0),
+        .dbg_sbus_rdy               (/* unused */),
+        .dbg_sbus_err               (/* unused */),
+        .dbg_sbus_wdata             (32'd0),
+        .dbg_sbus_rdata             (/* unused */),
 
         .mhartid_val                (32'd0),
         .eco_version                (4'd0), // FIXME tie cells
