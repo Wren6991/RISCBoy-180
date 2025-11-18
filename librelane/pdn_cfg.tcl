@@ -197,7 +197,14 @@ add_pdn_connect \
 
 define_pdn_grid \
     -macro \
-    -instances i_chip_core.sram_0 \
+    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[0\].g_width\[0\].ram_u \
+    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[0\].g_width\[1\].ram_u \
+    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[0\].g_width\[2\].ram_u \
+    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[0\].g_width\[3\].ram_u \
+    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[1\].g_width\[0\].ram_u \
+    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[1\].g_width\[1\].ram_u \
+    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[1\].g_width\[2\].ram_u \
+    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[1\].g_width\[3\].ram_u \
     -name sram_macros_NS \
     -starts_with POWER \
     -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"
@@ -212,19 +219,19 @@ add_pdn_connect \
 
 add_pdn_stripe -grid sram_macros_NS -layer Metal4 -width 2.36 -offset 1.18 -spacing 0.28 -pitch 426.86 -starts_with GROUND -number_of_straps 2
 
-define_pdn_grid \
-    -macro \
-    -instances i_chip_core.sram_1 \
-    -name sram_macros_WE \
-    -starts_with POWER \
-    -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"
+# define_pdn_grid \
+#     -macro \
+#     -instances i_chip_core.sram_1 \
+#     -name sram_macros_WE \
+#     -starts_with POWER \
+#     -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"
 
-add_pdn_connect \
-    -grid sram_macros_WE \
-    -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
+# add_pdn_connect \
+#     -grid sram_macros_WE \
+#     -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
 
-add_pdn_connect \
-    -grid sram_macros_WE \
-    -layers "$::env(PDN_VERTICAL_LAYER) Metal3"
+# add_pdn_connect \
+#     -grid sram_macros_WE \
+#     -layers "$::env(PDN_VERTICAL_LAYER) Metal3"
 
-add_pdn_stripe -grid sram_macros_WE -layer Metal4 -width 2.36 -offset 1.18 -spacing 0.28 -pitch 479.88 -starts_with GROUND -number_of_straps 2
+# add_pdn_stripe -grid sram_macros_WE -layer Metal4 -width 2.36 -offset 1.18 -spacing 0.28 -pitch 479.88 -starts_with GROUND -number_of_straps 2

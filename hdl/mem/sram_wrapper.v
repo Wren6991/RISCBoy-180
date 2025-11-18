@@ -12,6 +12,10 @@ module sram_wrapper #(
 	parameter WIDTH = 32,
 	parameter DEPTH = 512
 ) (
+`ifdef GF180MCU
+	inout  wire                     VDD,
+	inout  wire                     VSS,
+`endif
 	input  wire                     clk,
 	input  wire                     cs_n, // Active-low chip select
 	input  wire                     we_n, // Active-low write enable
@@ -25,18 +29,28 @@ module sram_wrapper #(
 // ----------------------------------------------------------------------------
 // ASIC memory instantiation for GF180MCU process
 
+// Note: the size options are mutually exclusive, so should be `if else if`,
+// but Yosys creates an insane hierarchical path like `.genblk1.genblk1...`,
+// presumably creating an unnamed block on each else. So just an if per block.
+
 genvar x, y;
 generate
 if (DEPTH < 128 || (DEPTH & (DEPTH - 1))) begin: err_depth
 	initial $fatal("DEPTH must be a power of two, >= 128");
-end else if (WIDTH % 8 != 0) begin: err_width
+end
+
+if (WIDTH % 8 != 0) begin: err_width
 	initial $fatal("WIDTH must be a multiple of eight");
-end else if (DEPTH == 128) begin: g_d128
+end
+
+if (DEPTH == 128) begin: g_d128
 
 	for (x = 0; x < WIDTH / 8; x = x + 1) begin: g_width
 		gf180mcu_fd_ip_sram__sram128x8m8wm1 ram_u (
+			.VDD  (VDD),
+			.VSS  (VSS),
 			.CLK  (clk),
-			.CEN  (ce_n),
+			.CEN  (cs_n),
 			.GWEN (we_n),
 			.WEN  (be_n),
 			.A    (addr),
@@ -45,12 +59,16 @@ end else if (DEPTH == 128) begin: g_d128
 		);
 	end
 
-end else if (DEPTH == 256) begin: g_d256
+end
+
+if (DEPTH == 256) begin: g_d256
 
 	for (x = 0; x < WIDTH / 8; x = x + 1) begin: g_width
 		gf180mcu_fd_ip_sram__sram256x8m8wm1 ram_u (
+			.VDD  (VDD),
+			.VSS  (VSS),
 			.CLK  (clk),
-			.CEN  (ce_n),
+			.CEN  (cs_n),
 			.GWEN (we_n),
 			.WEN  (be_n),
 			.A    (addr),
@@ -59,12 +77,16 @@ end else if (DEPTH == 256) begin: g_d256
 		);
 	end
 
-end else if (DEPTH == 512) begin: g_d512
+end
+
+if (DEPTH == 512) begin: g_d512
 
 	for (x = 0; x < WIDTH / 8; x = x + 1) begin: g_width
 		gf180mcu_fd_ip_sram__sram512x8m8wm1 ram_u (
+			.VDD  (VDD),
+			.VSS  (VSS),
 			.CLK  (clk),
-			.CEN  (ce_n),
+			.CEN  (cs_n),
 			.GWEN (we_n),
 			.WEN  (be_n),
 			.A    (addr),
@@ -73,7 +95,9 @@ end else if (DEPTH == 512) begin: g_d512
 		);
 	end
 
-end else begin: g_dg512
+end
+
+if (DEPTH > 512) begin: g_dg512
 
 	// Decode RAM select from address
 	wire [DEPTH/512-1:0] ramsel_aph = {
@@ -96,15 +120,17 @@ end else begin: g_dg512
 		integer i;
 		rdata_q = {WIDTH{1'b0}};
 		for (i = 0; i < DEPTH / 512; i = i + 1) begin
-			rdata_q = rdata_q | (rdata_per_ram & {WIDTH{ramsel_dph}});
+			rdata_q = rdata_q | (rdata_per_ram[i] & {WIDTH{ramsel_dph}});
 		end
 	end
 
 	for (y = 0; y < DEPTH / 512; y = y + 1) begin: g_depth
 		for (x = 0; x < WIDTH / 8; x = x + 1) begin: g_width
 			gf180mcu_fd_ip_sram__sram512x8m8wm1 ram_u (
+				.VDD  (VDD),
+				.VSS  (VSS),
 				.CLK  (clk),
-				.CEN  (ce_n || !ramsel_aph[y]),
+				.CEN  (cs_n || !ramsel_aph[y]),
 				.GWEN (we_n),
 				.WEN  (be_n),
 				.A    (addr[8:0]),

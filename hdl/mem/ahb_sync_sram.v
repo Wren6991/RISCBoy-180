@@ -19,8 +19,11 @@ module ahb_sync_sram #(
 	// Globals
 	input  wire               clk,
 	input  wire               rst_n,
-
-	// AHB lite slave interface
+`ifdef GF180MCU
+	inout  wire               VDD,
+	inout  wire               VSS,
+`endif
+	// AHB subordinate interface
 	output wire               ahbls_hready_resp,
 	input  wire               ahbls_hready,
 	output wire               ahbls_hresp,
@@ -108,6 +111,10 @@ sram_wrapper #(
 	.WIDTH (W_DATA),
 	.DEPTH (DEPTH)
 ) sram (
+`ifdef GF180MCU
+	.VDD    (VDD),
+	.VSS    (VSS),
+`endif
 	.clk    (clk),
 	.cs_n   (~|{ahb_read_aphase, sram_wen}),
 	.we_n   (~|sram_wen),

@@ -49,6 +49,8 @@ module chip_core #(
     logic _unused;
     assign _unused = &bidir_in;
 
+    assign bidir_out[NUM_BIDIR_PADS-1:1] = '0;
+
     // ------------------------------------------------------------------------
     // Clock and reset manipulation
 
@@ -342,6 +344,10 @@ module chip_core #(
         .W_DATA (32),
         .DEPTH (1024)
     ) iwram_u (
+`ifdef USE_POWER_PINS
+        .VDD               (VDD),
+        .VSS               (VSS),
+`endif
         .clk               (clk),
         .rst_n             (rst_n_sync),
 
