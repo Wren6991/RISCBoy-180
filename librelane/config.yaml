@@ -26,11 +26,43 @@ meta:
 
 DESIGN_NAME: chip_top
 VERILOG_FILES:
-- dir::../src/chip_top.sv
-- dir::../src/chip_core.sv
+- dir::../hdl/chip_top.sv
+- dir::../hdl/chip_core.sv
 
-# Enable plugin for better SystemVerilog support
-# USE_SLANG: True
+- dir::../hdl/mem/ahb_sync_sram.v
+- dir::../hdl/mem/sram_wrapper.v
+
+- dir::../hdl/hazard3/hdl/hazard3_cpu_1port.v
+- dir::../hdl/hazard3/hdl/arith/hazard3_alu.v
+- dir::../hdl/hazard3/hdl/arith/hazard3_branchcmp.v
+- dir::../hdl/hazard3/hdl/arith/hazard3_mul_fast.v
+- dir::../hdl/hazard3/hdl/arith/hazard3_muldiv_seq.v
+- dir::../hdl/hazard3/hdl/arith/hazard3_onehot_encode.v
+- dir::../hdl/hazard3/hdl/arith/hazard3_onehot_priority.v
+- dir::../hdl/hazard3/hdl/arith/hazard3_onehot_priority_dynamic.v
+- dir::../hdl/hazard3/hdl/arith/hazard3_priority_encode.v
+- dir::../hdl/hazard3/hdl/arith/hazard3_shift_barrel.v
+- dir::../hdl/hazard3/hdl/debug/cdc/hazard3_apb_async_bridge.v
+- dir::../hdl/hazard3/hdl/debug/cdc/hazard3_reset_sync.v
+- dir::../hdl/hazard3/hdl/debug/cdc/hazard3_sync_1bit.v
+- dir::../hdl/hazard3/hdl/debug/dm/hazard3_dm.v
+- dir::../hdl/hazard3/hdl/debug/dtm/hazard3_jtag_dtm.v
+- dir::../hdl/hazard3/hdl/debug/dtm/hazard3_jtag_dtm_core.v
+- dir::../hdl/hazard3/hdl/hazard3_core.v
+- dir::../hdl/hazard3/hdl/hazard3_csr.v
+- dir::../hdl/hazard3/hdl/hazard3_decode.v
+- dir::../hdl/hazard3/hdl/hazard3_frontend.v
+- dir::../hdl/hazard3/hdl/hazard3_instr_decompress.v
+- dir::../hdl/hazard3/hdl/hazard3_irq_ctrl.v
+- dir::../hdl/hazard3/hdl/hazard3_pmp.v
+- dir::../hdl/hazard3/hdl/hazard3_power_ctrl.v
+- dir::../hdl/hazard3/hdl/hazard3_regfile_1w2r.v
+- dir::../hdl/hazard3/hdl/hazard3_triggers.v
+
+- dir::../hdl/libfpga/common/reset_sync.v
+
+VERILOG_INCLUDE_DIRS:
+- dir::../hdl/hazard3/hdl
 
 # Slightly smaller file sizes
 PRIMARY_GDSII_STREAMOUT_TOOL: klayout
@@ -283,18 +315,14 @@ MACROS:
         - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_4v50.lib
     instances:
       # Make sure to specify the SRAMs in pdn_cfg.tcl
-      i_chip_core.sram_0:
+      i_chip_core.iwram_u.sram.g_d512.g_depth.foobar:
         location: [500, 501]
         orientation: N
-      i_chip_core.sram_1:
-        location: [1000, 501]
-        orientation: E
 
 # This is an alternative method compared to
 # specifying the power connections in the RTL
 PDN_MACRO_CONNECTIONS:
-- "i_chip_core.sram_0 VDD VSS VDD VSS"
-- "i_chip_core.sram_1 VDD VSS VDD VSS"
+- "i_chip_core.iwram_u.sram.g_d512.g_depth.foobar VDD VSS VDD VSS"
 
 PDN_CFG: dir::pdn_cfg.tcl
 
