@@ -99,8 +99,8 @@ def chip_top_runner():
 
         defines = {"FUNCTIONAL": True, "USE_POWER_PINS": True}
     else:
-        sources.append(proj_path / "../src/chip_top.sv")
-        sources.append(proj_path / "../src/chip_core.sv")
+        sources.append(proj_path / "../hdl/chip_top.sv")
+        sources.append(proj_path / "../hdl/chip_core.sv")
 
     sources += [
         # IO pad models
