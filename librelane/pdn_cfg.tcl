@@ -197,14 +197,7 @@ add_pdn_connect \
 
 define_pdn_grid \
     -macro \
-    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[0\].g_width\[0\].ram_u \
-    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[0\].g_width\[1\].ram_u \
-    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[0\].g_width\[2\].ram_u \
-    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[0\].g_width\[3\].ram_u \
-    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[1\].g_width\[0\].ram_u \
-    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[1\].g_width\[1\].ram_u \
-    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[1\].g_width\[2\].ram_u \
-    -instances i_chip_core.iwram_u.sram.g_dg512.g_depth\[1\].g_width\[3\].ram_u \
+    -instances {i_chip_core.iwram_u.sram.*.ram_u} \
     -name sram_macros_NS \
     -starts_with POWER \
     -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"

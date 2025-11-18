@@ -342,7 +342,7 @@ module chip_core #(
 
     ahb_sync_sram #(
         .W_DATA (32),
-        .DEPTH (1024)
+        .DEPTH  (2048)
     ) iwram_u (
 `ifdef USE_POWER_PINS
         .VDD               (VDD),
