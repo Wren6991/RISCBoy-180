@@ -80,107 +80,127 @@ VERILOG_DEFINES:
 # Slightly smaller file sizes
 PRIMARY_GDSII_STREAMOUT_TOOL: klayout
 
-# Specify the pad instances for the padring
-PAD_SOUTH: [
-    clk_pad,
-    rst_n_pad,
+# To remain bond-compatible with the template project, the DVDD and DVSS pads
+# must remain in the same positions (as commented below). The different IO pad
+# macros are all the same size, so these can be freely mixed and matched as
+# long as the totals are the same.
 
-    "bidir\\[0\\].pad",
-    "bidir\\[1\\].pad",
-    "bidir\\[2\\].pad",
-    "bidir\\[3\\].pad",
-    "bidir\\[4\\].pad",
-    "bidir\\[5\\].pad",
+# SRAM pads are ordered to wire out symmetrically to a JEDEC 44-pin SRAM in a
+# broadside orientation.
 
-    "dvss_pads\\[0\\].pad",
+# Note our SRAM A and DQ are *both* numbered from 0, which is different from
+# some datasheets.
 
-    "bidir\\[6\\].pad",
-    "bidir\\[7\\].pad",
-    "bidir\\[8\\].pad",
-    "bidir\\[9\\].pad",
-    "bidir\\[10\\].pad",
-    "bidir\\[11\\].pad",
-    "bidir\\[12\\].pad",
-    "bidir\\[13\\].pad"
-]
-
-PAD_EAST: [
-    "dvdd_pads\\[0\\].pad",
-    "dvss_pads\\[1\\].pad",
-
-    "bidir\\[14\\].pad",
-    "bidir\\[15\\].pad",
-    "bidir\\[16\\].pad",
-    "bidir\\[17\\].pad",
-    "bidir\\[18\\].pad",
-    "bidir\\[19\\].pad",
-    
-    "dvdd_pads\\[1\\].pad",
-    "dvss_pads\\[2\\].pad",
-
-    
-    "bidir\\[20\\].pad",
-    "bidir\\[21\\].pad",
-    "bidir\\[22\\].pad",
-    "bidir\\[23\\].pad",
-    "bidir\\[24\\].pad",
-    "bidir\\[25\\].pad",
-    
-    "dvss_pads\\[3\\].pad",
-    "dvdd_pads\\[2\\].pad",
-    "dvss_pads\\[4\\].pad",
-    "dvdd_pads\\[3\\].pad",
-]
-
-PAD_NORTH: [
-    "analog\\[1\\].pad",
-    "analog\\[0\\].pad",
-    "bidir\\[39\\].pad",
-    "bidir\\[38\\].pad",
-    "bidir\\[37\\].pad",
-    "bidir\\[36\\].pad",
-    "bidir\\[35\\].pad",
-    "bidir\\[34\\].pad",
-
-    "dvss_pads\\[5\\].pad",
-
-    "bidir\\[33\\].pad",
-    "bidir\\[32\\].pad",
-    "bidir\\[31\\].pad",
-    "bidir\\[30\\].pad",
-    "bidir\\[29\\].pad",
-    "bidir\\[28\\].pad",
-    "bidir\\[27\\].pad",
-    "bidir\\[26\\].pad"
-]
-
-
+# Pads 0 through  19
 PAD_WEST: [
-    "dvdd_pads\\[7\\].pad",
-    "dvss_pads\\[9\\].pad",
-    "dvdd_pads\\[6\\].pad",
-    "dvss_pads\\[8\\].pad",
+    "dvdd_pads\\[7\\].pad", # FIXED 0
+    "dvss_pads\\[9\\].pad", # FIXED 1
+    "dvdd_pads\\[6\\].pad", # FIXED 2
+    "dvss_pads\\[8\\].pad", # FIXED 3
 
-    "inputs\\[11\\].pad",
-    "inputs\\[10\\].pad",
-    "inputs\\[9\\].pad",
-    "inputs\\[8\\].pad",
-    "inputs\\[7\\].pad",
-    "inputs\\[6\\].pad",
+    # 6 IOs (4 through 9):
+    "pad_AUDIO_L",
+    "pad_AUDIO_R",
+    "pad_RSTn",
+    "pad_CLK",
+    "pad_DCK",
+    "pad_DIO",
 
-    "dvdd_pads\\[5\\].pad",
-    "dvss_pads\\[7\\].pad",
+    "dvdd_pads\\[5\\].pad", # FIXED 10
+    "dvss_pads\\[7\\].pad", # FIXED 11
 
-    "inputs\\[5\\].pad",
-    "inputs\\[4\\].pad",
-    "inputs\\[3\\].pad",
-    "inputs\\[2\\].pad",
+    # 4 IOs (12 through 15):
+    "pad_LCD_CLK",
+    "pad_LCD_DAT",
+    "pad_LCD_CSn",
+    "pad_LCD_DC",
 
-    "dvdd_pads\\[4\\].pad",
-    "dvss_pads\\[6\\].pad",
-    
-    "inputs\\[1\\].pad",
-    "inputs\\[0\\].pad"
+    "dvdd_pads\\[4\\].pad", # FIXED 16
+    "dvss_pads\\[6\\].pad", # FIXED 17
+
+    # 2 IOs (18 through 19):
+    "pad_LCD_BL",
+    "pad_GPIO\\[0\\].u"
+]
+
+# Pads 20 through 36
+PAD_SOUTH: [
+    # 8 IOs (20 through 27):
+    "pad_GPIO\\[1\\].u",
+    "pad_GPIO\\[2\\].u",
+    "pad_GPIO\\[3\\].u",
+    "pad_GPIO\\[4\\].u",
+    "pad_GPIO\\[5\\].u",
+    "pad_SRAM_DQ\\[11\\].u",
+    "pad_SRAM_DQ\\[10\\].u",
+    "pad_SRAM_DQ\\[9\\].u",
+
+    "dvss_pads\\[0\\].pad", # FIXED 28
+
+    # 8 IOs (29 through 36):
+    "pad_SRAM_DQ\\[8\\].u",
+    "pad_SRAM_A\\[14\\].u",
+    "pad_SRAM_A\\[13\\].u",
+    "pad_SRAM_A\\[12\\].u",
+    "pad_SRAM_A\\[11\\].u",
+    "pad_SRAM_A\\[10\\].u",
+    "pad_SRAM_A\\[9\\].u",
+    "pad_SRAM_A\\[8\\].u"
+]
+
+# Pads 37 through 56
+PAD_EAST: [
+    "dvdd_pads\\[0\\].pad", # FIXED 37
+    "dvss_pads\\[1\\].pad", # FIXED 38
+
+    # 6 IOs (39 through 44));
+    "pad_SRAM_A\\[7\\].u",
+    "pad_SRAM_A\\[6\\].u",
+    "pad_SRAM_A\\[5\\].u",
+    "pad_SRAM_WEn",
+    "pad_SRAM_DQ\\[7\\].u",
+    "pad_SRAM_DQ\\[6\\].u",
+
+    "dvdd_pads\\[1\\].pad", # FIXED 45
+    "dvss_pads\\[2\\].pad", # FIXED 46
+
+    # 6 IOs (47 through 52):
+    "pad_SRAM_DQ\\[5\\].u",
+    "pad_SRAM_DQ\\[4\\].u",
+    "pad_SRAM_DQ\\[3\\].u",
+    "pad_SRAM_DQ\\[2\\].u",
+    "pad_SRAM_DQ\\[1\\].u",
+    "pad_SRAM_DQ\\[0\\].u",
+
+    "dvss_pads\\[3\\].pad", # FIXED 53
+    "dvdd_pads\\[2\\].pad", # FIXED 54
+    "dvss_pads\\[4\\].pad", # FIXED 55
+    "dvdd_pads\\[3\\].pad", # FIXED 56
+]
+
+# Pads 57 through 73
+PAD_NORTH: [
+    # 8 IOs: 57 through 64
+    "pad_SRAM_CSn",
+    "pad_SRAM_A\\[4\\].u",
+    "pad_SRAM_A\\[3\\].u",
+    "pad_SRAM_A\\[2\\].u",
+    "pad_SRAM_A\\[1\\].u",
+    "pad_SRAM_A\\[0\\].u",
+    "pad_SRAM_A\\[17\\].u",
+    "pad_SRAM_A\\[16\\].u",
+
+    "dvss_pads\\[5\\].pad", # FIXED 65
+
+    # 8 IOs: 66 through 73
+    "pad_SRAM_A\\[15\\].u",
+    "pad_SRAM_OEn",
+    "pad_SRAM_UBn",
+    "pad_SRAM_LBn",
+    "pad_SRAM_DQ\\[15\\].u",
+    "pad_SRAM_DQ\\[14\\].u",
+    "pad_SRAM_DQ\\[13\\].u",
+    "pad_SRAM_DQ\\[12\\].u"
 ]
 
 # SDC files
@@ -246,7 +266,7 @@ PDN_CORE_HORIZONTAL_LAYER: Metal3
 MAGIC_GDS_FLATGLOB:
 # For contacts
 - "*_CDNS_*"
-# COMP and Poly2 filler cells need to be 
+# COMP and Poly2 filler cells need to be
 # flattened to form a "filltrans" layer
 - "COMP_fill_cell"
 - "Poly2_fill_cell"

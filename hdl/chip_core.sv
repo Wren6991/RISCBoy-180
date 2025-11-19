@@ -91,8 +91,8 @@ module chip_core #(
     output wire                 gpio_slew,
     output wire [1:0]           gpio_drive,
 
-    output wire [6:0]           gpio_pu,
-    output wire [6:0]           gpio_pd
+    output wire [N_GPIO-1:0]    gpio_pu,
+    output wire [N_GPIO-1:0]    gpio_pd
 );
 
 // ------------------------------------------------------------------------
@@ -553,8 +553,8 @@ assign lcd_dccs_slew    = 1'b1;
 assign lcd_bl_slew      = 1'b1;
 assign gpio_slew        = 1'b1;
 
-assign gpio_pu = 7'h00;
-assign gpio_pd = 7'h3f;
+assign gpio_pu          = {N_GPIO{1'b0}};
+assign gpio_pd          = {N_GPIO{1'b1}};
 
 endmodule
 

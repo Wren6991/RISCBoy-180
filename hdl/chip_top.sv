@@ -12,8 +12,8 @@ module chip_top #(
     parameter N_DVDD    = 8,
     parameter N_DVSS    = 10,
     parameter N_SRAM_DQ = 16,
-    parameter N_SRAM_A  = 17,
-    parameter N_GPIO    = 7
+    parameter N_SRAM_A  = 18,
+    parameter N_GPIO    = 6
 ) (
     // Power supply pads
     inout  wire                 VDD,
@@ -131,8 +131,8 @@ wire                 gpio_schmitt;
 wire                 gpio_slew;
 wire [1:0]           gpio_drive;
 
-wire [6:0]           gpio_pu;
-wire [6:0]           gpio_pd;
+wire [N_GPIO-1:0]    gpio_pu;
+wire [N_GPIO-1:0]    gpio_pd;
 
 // ----------------------------------------------------------------------------
 // IO pad instances: clock, reset, debug
@@ -333,7 +333,7 @@ gf180mcu_fd_io__bi_t pad_SRAM_UBn (
     .A      (padout_sram_ub_n),
     .OE     (enable_fixed_outputs),
     .Y      (/* unused */),
-    .PAD    (SRAM_OEn),
+    .PAD    (SRAM_UBn),
 
     .CS     (1'b0),
     .SL     (sram_strobe_slew),
@@ -354,7 +354,7 @@ gf180mcu_fd_io__bi_t pad_SRAM_LBn (
     .A      (padout_sram_lb_n),
     .OE     (enable_fixed_outputs),
     .Y      (/* unused */),
-    .PAD    (SRAM_OEn),
+    .PAD    (SRAM_LBn),
 
     .CS     (1'b0),
     .SL     (sram_strobe_slew),
