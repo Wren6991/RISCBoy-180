@@ -1,9 +1,9 @@
 current_design $::env(DESIGN_NAME)
 set_units -time ns
 
-create_clock i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u.Z -name clk_sys -period 50
+create_clock [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z] -name clk_sys -period 50
 
-create_clock pad_DCK.PAD -name dck -period 50
+create_clock [get_pins pad_DCK/PAD] -name dck -period 50
 
 set input_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_DELAY_CONSTRAINT) / 100]
 set output_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_DELAY_CONSTRAINT) / 100]
@@ -17,10 +17,10 @@ if { [info exists ::env(MAX_CAPACITANCE_CONSTRAINT)] } {
 }
 
 # Asynchronous reset, resynchronised internally
-set_false_path -through pad_RSTn.A
+set_false_path -through [get_pins pad_RSTn/Y]
 
 # You know what, fuck you *falses your paths*
-set_false_path -through *.magic_falsepath_anchor_u.Z
+set_false_path -through [get_pins *.magic_falsepath_anchor_u/Z]
 
 # # Bidirectional pads
 # set clk_core_inout_ports [get_ports { 
@@ -37,10 +37,12 @@ puts "\[INFO] Setting load to: $cap_load"
 set_load $cap_load [all_outputs]
 
 puts "\[INFO] Setting clock uncertainty to: $::env(CLOCK_UNCERTAINTY_CONSTRAINT)"
-set_clock_uncertainty $::env(CLOCK_UNCERTAINTY_CONSTRAINT) clk_sys dck
+set_clock_uncertainty $::env(CLOCK_UNCERTAINTY_CONSTRAINT) clk_sys
+set_clock_uncertainty $::env(CLOCK_UNCERTAINTY_CONSTRAINT) dck
 
 puts "\[INFO] Setting clock transition to: $::env(CLOCK_TRANSITION_CONSTRAINT)"
-set_clock_transition $::env(CLOCK_TRANSITION_CONSTRAINT) clk_sys dck
+set_clock_transition $::env(CLOCK_TRANSITION_CONSTRAINT) clk_sys
+set_clock_transition $::env(CLOCK_TRANSITION_CONSTRAINT) dck
 
 puts "\[INFO] Setting timing derate to: $::env(TIME_DERATING_CONSTRAINT)%"
 set_timing_derate -early [expr 1-[expr $::env(TIME_DERATING_CONSTRAINT) / 100]]
