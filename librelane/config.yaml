@@ -60,6 +60,15 @@ VERILOG_FILES:
 - dir::../hdl/hazard3/hdl/hazard3_triggers.v
 
 - dir::../hdl/libfpga/common/reset_sync.v
+- dir::../hdl/libfpga/cdc/sync_1bit.v
+- dir::../hdl/cells/clkroot_anchor.v
+- dir::../hdl/cells/falsepath_anchor.v
+
+- dir::../hdl/twowiredebug/hdl/twowire_dtm_core.v
+- dir::../hdl/twowiredebug/hdl/twowire_dtm_serial_comms.v
+- dir::../hdl/twowiredebug/hdl/cells/twowire_dtm_io_flops.v
+- dir::../hdl/twowiredebug/hdl/twowire_dtm_connect_monitor.v
+- dir::../hdl/twowiredebug/hdl/twowire_dtm.v
 
 VERILOG_INCLUDE_DIRS:
 - dir::../hdl/hazard3/hdl
