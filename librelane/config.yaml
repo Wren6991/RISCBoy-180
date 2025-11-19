@@ -63,6 +63,9 @@ VERILOG_FILES:
 - dir::../hdl/libfpga/cdc/sync_1bit.v
 - dir::../hdl/cells/clkroot_anchor.v
 - dir::../hdl/cells/falsepath_anchor.v
+- dir::../hdl/cells/cell_clkgate_low.v
+- dir::../hdl/cells/cell_clkxor.v
+- dir::../hdl/cells/cell_ddr_out.v
 
 - dir::../hdl/twowiredebug/hdl/twowire_dtm_core.v
 - dir::../hdl/twowiredebug/hdl/twowire_dtm_serial_comms.v
@@ -85,42 +88,45 @@ PRIMARY_GDSII_STREAMOUT_TOOL: klayout
 # macros are all the same size, so these can be freely mixed and matched as
 # long as the totals are the same.
 
-# SRAM pads are ordered to wire out symmetrically to a JEDEC 44-pin SRAM in a
-# broadside orientation.
+# SRAM pads are ordered to wire out symmetrically to a 44-pin 16-bit SRAM
+# (e.g. R1RP0416DI) in a broadside orientation.
 
 # Note our SRAM A and DQ are *both* numbered from 0, which is different from
 # some datasheets.
 
-# Pads 0 through  19
-PAD_WEST: [
-    "dvdd_pads\\[7\\].pad", # FIXED 0
-    "dvss_pads\\[9\\].pad", # FIXED 1
-    "dvdd_pads\\[6\\].pad", # FIXED 2
-    "dvss_pads\\[8\\].pad", # FIXED 3
+# My pad numbering is starting from 0 at northwest corner (on west edge) and
+# going anticlockwise.
 
-    # 6 IOs (4 through 9):
+# Pads 19 through  0
+PAD_WEST: [
+    "dvdd_pads\\[7\\].pad", # FIXED 19
+    "dvss_pads\\[9\\].pad", # FIXED 18
+    "dvdd_pads\\[6\\].pad", # FIXED 17
+    "dvss_pads\\[8\\].pad", # FIXED 16
+
+    # 6 IOs (15 through 10):
+    "pad_GPIO\\[0\\].u",
+    "pad_LCD_BL",
+    "pad_LCD_DC",
+    "pad_LCD_CSn",
+    "pad_LCD_DAT",
+    "pad_LCD_CLK",
+
+    "dvdd_pads\\[5\\].pad", # FIXED 9
+    "dvss_pads\\[7\\].pad", # FIXED 8
+
+    # 4 IOs (7 through 4):
+    "pad_CLK",
+    "pad_RSTn",
     "pad_AUDIO_L",
     "pad_AUDIO_R",
-    "pad_RSTn",
-    "pad_CLK",
-    "pad_DCK",
+
+    "dvdd_pads\\[4\\].pad", # FIXED 3
+    "dvss_pads\\[6\\].pad", # FIXED 2
+
+    # 2 IOs (1 through 0):
     "pad_DIO",
-
-    "dvdd_pads\\[5\\].pad", # FIXED 10
-    "dvss_pads\\[7\\].pad", # FIXED 11
-
-    # 4 IOs (12 through 15):
-    "pad_LCD_CLK",
-    "pad_LCD_DAT",
-    "pad_LCD_CSn",
-    "pad_LCD_DC",
-
-    "dvdd_pads\\[4\\].pad", # FIXED 16
-    "dvss_pads\\[6\\].pad", # FIXED 17
-
-    # 2 IOs (18 through 19):
-    "pad_LCD_BL",
-    "pad_GPIO\\[0\\].u"
+    "pad_DCK",
 ]
 
 # Pads 20 through 36
@@ -145,7 +151,7 @@ PAD_SOUTH: [
     "pad_SRAM_A\\[11\\].u",
     "pad_SRAM_A\\[10\\].u",
     "pad_SRAM_A\\[9\\].u",
-    "pad_SRAM_A\\[8\\].u"
+    "pad_SRAM_A\\[8\\].u",
 ]
 
 # Pads 37 through 56
@@ -178,29 +184,29 @@ PAD_EAST: [
     "dvdd_pads\\[3\\].pad", # FIXED 56
 ]
 
-# Pads 57 through 73
+# Pads 73 through 57
 PAD_NORTH: [
-    # 8 IOs: 57 through 64
-    "pad_SRAM_CSn",
-    "pad_SRAM_A\\[4\\].u",
-    "pad_SRAM_A\\[3\\].u",
-    "pad_SRAM_A\\[2\\].u",
-    "pad_SRAM_A\\[1\\].u",
-    "pad_SRAM_A\\[0\\].u",
-    "pad_SRAM_A\\[17\\].u",
-    "pad_SRAM_A\\[16\\].u",
+    # 8 IOs: 73 through 66
+    "pad_SRAM_DQ\\[12\\].u",
+    "pad_SRAM_DQ\\[13\\].u",
+    "pad_SRAM_DQ\\[14\\].u",
+    "pad_SRAM_DQ\\[15\\].u",
+    "pad_SRAM_LBn",
+    "pad_SRAM_UBn",
+    "pad_SRAM_OEn",
+    "pad_SRAM_A\\[15\\].u",
 
     "dvss_pads\\[5\\].pad", # FIXED 65
 
-    # 8 IOs: 66 through 73
-    "pad_SRAM_A\\[15\\].u",
-    "pad_SRAM_OEn",
-    "pad_SRAM_UBn",
-    "pad_SRAM_LBn",
-    "pad_SRAM_DQ\\[15\\].u",
-    "pad_SRAM_DQ\\[14\\].u",
-    "pad_SRAM_DQ\\[13\\].u",
-    "pad_SRAM_DQ\\[12\\].u"
+    # 8 IOs: 65 through 57
+    "pad_SRAM_A\\[16\\].u",
+    "pad_SRAM_A\\[17\\].u",
+    "pad_SRAM_A\\[0\\].u",
+    "pad_SRAM_A\\[1\\].u",
+    "pad_SRAM_A\\[2\\].u",
+    "pad_SRAM_A\\[3\\].u",
+    "pad_SRAM_A\\[4\\].u",
+    "pad_SRAM_CSn",
 ]
 
 # SDC files
