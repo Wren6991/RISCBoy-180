@@ -141,8 +141,8 @@ wire        ndtmresetreq;
 wire        ndtmresetack;
 
 twowire_dtm #(
-    .IDCODE (32'hdeadbeef), // TODO this is a real company
-    .ASIZE  (0)             // TODO mark presence of debug module
+    .IDCODE (32'h00280035), // Mfr Zilog, Part 280
+    .ASIZE  (0) 
 ) dtm_u (
     .dck            (padin_dck),
     .drst_n         (drst_n),
@@ -362,6 +362,14 @@ wire                fence_i_vld;
 wire                fence_d_vld;
 wire                fence_rdy = 1'b1;
 
+wire                clk_sys_gated_cpu;
+
+cell_clkgate_low clkgate_cpu_u (
+    .clk_in  (clk_sys),
+    .enable  (cpu_clk_en),
+    .clk_out (clk_sys_gated_cpu)
+);
+
 hazard3_cpu_1port #(
     .RESET_VECTOR        (32'h00000000),
     .MTVEC_INIT          (32'h00000000),
@@ -414,7 +422,7 @@ hazard3_cpu_1port #(
     .MTVEC_WMASK         (32'h000ffffd)
 ) cpu_u (
     .clk                        (clk_sys),
-    .clk_always_on              (clk_sys), // FIXME clock gating
+    .clk_always_on              (clk_sys_gated_cpu),
     .rst_n                      (rst_n_sys),
 
     .pwrup_req                  (cpu_pwrup_req),
