@@ -1,20 +1,44 @@
 current_design $::env(DESIGN_NAME)
 set_units -time ns
 
-create_clock [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z] -name clk_sys -period 50
+###############################################################################
+# Clock definitions
 
-create_clock [get_pins pad_DCK/PAD] -name dck -period 50
+set CLK_SYS_PERIOD 50
+set DCK_PERIOD 50
 
-set input_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_DELAY_CONSTRAINT) / 100]
-set output_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_DELAY_CONSTRAINT) / 100]
+# System clock: main CPU, SRAM, digital peripherals and external SRAM interface
+create_clock [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z] \
+    -name clk_sys \
+    -period $CLK_SYS_PERIOD
 
-set_max_fanout $::env(MAX_FANOUT_CONSTRAINT) [current_design]
-if { [info exists ::env(MAX_TRANSITION_CONSTRAINT)] } {
-    set_max_transition $::env(MAX_TRANSITION_CONSTRAINT) [current_design]
+# Debug clock: clocks the debug transport module and one side of its bus CDC
+create_clock [get_pins pad_DCK/PAD] \
+    -name dck \
+    -period $DCK_PERIOD
+
+###############################################################################
+# CDC constraints
+
+proc cdc_maxdelay {clk_from clk_to period_to} {
+    # Allow two cycles of propagation; really this is putting an upper bound on the skew
+    set_max_delay [expr 2.0 * $period_to] -from [get_clocks $clk_from] -to [get_clocks $clk_to]
+    # LibreLane doesn't support set_max_delay -datapath_only!
+    # Instead, manually disable hold checks between unrelated clocks:
+    set_false_path -hold -from [get_clocks $clk_from] -to [get_clocks $clk_to]
 }
-if { [info exists ::env(MAX_CAPACITANCE_CONSTRAINT)] } {
-    set_max_capacitance $::env(MAX_CAPACITANCE_CONSTRAINT) [current_design]
-}
+
+# All paths between clk_sys and DCK should be in the APB CDC, or reset
+# controls which go into synchronisers in the destination domain. MCP of 2 is
+# sufficient.
+cdc_maxdelay dck clk_sys $CLK_SYS_PERIOD
+cdc_maxdelay clk_sys dck $DCK_PERIOD
+
+###############################################################################
+# IO constraints
+
+# set input_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_DELAY_CONSTRAINT) / 100]
+# set output_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_DELAY_CONSTRAINT) / 100]
 
 # Asynchronous reset, resynchronised internally
 set_false_path -through [get_pins pad_RSTn/Y]
@@ -30,6 +54,9 @@ set_false_path -through [get_pins *.magic_falsepath_anchor_u/Z]
 # set_input_delay -min 0 -clock $clocks $clk_core_inout_ports
 # set_input_delay -max $input_delay_value -clock $clocks $clk_core_inout_ports
 # set_output_delay $output_delay_value -clock $clocks $clk_core_inout_ports
+
+###############################################################################
+# Cargo-culted from project template :)
 
 # Output load
 set cap_load [expr $::env(OUTPUT_CAP_LOAD) / 1000.0]
