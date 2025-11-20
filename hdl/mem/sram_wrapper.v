@@ -162,7 +162,7 @@ always @ (posedge clk) begin: update
 	if (!cs_n && !we_n) begin
 		for (i = 0; i < WIDTH / 8; i = i + 1) begin
 			if (!be_n[i]) begin
-				mem[addr][i * 8 +: 8] <= wdata;
+				mem[addr][i * 8 +: 8] <= wdata[i * 8 +: 8];
 			end
 		end	
 	end

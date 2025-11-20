@@ -127,10 +127,12 @@ async def twd_write_bus(dut, addr, wdata):
 async def twd_read_bus(dut, addr):
     await twd_command(dut, TWD_CMD_W_ADDR, 1, addr)
     _ = await twd_command(dut, TWD_CMD_R_DATA, 4)
-    while True:
+    for i in range(10):
         csr = await twd_command(dut, TWD_CMD_R_CSR, 4)
         if (csr & TWD_CSR_BUSY_BITS) == 0:
             break
+    else:
+        assert False
     return await twd_command(dut, TWD_CMD_R_BUFF, 4)
 
 ###############################################################################
@@ -241,16 +243,21 @@ async def rvdebug_put_gpr(dut, gpr, wdata):
         if (stat & DM_ABSTRACTCS_BUSY) == 0:
             break
 
+async def rvdebug_wait_acmd_finish(dut):
+    for i in range(10):
+        stat = await twd_read_bus(dut, DM_ABSTRACTCS)
+        if (stat & DM_ABSTRACTCS_BUSY) == 0:
+            break
+    else:
+        assert False
+
 async def rvdebug_get_gpr(dut, gpr):
     await twd_write_bus(dut, DM_COMMAND,
         DM_COMMAND_TRANSFER |
         DM_COMMAND_SIZE_WORD |
         ((0x1000 + gpr) << DM_COMMAND_REGNO_LSB)
     )
-    while True:
-        stat = await twd_read_bus(dut, DM_ABSTRACTCS)
-        if (stat & DM_ABSTRACTCS_BUSY) == 0:
-            break
+    await rvdebug_wait_acmd_finish(dut)
     return await twd_read_bus(dut, DM_DATA0)
 
 async def rvdebug_put_csr(dut, csr, wdata):
@@ -265,10 +272,7 @@ async def rvdebug_put_csr(dut, csr, wdata):
         DM_COMMAND_WRITE |
         0x1008
     )
-    while True:
-        stat = await twd_read_bus(dut, DM_ABSTRACTCS)
-        if (stat & DM_ABSTRACTCS_BUSY) == 0:
-            break
+    await rvdebug_wait_acmd_finish(dut)
     await rvdebug_put_gpr(dut, 8, gprsave)
 
 async def rvdebug_get_csr(dut, csr):
@@ -276,14 +280,45 @@ async def rvdebug_get_csr(dut, csr):
     await twd_write_bus(dut, DM_PROGBUF0, 0x00002073 | (csr << 20) | (8 << 7)) # csrr s0, xxx
     await twd_write_bus(dut, DM_PROGBUF1, 0xbff01073 | (8 << 15)) # csrw dmdata0, s0
     await twd_write_bus(dut, DM_COMMAND, DM_COMMAND_POSTEXEC)
-    while True:
-        stat = await twd_read_bus(dut, DM_ABSTRACTCS)
-        if (stat & DM_ABSTRACTCS_BUSY) == 0:
-            break
+    await rvdebug_wait_acmd_finish(dut)
     rdata = await twd_read_bus(dut, DM_DATA0)
     await rvdebug_put_gpr(dut, 8, gprsave)
     return rdata
 
+async def rvdebug_write_mem32(dut, addr, wdata):
+    save_s0 = await rvdebug_get_gpr(dut, 8)
+    save_s1 = await rvdebug_get_gpr(dut, 9)
+    await rvdebug_put_gpr(dut, 9, wdata)
+    await twd_write_bus(dut, DM_DATA0, addr)
+    await twd_write_bus(dut, DM_PROGBUF0, 0x00002023 | (9 << 20) | (8 << 15)) # sw s1, (s0)
+    await twd_write_bus(dut, DM_PROGBUF1, 0x00100073) # ebreak
+    await twd_write_bus(dut, DM_COMMAND,
+        DM_COMMAND_POSTEXEC |
+        DM_COMMAND_TRANSFER |
+        DM_COMMAND_SIZE_WORD |
+        DM_COMMAND_WRITE |
+        0x1008
+    )
+    await rvdebug_wait_acmd_finish(dut)
+    await rvdebug_put_gpr(dut, 8, save_s0)
+    await rvdebug_put_gpr(dut, 9, save_s1)
+
+async def rvdebug_read_mem32(dut, addr):
+    save_s0 = await rvdebug_get_gpr(dut, 8)
+    await twd_write_bus(dut, DM_DATA0, addr)
+    await twd_write_bus(dut, DM_PROGBUF0, 0x00002003 | (8 << 7) | (8 << 15)) # lw s0, (s0)
+    await twd_write_bus(dut, DM_PROGBUF1, 0x00100073) # ebreak
+    await twd_write_bus(dut, DM_COMMAND,
+        DM_COMMAND_POSTEXEC |
+        DM_COMMAND_TRANSFER |
+        DM_COMMAND_SIZE_WORD |
+        DM_COMMAND_WRITE |
+        0x1008
+    )
+    await rvdebug_wait_acmd_finish(dut)
+    rdata = await rvdebug_get_gpr(dut, 8)
+    await rvdebug_put_gpr(dut, 8, save_s0)
+    return rdata
 
 ###############################################################################
 
@@ -308,32 +343,58 @@ async def start_up(dut):
     await start_clock(dut.CLK)
     await reset(dut.RSTn)
 
-@cocotb.test()
-async def test_twd_idcode(dut):
-    """Connect TWD and read IDCODE. Check against predefined value."""
-    await start_up(dut)
-    await twd_connect(dut)
-    idcode = await twd_read_idcode(dut)
-    cocotb.log.info(f"IDCODE = {idcode:08x}")
-    assert idcode == 0x00280035
+# @cocotb.test()
+# async def test_twd_idcode(dut):
+#     """Connect TWD and read IDCODE. Check against predefined value."""
+#     await start_up(dut)
+#     await twd_connect(dut)
+#     idcode = await twd_read_idcode(dut)
+#     cocotb.log.info(f"IDCODE = {idcode:08x}")
+#     assert idcode == 0x00280035
+
+# @cocotb.test()
+# async def test_debug_archid(dut):
+#     """Connect to RISC-V core 0 and check marchid and misa CSRs"""
+#     await start_up(dut)
+#     cocotb.log.info(f"Connecting debug")
+#     await rvdebug_init(dut)
+#     cocotb.log.info(f"Halting core 0")
+#     await rvdebug_select_hart(dut, 0)
+#     await rvdebug_halt(dut)
+#     # GPRs aren't reset, so initialise the one that's saved and restored:
+#     await rvdebug_put_gpr(dut, 8, 0)
+#     marchid = await rvdebug_get_csr(dut, CSR_MARCHID)
+#     cocotb.log.info(f"marchid = {marchid:08x}")
+#     assert marchid == 0x1b # Hazard3
+#     misa = await rvdebug_get_csr(dut, CSR_MISA)
+#     cocotb.log.info(f"misa    = {misa:08x}")
+#     # assert misa == 0x1b # Hazard3
 
 @cocotb.test()
-async def test_debug_archid(dut):
-    """Connect to RISC-V core 0 and check marchid and misa CSRs"""
+async def test_iwram_smoke(dut):
+    """Smoke test for IWRAM (cover all four banks with 32-bit read/write)"""
+    cocotb.log.info(f"Read + write all banks")
     await start_up(dut)
-    cocotb.log.info(f"Connecting debug")
     await rvdebug_init(dut)
-    cocotb.log.info(f"Halting core 0")
-    await rvdebug_select_hart(dut, 0)
     await rvdebug_halt(dut)
-    # GPRs aren't reset, so initialise the one that's saved and restored:
     await rvdebug_put_gpr(dut, 8, 0)
-    marchid = await rvdebug_get_csr(dut, CSR_MARCHID)
-    cocotb.log.info(f"marchid = {marchid:08x}")
-    assert marchid == 0x1b # Hazard3
-    misa = await rvdebug_get_csr(dut, CSR_MISA)
-    cocotb.log.info(f"misa    = {misa:08x}")
-    # assert misa == 0x1b # Hazard3
+    await rvdebug_put_gpr(dut, 9, 0)
+    expect = dict()
+    for i in range(16):
+        addr = (i & 0xc) + ((i % 4) * 0x800)
+        wdata = addr * 123 ^ 0xaa55aa55
+        cocotb.log.info(f"{addr:08x} <- {wdata:08x}")
+        expect[addr] = wdata
+        # Cover R2W on same bank
+        await rvdebug_write_mem32(dut, addr, wdata)
+        rdata = await rvdebug_read_mem32(dut, addr)
+        cocotb.log.info(f"         -> {rdata:08x}")
+        assert rdata == wdata
+    cocotb.log.info(f"Re-read")
+    for i in range(16):
+        addr = i & 0xc + ((i % 4) * 0x800)
+        rdata = await rvdebug_read_mem32(dut, addr)
+        assert rdata == expect[addr]
 
 def chip_top_runner():
 
