@@ -118,9 +118,7 @@ clkroot_anchor clkroot_sys_u (
 // allowing the DTM to ignore the leading zeroes on the Connect sequence (they
 // are just there to sync the LFSR).
 wire        drst_n;
-reset_sync #(
-    .N_CYCLES (3)
-) sync_drst_n_u (
+reset_sync sync_drst_n_u (
     .clk       (padin_dck),
     .rst_n_in  (rst_n_por),
     .rst_n_out (drst_n)
@@ -179,9 +177,7 @@ falsepath_anchor fp_ndtmresetreq_u (
 wire rst_n_sys_unsync = rst_n_por && !ndtmresetreq_fp;
 
 wire rst_n_sys;
-reset_sync #(
-    .N_CYCLES (3)
-) sync_root_rst_n_u (
+reset_sync sync_root_rst_n_u (
     .clk       (clk_sys),
     .rst_n_in  (rst_n_sys_unsync),
     .rst_n_out (rst_n_sys)
@@ -367,7 +363,7 @@ wire [31:0]         cpu_hrdata;
 
 wire [NUM_IRQS-1:0] irq = 1'b0;
 wire                soft_irq = 1'b0;
-wire                timer_irq = 1'b0;
+wire                timer_irq;
 
 wire                fence_i_vld;
 wire                fence_d_vld;
@@ -657,11 +653,49 @@ ahbl_to_apb #(
     .apbm_pslverr      (peri_pslverr)
 );
 
-// Temporary tie-off as there are no APB peripherals
+wire [19:0] timer_paddr;
+wire        timer_psel;
+wire        timer_penable;
+wire        timer_pwrite;
+wire [31:0] timer_pwdata;
+wire        timer_pready;
+wire [31:0] timer_prdata;
+wire        timer_pslverr;
 
-assign peri_pslverr = 1'b1;
-assign peri_pready = 1'b1;
-assign peri_prdata = 32'd0;
+wire [19:0] padctrl_paddr;
+wire        padctrl_psel;
+wire        padctrl_penable;
+wire        padctrl_pwrite;
+wire [31:0] padctrl_pwdata;
+wire        padctrl_pready;
+wire [31:0] padctrl_prdata;
+wire        padctrl_pslverr;
+
+apb_splitter #(
+    .W_ADDR    (20),
+    .W_DATA    (32),
+    .N_SLAVES  (2),
+    .ADDR_MAP  (40'h01000_00000),
+    .ADDR_MASK (40'h0f000_0f000)
+) inst_apb_splitter (
+    .apbs_paddr   (peri_paddr),
+    .apbs_psel    (peri_psel),
+    .apbs_penable (peri_penable),
+    .apbs_pwrite  (peri_pwrite),
+    .apbs_pwdata  (peri_pwdata),
+    .apbs_pready  (peri_pready),
+    .apbs_prdata  (peri_prdata),
+    .apbs_pslverr (peri_pslverr),
+
+    .apbm_paddr   ({padctrl_paddr   , timer_paddr  }),
+    .apbm_psel    ({padctrl_psel    , timer_psel   }),
+    .apbm_penable ({padctrl_penable , timer_penable}),
+    .apbm_pwrite  ({padctrl_pwrite  , timer_pwrite }),
+    .apbm_pwdata  ({padctrl_pwdata  , timer_pwdata }),
+    .apbm_pready  ({padctrl_pready  , timer_pready }),
+    .apbm_prdata  ({padctrl_prdata  , timer_prdata }),
+    .apbm_pslverr ({padctrl_pslverr , timer_pslverr})
+);
 
 // ------------------------------------------------------------------------
 // Memories
@@ -723,7 +757,7 @@ audio_processor #(
     .dbg_instr_caught_exception (dbg_instr_caught_exception[1]),
     .dbg_instr_caught_ebreak    (dbg_instr_caught_ebreak[1]),
 
-    .ahbls_haddr                (apu_haddr),
+    .ahbls_haddr                ({12'd0, apu_haddr}),
     .ahbls_hwrite               (apu_hwrite),
     .ahbls_htrans               (apu_htrans),
     .ahbls_hsize                (apu_hsize),
@@ -735,6 +769,69 @@ audio_processor #(
 
     .audio_l                    (padout_audio_l),
     .audio_r                    (padout_audio_r)
+);
+
+// ------------------------------------------------------------------------
+// APB peripherals and control registers
+
+padctrl #(
+    .N_GPIO(N_GPIO)
+) padctrl_u (
+    .clk               (clk_sys),
+    .rst_n             (rst_n_sys),
+
+    .apbs_psel         (padctrl_psel),
+    .apbs_penable      (padctrl_penable),
+    .apbs_pwrite       (padctrl_pwrite),
+    .apbs_paddr        (padctrl_paddr),
+    .apbs_pwdata       (padctrl_pwdata),
+    .apbs_prdata       (padctrl_prdata),
+    .apbs_pready       (padctrl_pready),
+    .apbs_pslverr      (padctrl_pslverr),
+
+    .dio_schmitt       (dio_schmitt),
+    .dio_slew          (dio_slew),
+    .dio_drive         (dio_drive),
+    .sram_dq_schmitt   (sram_dq_schmitt),
+    .sram_dq_slew      (sram_dq_slew),
+    .sram_dq_drive     (sram_dq_drive),
+    .sram_a_slew       (sram_a_slew),
+    .sram_a_drive      (sram_a_drive),
+    .sram_strobe_slew  (sram_strobe_slew),
+    .sram_strobe_drive (sram_strobe_drive),
+    .audio_slew        (audio_slew),
+    .audio_drive       (audio_drive),
+    .lcd_clk_slew      (lcd_clk_slew),
+    .lcd_clk_drive     (lcd_clk_drive),
+    .lcd_dat_slew      (lcd_dat_slew),
+    .lcd_dat_drive     (lcd_dat_drive),
+    .lcd_dccs_slew     (lcd_dccs_slew),
+    .lcd_dccs_drive    (lcd_dccs_drive),
+    .lcd_bl_slew       (lcd_bl_slew),
+    .lcd_bl_drive      (lcd_bl_drive),
+    .gpio_schmitt      (gpio_schmitt),
+    .gpio_slew         (gpio_slew),
+    .gpio_drive        (gpio_drive),
+    .gpio_pu           (gpio_pu),
+    .gpio_pd           (gpio_pd)
+);
+
+hazard3_riscv_timer #(
+    .TICK_IS_NRZ (0) // TODO
+) inst_hazard3_riscv_timer (
+    .clk       (clk_sys),
+    .rst_n     (rst_n_sys),
+    .paddr     (timer_paddr[15:0]),
+    .psel      (timer_psel),
+    .penable   (timer_penable),
+    .pwrite    (timer_pwrite),
+    .pwdata    (timer_pwdata),
+    .prdata    (timer_prdata),
+    .pready    (timer_pready),
+    .pslverr   (timer_pslverr),
+    .dbg_halt  (dbg_halted[0]),
+    .tick      (1'b1),
+    .timer_irq (timer_irq)
 );
 
 // ------------------------------------------------------------------------
@@ -756,38 +853,6 @@ assign padout_lcd_dc     = 1'b0;
 assign padout_lcd_bl     = 1'b0;
 assign padoe_gpio        = {N_GPIO{1'b0}};
 assign padout_gpio       = {N_GPIO{1'b0}};
-
-// Minimum drive
-assign dio_drive         = 2'd0;
-assign sram_dq_drive     = 2'd0;
-assign sram_a_drive      = 2'd0;
-assign sram_strobe_drive = 2'd0;
-assign audio_drive       = 2'd0;
-assign lcd_clk_drive     = 2'd0;
-assign lcd_dat_drive     = 2'd0;
-assign lcd_dccs_drive    = 2'd0;
-assign lcd_bl_drive      = 2'd0;
-assign gpio_drive        = 2'd0;
-
-// Enable Schmitt
-assign dio_schmitt      = 1'b1;
-assign sram_dq_schmitt  = 1'b1;
-assign gpio_schmitt     = 1'b1;
-
-// Slow slew
-assign dio_slew         = 1'b1;
-assign sram_dq_slew     = 1'b1;
-assign sram_a_slew      = 1'b1;
-assign sram_strobe_slew = 1'b1;
-assign audio_slew       = 1'b1;
-assign lcd_clk_slew     = 1'b1;
-assign lcd_dat_slew     = 1'b1;
-assign lcd_dccs_slew    = 1'b1;
-assign lcd_bl_slew      = 1'b1;
-assign gpio_slew        = 1'b1;
-
-assign gpio_pu          = {N_GPIO{1'b0}};
-assign gpio_pd          = {N_GPIO{1'b1}};
 
 endmodule
 

@@ -33,6 +33,9 @@ VERILOG_FILES:
 - dir::../hdl/mem/ahb_sync_sram.v
 - dir::../hdl/mem/sram_wrapper.v
 
+- dir::../hdl/padctrl/padctrl.v
+- dir::../hdl/padctrl/padctrl_regs.v
+
 - dir::../hdl/hazard3/hdl/hazard3_cpu_1port.v
 - dir::../hdl/hazard3/hdl/arith/hazard3_alu.v
 - dir::../hdl/hazard3/hdl/arith/hazard3_branchcmp.v
@@ -60,17 +63,20 @@ VERILOG_FILES:
 - dir::../hdl/hazard3/hdl/hazard3_regfile_1w2r.v
 - dir::../hdl/hazard3/hdl/hazard3_triggers.v
 
+- dir::../hdl/hazard3/example_soc/soc/peri/hazard3_riscv_timer.v
+
 - dir::..//hdl/libfpga/common/onehot_mux.v
-- dir::../hdl/libfpga/common/reset_sync.v
 - dir::../hdl/libfpga/cdc/sync_1bit.v
 - dir::../hdl/libfpga/busfabric/ahbl_to_apb.v
 - dir::../hdl/libfpga/busfabric/ahbl_splitter.v
+- dir::../hdl/libfpga/busfabric/apb_splitter.v
 
 - dir::../hdl/cells/clkroot_anchor.v
 - dir::../hdl/cells/falsepath_anchor.v
 - dir::../hdl/cells/cell_clkgate_low.v
 - dir::../hdl/cells/cell_clkxor.v
 - dir::../hdl/cells/cell_ddr_out.v
+- dir::../hdl/cells/reset_sync.v
 
 - dir::../hdl/twowiredebug/hdl/twowire_dtm_core.v
 - dir::../hdl/twowiredebug/hdl/twowire_dtm_serial_comms.v
@@ -453,6 +459,10 @@ MACROS:
         orientation: "N"
 
 PDN_CFG: dir::pdn_cfg.tcl
+
+PDN_VERTICAL_HALO: 5
+
+PDN_HORIZONTAL_HALO: 5
 
 # Make sure netgen doesn't create 'no_connect' nets
 # Not needed since netgen 1.5.303
