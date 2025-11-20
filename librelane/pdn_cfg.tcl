@@ -195,23 +195,36 @@ add_pdn_connect \
 
 # SRAM macros
 
-define_pdn_grid \
-    -macro \
-    -instances {i_chip_core.iram_u.sram.*.ram_u} \
-    -instances {i_chip_core.apu_u.ram_u.sram.*.ram_u} \
-    -name sram_macros_NS \
-    -starts_with POWER \
-    -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"
+proc sram_pdn_ns {pdnname macrolist} {
+    define_pdn_grid \
+        -macro \
+        -instances $macrolist \
+        -name $pdnname \
+        -starts_with POWER \
+        -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"
 
-add_pdn_connect \
-    -grid sram_macros_NS \
-    -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
+    add_pdn_connect \
+        -grid $pdnname \
+        -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
 
-add_pdn_connect \
-    -grid sram_macros_NS \
-    -layers "$::env(PDN_VERTICAL_LAYER) Metal3"
+    add_pdn_connect \
+        -grid $pdnname \
+        -layers "$::env(PDN_VERTICAL_LAYER) Metal3"
 
-add_pdn_stripe -grid sram_macros_NS -layer Metal4 -width 2.36 -offset 1.18 -spacing 0.28 -pitch 426.86 -starts_with GROUND -number_of_straps 2
+    add_pdn_stripe \
+        -grid $pdnname \
+        -layer Metal4 \
+        -width 2.36 \
+        -offset 1.18 \
+        -spacing 0.28 \
+        -pitch 426.86 \
+        -starts_with GROUND \
+        -number_of_straps 2
+}
+
+sram_pdn_ns pdn_cpu_iram {i_chip_core.iram_u.sram.*.ram_u}
+sram_pdn_ns pdn_apu_ram {i_chip_core.apu_u.ram_u.sram.*.ram_u}
+
 
 # define_pdn_grid \
 #     -macro \
