@@ -6,6 +6,9 @@
 // Unfortunately there is no clock (balanced) XOR cell in the GF180MCU library
 // so this is just a normal XOR.
 
+// For VDD/VSS:
+/* verilator lint_off PINMISSING */
+
 `default_nettype none
 
 module cell_clkxor (

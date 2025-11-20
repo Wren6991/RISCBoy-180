@@ -9,6 +9,9 @@
 // * Creates a predictable cell name that can easily be found for constraints.
 //   You can even wildcard *.magic_falsepath_anchor_u.Z if you want to.
 
+// For VDD/VSS:
+/* verilator lint_off PINMISSING */
+
 `default_nettype none
 
 module falsepath_anchor (

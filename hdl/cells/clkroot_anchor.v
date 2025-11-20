@@ -6,6 +6,9 @@
 // Clock root anchor buffer. No particular meaning in synthesis, but helps
 // constraints to find a clock net in the netlist.
 
+// For VDD/VSS:
+/* verilator lint_off PINMISSING */
+
 `default_nettype none
 
 module clkroot_anchor (

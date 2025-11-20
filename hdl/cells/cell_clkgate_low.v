@@ -6,6 +6,9 @@
 // Clock gate (ICG) which latches enable on posedge and holds the clock low
 // when the enable is low.
 
+// For VDD/VSS:
+/* verilator lint_off PINMISSING */
+
 `default_nettype none
 
 module cell_clkgate_low (

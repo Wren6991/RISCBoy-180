@@ -7,3 +7,9 @@
 [submodule "hdl/twowiredebug"]
 	path = hdl/twowiredebug
 	url = https://github.com/Wren6991/TwoWireDebug.git
+[submodule "hdl/riscboy"]
+	path = hdl/riscboy
+	url = https://github.com/Wren6991/RISCBoy.git
+[submodule "scripts"]
+	path = scripts
+	url = https://github.com/Wren6991/fpgascripts.git
