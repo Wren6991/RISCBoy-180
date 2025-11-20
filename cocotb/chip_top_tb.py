@@ -93,7 +93,7 @@ async def twd_command(dut, cmd, n_bytes, wdata=None):
     else:
         await twd_shift_out(dut, 0, 2)
         await twd_shift_out(dut, wdata, 8 * n_bytes)
-        await twd_shift_out(dut, odd_parity(wdata), 4)
+        await twd_shift_out(dut, odd_parity(wdata) << 3, 4)
 
 async def twd_connect(dut):
     connect_seq = [
@@ -124,7 +124,7 @@ async def twd_write_bus(dut, addr, wdata):
         if (csr & TWD_CSR_BUSY_BITS) == 0:
             break
 
-async def twd_read_bus(dut):
+async def twd_read_bus(dut, addr):
     await twd_command(dut, TWD_CMD_W_ADDR, 1, addr)
     _ = await twd_command(dut, TWD_CMD_R_DATA, 4)
     while True:
@@ -167,6 +167,7 @@ DM_DMSTATUS_ANYHAVERESET   = 1 << 19
 DM_ABSTRACTCS_BUSY         = 1 << 12
 DM_ABSTRACTCS_CMDERR       = 0x7 << 8
 
+DM_COMMAND_SIZE_WORD       = 2 << 20
 DM_COMMAND_POSTEXEC        = 1 << 18
 DM_COMMAND_TRANSFER        = 1 << 17
 DM_COMMAND_WRITE           = 1 << 16
@@ -175,6 +176,7 @@ DM_COMMAND_REGNO_LSB       = 0
 CSR_MVENDORID              = 0xf11
 CSR_MARCHID                = 0xf12
 CSR_MIMPID                 = 0xf13
+CSR_MISA                   = 0x301
 CSR_H3_MSLEEP              = 0xbf0
 CSR_TSELECT                = 0x7a0
 CSR_TDATA1                 = 0x7a1
@@ -187,7 +189,7 @@ CSR_DPC                    = 0x7b1
 
 async def rvdebug_init(dut):
     await twd_connect(dut)
-    dmstatus = await twd_read_bus(DM_DMSTATUS)
+    dmstatus = await twd_read_bus(dut, DM_DMSTATUS)
     assert (dmstatus & 0xf) == 2
     await twd_write_bus(dut, DM_DMCONTROL, 0)
     await twd_write_bus(dut, DM_DMCONTROL, DM_DMCONTROL_DMACTIVE)
@@ -230,6 +232,7 @@ async def rvdebug_put_gpr(dut, gpr, wdata):
     await twd_write_bus(dut, DM_DATA0, wdata)
     await twd_write_bus(dut, DM_COMMAND,
         DM_COMMAND_TRANSFER |
+        DM_COMMAND_SIZE_WORD |
         DM_COMMAND_WRITE |
         ((0x1000 + gpr) << DM_COMMAND_REGNO_LSB)
     )
@@ -241,6 +244,7 @@ async def rvdebug_put_gpr(dut, gpr, wdata):
 async def rvdebug_get_gpr(dut, gpr):
     await twd_write_bus(dut, DM_COMMAND,
         DM_COMMAND_TRANSFER |
+        DM_COMMAND_SIZE_WORD |
         ((0x1000 + gpr) << DM_COMMAND_REGNO_LSB)
     )
     while True:
@@ -257,6 +261,7 @@ async def rvdebug_put_csr(dut, csr, wdata):
     await twd_write_bus(dut, DM_COMMAND,
         DM_COMMAND_POSTEXEC |
         DM_COMMAND_TRANSFER |
+        DM_COMMAND_SIZE_WORD |
         DM_COMMAND_WRITE |
         0x1008
     )
@@ -269,7 +274,7 @@ async def rvdebug_put_csr(dut, csr, wdata):
 async def rvdebug_get_csr(dut, csr):
     gprsave = await rvdebug_get_gpr(dut, 8)
     await twd_write_bus(dut, DM_PROGBUF0, 0x00002073 | (csr << 20) | (8 << 7)) # csrr s0, xxx
-    await twd_write_bus(dut, DM_PROGBUF1, 0xbff01073) # csrw dmdata0, s0
+    await twd_write_bus(dut, DM_PROGBUF1, 0xbff01073 | (8 << 15)) # csrw dmdata0, s0
     await twd_write_bus(dut, DM_COMMAND, DM_COMMAND_POSTEXEC)
     while True:
         stat = await twd_read_bus(dut, DM_ABSTRACTCS)
@@ -312,6 +317,23 @@ async def test_twd_idcode(dut):
     cocotb.log.info(f"IDCODE = {idcode:08x}")
     assert idcode == 0x00280035
 
+@cocotb.test()
+async def test_debug_archid(dut):
+    """Connect to RISC-V core 0 and check marchid and misa CSRs"""
+    await start_up(dut)
+    cocotb.log.info(f"Connecting debug")
+    await rvdebug_init(dut)
+    cocotb.log.info(f"Halting core 0")
+    await rvdebug_select_hart(dut, 0)
+    await rvdebug_halt(dut)
+    # GPRs aren't reset, so initialise the one that's saved and restored:
+    await rvdebug_put_gpr(dut, 8, 0)
+    marchid = await rvdebug_get_csr(dut, CSR_MARCHID)
+    cocotb.log.info(f"marchid = {marchid:08x}")
+    assert marchid == 0x1b # Hazard3
+    misa = await rvdebug_get_csr(dut, CSR_MISA)
+    cocotb.log.info(f"misa    = {misa:08x}")
+    # assert misa == 0x1b # Hazard3
 
 def chip_top_runner():
 
