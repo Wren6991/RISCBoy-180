@@ -28,6 +28,7 @@ DESIGN_NAME: chip_top
 VERILOG_FILES:
 - dir::../hdl/chip_top.sv
 - dir::../hdl/chip_core.sv
+- dir::../hdl/audio_processor.v
 
 - dir::../hdl/mem/ahb_sync_sram.v
 - dir::../hdl/mem/sram_wrapper.v
@@ -59,8 +60,12 @@ VERILOG_FILES:
 - dir::../hdl/hazard3/hdl/hazard3_regfile_1w2r.v
 - dir::../hdl/hazard3/hdl/hazard3_triggers.v
 
+- dir::..//hdl/libfpga/common/onehot_mux.v
 - dir::../hdl/libfpga/common/reset_sync.v
 - dir::../hdl/libfpga/cdc/sync_1bit.v
+- dir::../hdl/libfpga/busfabric/ahbl_to_apb.v
+- dir::../hdl/libfpga/busfabric/ahbl_splitter.v
+
 - dir::../hdl/cells/clkroot_anchor.v
 - dir::../hdl/cells/falsepath_anchor.v
 - dir::../hdl/cells/cell_clkgate_low.v
@@ -385,59 +390,67 @@ MACROS:
         - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_4v50.lib
     instances:
       # Make sure to specify the SRAMs in pdn_cfg.tcl
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[0].g_width[0].ram_u:
+      i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[0].ram_u:
         location: [3000, 600]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[0].g_width[1].ram_u:
+        orientation: "N"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[1].ram_u:
         location: [3000, 1200]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[0].g_width[2].ram_u:
+        orientation: "N"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[2].ram_u:
         location: [3000, 1800]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[0].g_width[3].ram_u:
+        orientation: "S"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[3].ram_u:
         location: [3000, 2400]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[1].g_width[0].ram_u:
+        orientation: "S"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[0].ram_u:
         location: [2500, 600]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[1].g_width[1].ram_u:
+        orientation: "N"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[1].ram_u:
         location: [2500, 1200]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[1].g_width[2].ram_u:
+        orientation: "N"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[2].ram_u:
         location: [2500, 1800]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[1].g_width[3].ram_u:
+        orientation: "S"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[3].ram_u:
         location: [2500, 2400]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[2].g_width[0].ram_u:
+        orientation: "S"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[0].ram_u:
         location: [1000, 600]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[2].g_width[1].ram_u:
+        orientation: "N"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[1].ram_u:
         location: [1000, 1200]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[2].g_width[2].ram_u:
+        orientation: "N"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[2].ram_u:
         location: [1000, 1800]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[2].g_width[3].ram_u:
+        orientation: "S"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[3].ram_u:
         location: [1000, 2400]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[3].g_width[0].ram_u:
+        orientation: "S"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[0].ram_u:
         location: [500, 600]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[3].g_width[1].ram_u:
+        orientation: "N"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[1].ram_u:
         location: [500, 1200]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[3].g_width[2].ram_u:
+        orientation: "N"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[2].ram_u:
         location: [500, 1800]
-        orientation: N
-      i_chip_core.iwram_u.sram.g_dg512.g_depth[3].g_width[3].ram_u:
+        orientation: "S"
+      i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[3].ram_u:
         location: [500, 2400]
-        orientation: N
+        orientation: "S"
 
-# This is an alternative method compared to
-# specifying the power connections in the RTL
-# PDN_MACRO_CONNECTIONS:
-# - "i_chip_core.iwram_u.*.ram_u VDD VSS VDD VSS"
+      i_chip_core.apu_u.ram_u.sram.g_d512.g_width[0].ram_u:
+        location: [500, 3500]
+        orientation: "S"
+      i_chip_core.apu_u.ram_u.sram.g_d512.g_width[1].ram_u:
+        location: [500, 4100]
+        orientation: "N"
+      i_chip_core.apu_u.ram_u.sram.g_d512.g_width[2].ram_u:
+        location: [1000, 3500]
+        orientation: "S"
+      i_chip_core.apu_u.ram_u.sram.g_d512.g_width[3].ram_u:
+        location: [1000, 4100]
+        orientation: "N"
 
 PDN_CFG: dir::pdn_cfg.tcl
 

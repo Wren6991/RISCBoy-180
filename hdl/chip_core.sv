@@ -252,37 +252,48 @@ assign dmi_paddr[1:0] = 2'b00;
 // Debug Module and processor reset control
 
 wire        sys_reset_req;
-wire        hart_reset_req;
+wire        sys_reset_done;
+wire  [1:0] hart_reset_req;
+wire  [1:0] hart_reset_done;
 wire        rst_n_cpu;
-wire        rst_n_cpu_unsync = rst_n_sys && !(sys_reset_req || hart_reset_req);
+wire        rst_n_apu;
+wire        rst_n_cpu_unsync = rst_n_sys && !(sys_reset_req || hart_reset_req[0]);
+wire        rst_n_apu_unsync = rst_n_sys && !(sys_reset_req || hart_reset_req[1]);
 
-reset_sync #(
-    .N_CYCLES (3)
-) sync_rst_n_cpu (
+reset_sync sync_rst_n_cpu (
     .clk       (clk_sys),
     .rst_n_in  (rst_n_cpu_unsync),
     .rst_n_out (rst_n_cpu)
 );
 
-wire sys_reset_done = rst_n_cpu;
-wire hart_reset_done = rst_n_cpu;
+reset_sync sync_rst_n_apu (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_apu_unsync),
+    .rst_n_out (rst_n_apu)
+);
 
-wire        dbg_req_halt;
-wire        dbg_req_halt_on_reset;
-wire        dbg_req_resume;
-wire        dbg_halted;
-wire        dbg_running;
-wire [31:0] dbg_data0_rdata;
-wire [31:0] dbg_data0_wdata;
-wire        dbg_data0_wen;
-wire [31:0] dbg_instr_data;
-wire        dbg_instr_data_vld;
-wire        dbg_instr_data_rdy;
-wire        dbg_instr_caught_exception;
-wire        dbg_instr_caught_ebreak;
+assign sys_reset_done = rst_n_cpu && rst_n_apu; // TODO async violation (though it's all on clk_sys really)
+assign hart_reset_done[0] = rst_n_cpu;
+assign hart_reset_done[1] = rst_n_apu;
+
+localparam N_HARTS = 2;
+
+wire [N_HARTS-1:0]    dbg_req_halt;
+wire [N_HARTS-1:0]    dbg_req_halt_on_reset;
+wire [N_HARTS-1:0]    dbg_req_resume;
+wire [N_HARTS-1:0]    dbg_halted;
+wire [N_HARTS-1:0]    dbg_running;
+wire [32*N_HARTS-1:0] dbg_data0_rdata;
+wire [32*N_HARTS-1:0] dbg_data0_wdata;
+wire [N_HARTS-1:0]    dbg_data0_wen;
+wire [N_HARTS-1:0]    dbg_instr_data_vld;
+wire [N_HARTS-1:0]    dbg_instr_data_rdy;
+wire [32*N_HARTS-1:0] dbg_instr_data;
+wire [N_HARTS-1:0]    dbg_instr_caught_exception;
+wire [N_HARTS-1:0]    dbg_instr_caught_ebreak;
 
 hazard3_dm #(
-    .N_HARTS  (1),
+    .N_HARTS  (N_HARTS),
     .HAVE_SBA (0)
 ) dm_u (
     .clk                         (clk_sys),
@@ -350,7 +361,7 @@ wire [7:0]          cpu_hmaster;
 wire                cpu_hexcl;
 wire                cpu_hready;
 wire                cpu_hresp;
-wire                cpu_hexokay = 1'b1;
+wire                cpu_hexokay;
 wire [31:0]         cpu_hwdata;
 wire [31:0]         cpu_hrdata;
 
@@ -451,19 +462,19 @@ hazard3_cpu_1port #(
     .fence_d_vld                (fence_d_vld),
     .fence_rdy                  (fence_rdy),
 
-    .dbg_req_halt               (dbg_req_halt),
-    .dbg_req_halt_on_reset      (dbg_req_halt_on_reset),
-    .dbg_req_resume             (dbg_req_resume),
-    .dbg_halted                 (dbg_halted),
-    .dbg_running                (dbg_running),
-    .dbg_data0_rdata            (dbg_data0_rdata),
-    .dbg_data0_wdata            (dbg_data0_wdata),
-    .dbg_data0_wen              (dbg_data0_wen),
-    .dbg_instr_data             (dbg_instr_data),
-    .dbg_instr_data_vld         (dbg_instr_data_vld),
-    .dbg_instr_data_rdy         (dbg_instr_data_rdy),
-    .dbg_instr_caught_exception (dbg_instr_caught_exception),
-    .dbg_instr_caught_ebreak    (dbg_instr_caught_ebreak),
+    .dbg_req_halt               (dbg_req_halt[0]),
+    .dbg_req_halt_on_reset      (dbg_req_halt_on_reset[0]),
+    .dbg_req_resume             (dbg_req_resume[0]),
+    .dbg_halted                 (dbg_halted[0]),
+    .dbg_running                (dbg_running[0]),
+    .dbg_data0_rdata            (dbg_data0_rdata[0 * 32 +: 32]),
+    .dbg_data0_wdata            (dbg_data0_wdata[0 * 32 +: 32]),
+    .dbg_data0_wen              (dbg_data0_wen[0]),
+    .dbg_instr_data             (dbg_instr_data[0 * 32 +: 32]),
+    .dbg_instr_data_vld         (dbg_instr_data_vld[0]),
+    .dbg_instr_data_rdy         (dbg_instr_data_rdy[0]),
+    .dbg_instr_caught_exception (dbg_instr_caught_exception[0]),
+    .dbg_instr_caught_ebreak    (dbg_instr_caught_ebreak[0]),
 
     .dbg_sbus_addr              (32'd0),
     .dbg_sbus_write             (1'b0),
@@ -475,7 +486,7 @@ hazard3_cpu_1port #(
     .dbg_sbus_rdata             (/* unused */),
 
     .mhartid_val                (32'd0),
-    .eco_version                (4'd0), // FIXME tie cells
+    .eco_version                (4'd0),
 
     .irq                        (irq),
     .soft_irq                   (soft_irq),
@@ -483,31 +494,247 @@ hazard3_cpu_1port #(
 );
 
 // ------------------------------------------------------------------------
+// Bus components
+
+// 1 MB system address space:
+//
+// 00000 to 7ffff: external SRAM     (up to 512 kB)
+// 80000 to cffff: internal SRAM     (mirrored across 256 kB)
+// c0000 to dffff: APU address space (128 kB aperture)
+// e0000 to fffff: APB peripherals   (128 kB address space, ~4 kB each)
+
+wire [19:0]         eram_haddr;
+wire                eram_hwrite;
+wire [1:0]          eram_htrans;
+wire [2:0]          eram_hsize;
+wire [2:0]          eram_hburst;
+wire [3:0]          eram_hprot;
+wire                eram_hmastlock;
+wire [7:0]          eram_hmaster;
+wire                eram_hexcl;
+wire                eram_hready;
+wire                eram_hready_resp;
+wire                eram_hresp;
+wire                eram_hexokay;
+wire [31:0]         eram_hwdata;
+wire [31:0]         eram_hrdata;
+
+wire [19:0]         iram_haddr;
+wire                iram_hwrite;
+wire [1:0]          iram_htrans;
+wire [2:0]          iram_hsize;
+wire [2:0]          iram_hburst;
+wire [3:0]          iram_hprot;
+wire                iram_hmastlock;
+wire [7:0]          iram_hmaster;
+wire                iram_hexcl;
+wire                iram_hready;
+wire                iram_hready_resp;
+wire                iram_hresp;
+wire                iram_hexokay;
+wire [31:0]         iram_hwdata;
+wire [31:0]         iram_hrdata;
+
+wire [19:0]         apu_haddr;
+wire                apu_hwrite;
+wire [1:0]          apu_htrans;
+wire [2:0]          apu_hsize;
+wire [2:0]          apu_hburst;
+wire [3:0]          apu_hprot;
+wire                apu_hmastlock;
+wire [7:0]          apu_hmaster;
+wire                apu_hexcl;
+wire                apu_hready;
+wire                apu_hready_resp;
+wire                apu_hresp;
+wire                apu_hexokay;
+wire [31:0]         apu_hwdata;
+wire [31:0]         apu_hrdata;
+
+wire [19:0]         apb_haddr;
+wire                apb_hwrite;
+wire [1:0]          apb_htrans;
+wire [2:0]          apb_hsize;
+wire [2:0]          apb_hburst;
+wire [3:0]          apb_hprot;
+wire                apb_hmastlock;
+wire [7:0]          apb_hmaster;
+wire                apb_hexcl;
+wire                apb_hready;
+wire                apb_hready_resp;
+wire                apb_hresp;
+wire                apb_hexokay;
+wire [31:0]         apb_hwdata;
+wire [31:0]         apb_hrdata;
+
+// Tie off exclusive responses (harmless if A extension is deselected).
+// Exclusives always fail on APU memory and always pass elsewhere.
+assign iram_hexokay = 1'b1;
+assign eram_hexokay = 1'b1;
+assign apu_hexokay  = 1'b0;
+assign apb_hexokay  = 1'b1;
+
+ahbl_splitter #(
+    .N_PORTS   (4),
+    .W_ADDR    (20),
+    .W_DATA    (32),
+    .ADDR_MAP  (80'he0000_c0000_80000_00000),
+    .ADDR_MASK (80'he0000_e0000_c0000_80000)
+) splitter_u (
+    .clk             (clk_sys),
+    .rst_n           (rst_n_sys),
+
+    .src_hready      (cpu_hready),
+    .src_hready_resp (cpu_hready),
+    .src_hresp       (cpu_hresp),
+    .src_hexokay     (cpu_hexokay),
+    .src_haddr       (cpu_haddr[19:0]),
+    .src_hwrite      (cpu_hwrite),
+    .src_htrans      (cpu_htrans),
+    .src_hsize       (cpu_hsize),
+    .src_hburst      (cpu_hburst),
+    .src_hprot       (cpu_hprot),
+    .src_hmaster     (cpu_hmaster),
+    .src_hmastlock   (cpu_hmastlock),
+    .src_hexcl       (cpu_hexcl),
+    .src_hwdata      (cpu_hwdata),
+    .src_hrdata      (cpu_hrdata),
+
+    .dst_hready      ({apb_hready      , apu_hready      , iram_hready      , eram_hready     }),
+    .dst_hready_resp ({apb_hready_resp , apu_hready_resp , iram_hready_resp , eram_hready_resp}),
+    .dst_hresp       ({apb_hresp       , apu_hresp       , iram_hresp       , eram_hresp      }),
+    .dst_hexokay     ({apb_hexokay     , apu_hexokay     , iram_hexokay     , eram_hexokay    }),
+    .dst_haddr       ({apb_haddr       , apu_haddr       , iram_haddr       , eram_haddr      }),
+    .dst_hwrite      ({apb_hwrite      , apu_hwrite      , iram_hwrite      , eram_hwrite     }),
+    .dst_htrans      ({apb_htrans      , apu_htrans      , iram_htrans      , eram_htrans     }),
+    .dst_hsize       ({apb_hsize       , apu_hsize       , iram_hsize       , eram_hsize      }),
+    .dst_hburst      ({apb_hburst      , apu_hburst      , iram_hburst      , eram_hburst     }),
+    .dst_hprot       ({apb_hprot       , apu_hprot       , iram_hprot       , eram_hprot      }),
+    .dst_hmaster     ({apb_hmaster     , apu_hmaster     , iram_hmaster     , eram_hmaster    }),
+    .dst_hmastlock   ({apb_hmastlock   , apu_hmastlock   , iram_hmastlock   , eram_hmastlock  }),
+    .dst_hexcl       ({apb_hexcl       , apu_hexcl       , iram_hexcl       , eram_hexcl      }),
+    .dst_hwdata      ({apb_hwdata      , apu_hwdata      , iram_hwdata      , eram_hwdata     }),
+    .dst_hrdata      ({apb_hrdata      , apu_hrdata      , iram_hrdata      , eram_hrdata     })
+);
+
+wire [19:0] peri_paddr;
+wire        peri_psel;
+wire        peri_penable;
+wire        peri_pwrite;
+wire [31:0] peri_pwdata;
+wire        peri_pready;
+wire [31:0] peri_prdata;
+wire        peri_pslverr;
+
+ahbl_to_apb #(
+    .W_HADDR (20),
+    .W_PADDR (20),
+    .W_DATA  (32)
+) inst_ahbl_to_apb (
+    .clk               (clk_sys),
+    .rst_n             (rst_n_sys),
+
+    .ahbls_haddr       (apb_haddr),
+    .ahbls_hwrite      (apb_hwrite),
+    .ahbls_htrans      (apb_htrans),
+    .ahbls_hsize       (apb_hsize),
+    .ahbls_hburst      (apb_hburst),
+    .ahbls_hprot       (apb_hprot),
+    .ahbls_hmastlock   (apb_hmastlock),
+    .ahbls_hwdata      (apb_hwdata),
+    .ahbls_hready      (apb_hready),
+    .ahbls_hready_resp (apb_hready_resp),
+    .ahbls_hresp       (apb_hresp),
+    .ahbls_hrdata      (apb_hrdata),
+
+    .apbm_paddr        (peri_paddr),
+    .apbm_psel         (peri_psel),
+    .apbm_penable      (peri_penable),
+    .apbm_pwrite       (peri_pwrite),
+    .apbm_pwdata       (peri_pwdata),
+    .apbm_pready       (peri_pready),
+    .apbm_prdata       (peri_prdata),
+    .apbm_pslverr      (peri_pslverr)
+);
+
+// Temporary tie-off as there are no APB peripherals
+
+assign peri_pslverr = 1'b1;
+assign peri_pready = 1'b1;
+assign peri_prdata = 32'd0;
+
+// ------------------------------------------------------------------------
 // Memories
 
 ahb_sync_sram #(
     .W_DATA (32),
+    .W_ADDR (20), // this is HADDR, not RAM address
     .DEPTH  (2048)
-) iwram_u (
-`ifdef USE_POWER_PINS
+) iram_u (
     .VDD               (VDD),
     .VSS               (VSS),
-`endif
+
     .clk               (clk_sys),
     .rst_n             (rst_n_sys),
 
-    .ahbls_hready_resp (cpu_hready),
-    .ahbls_hready      (cpu_hready),
-    .ahbls_hresp       (cpu_hresp),
-    .ahbls_haddr       (cpu_haddr),
-    .ahbls_hwrite      (cpu_hwrite),
-    .ahbls_htrans      (cpu_htrans),
-    .ahbls_hsize       (cpu_hsize),
-    .ahbls_hburst      (cpu_hburst),
-    .ahbls_hprot       (cpu_hprot),
-    .ahbls_hmastlock   (cpu_hmastlock),
-    .ahbls_hwdata      (cpu_hwdata),
-    .ahbls_hrdata      (cpu_hrdata)
+    .ahbls_hready_resp (iram_hready_resp),
+    .ahbls_hready      (iram_hready),
+    .ahbls_hresp       (iram_hresp),
+    .ahbls_haddr       (iram_haddr),
+    .ahbls_hwrite      (iram_hwrite),
+    .ahbls_htrans      (iram_htrans),
+    .ahbls_hsize       (iram_hsize),
+    .ahbls_hburst      (iram_hburst),
+    .ahbls_hprot       (iram_hprot),
+    .ahbls_hmastlock   (iram_hmastlock),
+    .ahbls_hwdata      (iram_hwdata),
+    .ahbls_hrdata      (iram_hrdata)
+);
+
+assign eram_hrdata = 32'd0;
+assign eram_hready_resp = 1'b1;
+assign eram_hresp = 1'b0;
+
+// ------------------------------------------------------------------------
+// Audio processor
+
+assign apu_hexokay = 1'b0;
+
+audio_processor #(
+    .RAM_DEPTH (512)
+) apu_u (
+    .clk                        (clk_sys),
+    .rst_n                      (rst_n_apu),
+
+    .VDD                        (VDD),
+    .VSS                        (VSS),
+
+    .dbg_req_halt               (dbg_req_halt[1]),
+    .dbg_req_halt_on_reset      (dbg_req_halt_on_reset[1]),
+    .dbg_req_resume             (dbg_req_resume[1]),
+    .dbg_halted                 (dbg_halted[1]),
+    .dbg_running                (dbg_running[1]),
+    .dbg_data0_rdata            (dbg_data0_rdata[1 * 32 +: 32]),
+    .dbg_data0_wdata            (dbg_data0_wdata[1 * 32 +: 32]),
+    .dbg_data0_wen              (dbg_data0_wen[1]),
+    .dbg_instr_data             (dbg_instr_data[1 * 32 +: 32]),
+    .dbg_instr_data_vld         (dbg_instr_data_vld[1]),
+    .dbg_instr_data_rdy         (dbg_instr_data_rdy[1]),
+    .dbg_instr_caught_exception (dbg_instr_caught_exception[1]),
+    .dbg_instr_caught_ebreak    (dbg_instr_caught_ebreak[1]),
+
+    .ahbls_haddr                (apu_haddr),
+    .ahbls_hwrite               (apu_hwrite),
+    .ahbls_htrans               (apu_htrans),
+    .ahbls_hsize                (apu_hsize),
+    .ahbls_hready               (apu_hready),
+    .ahbls_hready_resp          (apu_hready_resp),
+    .ahbls_hresp                (apu_hresp),
+    .ahbls_hwdata               (apu_hwdata),
+    .ahbls_hrdata               (apu_hrdata),
+
+    .audio_l                    (padout_audio_l),
+    .audio_r                    (padout_audio_r)
 );
 
 // ------------------------------------------------------------------------
@@ -522,8 +749,6 @@ assign padout_sram_cs_n  = 1'b0;
 assign padout_sram_we_n  = 1'b0;
 assign padout_sram_ub_n  = 1'b0;
 assign padout_sram_lb_n  = 1'b0;
-assign padout_audio_l    = 1'b0;
-assign padout_audio_r    = 1'b0;
 assign padout_lcd_clk    = 1'b0;
 assign padout_lcd_dat    = 1'b0;
 assign padout_lcd_cs_n   = 1'b0;

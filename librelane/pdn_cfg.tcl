@@ -197,7 +197,8 @@ add_pdn_connect \
 
 define_pdn_grid \
     -macro \
-    -instances {i_chip_core.iwram_u.sram.*.ram_u} \
+    -instances {i_chip_core.iram_u.sram.*.ram_u} \
+    -instances {i_chip_core.apu_u.ram_u.sram.*.ram_u} \
     -name sram_macros_NS \
     -starts_with POWER \
     -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"

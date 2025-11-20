@@ -14,10 +14,8 @@ module sram_wrapper #(
 	parameter WIDTH = 32,
 	parameter DEPTH = 512
 ) (
-`ifdef GF180MCU
 	inout  wire                     VDD,
 	inout  wire                     VSS,
-`endif
 	input  wire                     clk,
 	input  wire                     cs_n, // Active-low chip select
 	input  wire                     we_n, // Active-low write enable

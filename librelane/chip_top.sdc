@@ -4,8 +4,11 @@ set_units -time ns
 ###############################################################################
 # Clock definitions
 
-set CLK_SYS_PERIOD 50
-set DCK_PERIOD 50
+set CLK_SYS_MHZ 18
+set DCK_MHZ 20
+
+set CLK_SYS_PERIOD [expr 1000.0 / $CLK_SYS_MHZ]
+set DCK_PERIOD     [expr 1000.0 / $DCK_MHZ]
 
 # System clock: main CPU, SRAM, digital peripherals and external SRAM interface
 create_clock [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z] \

@@ -23,6 +23,18 @@ gl = os.getenv("GL", False)
 hdl_toplevel = "chip_top"
 
 ###############################################################################
+# System address map
+
+ERAM_BASE    = 0x00000
+IRAM_BASE    = 0x80000
+APU_BASE     = 0xc0000
+PERI_BASE    = 0xe0000
+
+IRAM_END     = IRAM_BASE + 0x2000
+APU_RAM_BASE = APU_BASE
+APU_RAM_END  = APU_RAM_BASE + 0x800
+
+###############################################################################
 # TWD debug helpers
 
 TWD_PERIOD = 50
@@ -95,7 +107,10 @@ async def twd_command(dut, cmd, n_bytes, wdata=None):
         await twd_shift_out(dut, wdata, 8 * n_bytes)
         await twd_shift_out(dut, odd_parity(wdata) << 3, 4)
 
+twd_cached_addr = None
 async def twd_connect(dut):
+    global twd_cached_addr
+    twd_cached_addr = None
     connect_seq = [
         0x00, 0xa7, 0xa3, 0x92, 0xdd, 0x9a, 0xbf, 0x04, 0x31, 0xff, 0xff,
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x0f
@@ -117,7 +132,10 @@ async def twd_read_idcode(dut):
     return await twd_command(dut, TWD_CMD_R_IDCODE, 4)
 
 async def twd_write_bus(dut, addr, wdata):
-    await twd_command(dut, TWD_CMD_W_ADDR, 1, addr)
+    global twd_cached_addr
+    if addr != twd_cached_addr:
+        await twd_command(dut, TWD_CMD_W_ADDR, 1, addr)
+        twd_cached_addr = addr
     await twd_command(dut, TWD_CMD_W_DATA, 4, wdata)
     while True:
         csr = await twd_command(dut, TWD_CMD_R_CSR, 4)
@@ -125,7 +143,10 @@ async def twd_write_bus(dut, addr, wdata):
             break
 
 async def twd_read_bus(dut, addr):
-    await twd_command(dut, TWD_CMD_W_ADDR, 1, addr)
+    global twd_cached_addr
+    if addr != twd_cached_addr:
+        await twd_command(dut, TWD_CMD_W_ADDR, 1, addr)
+        twd_cached_addr = addr
     _ = await twd_command(dut, TWD_CMD_R_DATA, 4)
     for i in range(10):
         csr = await twd_command(dut, TWD_CMD_R_CSR, 4)
@@ -178,6 +199,7 @@ DM_COMMAND_REGNO_LSB       = 0
 CSR_MVENDORID              = 0xf11
 CSR_MARCHID                = 0xf12
 CSR_MIMPID                 = 0xf13
+CSR_MHARTID                = 0xf14
 CSR_MISA                   = 0x301
 CSR_H3_MSLEEP              = 0xbf0
 CSR_TSELECT                = 0x7a0
@@ -189,7 +211,10 @@ CSR_TCONTROL               = 0x7a5
 CSR_DCSR                   = 0x7b0
 CSR_DPC                    = 0x7b1
 
+rvdebug_progbuf_cache = [0, 0]
 async def rvdebug_init(dut):
+    global rvdebug_progbuf_cache
+    rvdebug_progbuf_cache = [0, 0]
     await twd_connect(dut)
     dmstatus = await twd_read_bus(dut, DM_DMSTATUS)
     assert (dmstatus & 0xf) == 2
@@ -260,11 +285,17 @@ async def rvdebug_get_gpr(dut, gpr):
     await rvdebug_wait_acmd_finish(dut)
     return await twd_read_bus(dut, DM_DATA0)
 
+async def rvdebug_put_progbuf(dut, idx, instr):
+    global rvdebug_progbuf_cache
+    if rvdebug_progbuf_cache[idx] != instr:
+        rvdebug_progbuf_cache[idx] = instr
+        await twd_write_bus(dut, DM_PROGBUF0 + idx, instr)
+
 async def rvdebug_put_csr(dut, csr, wdata):
     gprsave = await rvdebug_get_gpr(dut, 8)
     await twd_write_bus(dut, DM_DATA0, wdata)
-    await twd_write_bus(dut, DM_PROGBUF0, 0x00001073 | (csr << 20) | (8 << 15)) # csrw xxx, s0
-    await twd_write_bus(dut, DM_PROGBUF1, 0x00100073) # ebreak
+    await rvdebug_put_progbuf(dut, 0, 0x00001073 | (csr << 20) | (8 << 15)) # csrw xxx, s0
+    await rvdebug_put_progbuf(dut, 1, 0x00100073) # ebreak
     await twd_write_bus(dut, DM_COMMAND,
         DM_COMMAND_POSTEXEC |
         DM_COMMAND_TRANSFER |
@@ -277,8 +308,8 @@ async def rvdebug_put_csr(dut, csr, wdata):
 
 async def rvdebug_get_csr(dut, csr):
     gprsave = await rvdebug_get_gpr(dut, 8)
-    await twd_write_bus(dut, DM_PROGBUF0, 0x00002073 | (csr << 20) | (8 << 7)) # csrr s0, xxx
-    await twd_write_bus(dut, DM_PROGBUF1, 0xbff01073 | (8 << 15)) # csrw dmdata0, s0
+    await rvdebug_put_progbuf(dut, 0, 0x00002073 | (csr << 20) | (8 << 7)) # csrr s0, xxx
+    await rvdebug_put_progbuf(dut, 1, 0xbff01073 | (8 << 15)) # csrw dmdata0, s0
     await twd_write_bus(dut, DM_COMMAND, DM_COMMAND_POSTEXEC)
     await rvdebug_wait_acmd_finish(dut)
     rdata = await twd_read_bus(dut, DM_DATA0)
@@ -290,8 +321,8 @@ async def rvdebug_write_mem32(dut, addr, wdata):
     save_s1 = await rvdebug_get_gpr(dut, 9)
     await rvdebug_put_gpr(dut, 9, wdata)
     await twd_write_bus(dut, DM_DATA0, addr)
-    await twd_write_bus(dut, DM_PROGBUF0, 0x00002023 | (9 << 20) | (8 << 15)) # sw s1, (s0)
-    await twd_write_bus(dut, DM_PROGBUF1, 0x00100073) # ebreak
+    await rvdebug_put_progbuf(dut, 0, 0x00002023 | (9 << 20) | (8 << 15)) # sw s1, (s0)
+    await rvdebug_put_progbuf(dut, 1, 0x00100073) # ebreak
     await twd_write_bus(dut, DM_COMMAND,
         DM_COMMAND_POSTEXEC |
         DM_COMMAND_TRANSFER |
@@ -306,8 +337,8 @@ async def rvdebug_write_mem32(dut, addr, wdata):
 async def rvdebug_read_mem32(dut, addr):
     save_s0 = await rvdebug_get_gpr(dut, 8)
     await twd_write_bus(dut, DM_DATA0, addr)
-    await twd_write_bus(dut, DM_PROGBUF0, 0x00002003 | (8 << 7) | (8 << 15)) # lw s0, (s0)
-    await twd_write_bus(dut, DM_PROGBUF1, 0x00100073) # ebreak
+    await rvdebug_put_progbuf(dut, 0, 0x00002003 | (8 << 7) | (8 << 15)) # lw s0, (s0)
+    await rvdebug_put_progbuf(dut, 1, 0x00100073) # ebreak
     await twd_write_bus(dut, DM_COMMAND,
         DM_COMMAND_POSTEXEC |
         DM_COMMAND_TRANSFER |
@@ -343,35 +374,58 @@ async def start_up(dut):
     await start_clock(dut.CLK)
     await reset(dut.RSTn)
 
-# @cocotb.test()
-# async def test_twd_idcode(dut):
-#     """Connect TWD and read IDCODE. Check against predefined value."""
-#     await start_up(dut)
-#     await twd_connect(dut)
-#     idcode = await twd_read_idcode(dut)
-#     cocotb.log.info(f"IDCODE = {idcode:08x}")
-#     assert idcode == 0x00280035
-
-# @cocotb.test()
-# async def test_debug_archid(dut):
-#     """Connect to RISC-V core 0 and check marchid and misa CSRs"""
-#     await start_up(dut)
-#     cocotb.log.info(f"Connecting debug")
-#     await rvdebug_init(dut)
-#     cocotb.log.info(f"Halting core 0")
-#     await rvdebug_select_hart(dut, 0)
-#     await rvdebug_halt(dut)
-#     # GPRs aren't reset, so initialise the one that's saved and restored:
-#     await rvdebug_put_gpr(dut, 8, 0)
-#     marchid = await rvdebug_get_csr(dut, CSR_MARCHID)
-#     cocotb.log.info(f"marchid = {marchid:08x}")
-#     assert marchid == 0x1b # Hazard3
-#     misa = await rvdebug_get_csr(dut, CSR_MISA)
-#     cocotb.log.info(f"misa    = {misa:08x}")
-#     # assert misa == 0x1b # Hazard3
+@cocotb.test()
+async def test_twd_idcode(dut):
+    """Connect TWD and read IDCODE. Check against predefined value."""
+    await start_up(dut)
+    await twd_connect(dut)
+    idcode = await twd_read_idcode(dut)
+    cocotb.log.info(f"IDCODE = {idcode:08x}")
+    assert idcode == 0x00280035
 
 @cocotb.test()
-async def test_iwram_smoke(dut):
+async def test_debug_archid(dut):
+    """Connect to RISC-V core 0 and check marchid and misa CSRs"""
+    await start_up(dut)
+    cocotb.log.info(f"Connecting debug")
+    await rvdebug_init(dut)
+    cocotb.log.info(f"Halting core 0")
+    await rvdebug_select_hart(dut, 0)
+    await rvdebug_halt(dut)
+    # GPRs aren't reset, so initialise the one that's saved and restored:
+    await rvdebug_put_gpr(dut, 8, 0)
+    marchid = await rvdebug_get_csr(dut, CSR_MARCHID)
+    cocotb.log.info(f"marchid = {marchid:08x}")
+    assert marchid == 0x1b # Hazard3
+    misa = await rvdebug_get_csr(dut, CSR_MISA)
+    cocotb.log.info(f"misa    = {misa:08x}")
+    assert misa == 0x40801106
+
+@cocotb.test()
+async def test_debug_hart_ids(dut):
+    """Enumerate harts, then connect to each one and check mhartid == HARTSEL"""
+    await start_up(dut)
+    cocotb.log.info(f"Connecting debug")
+    await rvdebug_init(dut)
+    n_harts = await rvdebug_count_harts(dut)
+    cocotb.log.info(f"Found {n_harts} harts")
+    assert n_harts == 2
+
+    for hart in range(n_harts):
+        cocotb.log.info(f"Connecting to hart {hart}")
+        await rvdebug_select_hart(dut, hart)
+        await rvdebug_halt(dut)
+        # GPRs aren't reset, so initialise the one that's saved and restored:
+        await rvdebug_put_gpr(dut, 8, 0)
+        marchid = await rvdebug_get_csr(dut, CSR_MARCHID)
+        cocotb.log.info(f"marchid = {marchid:08x}")
+        assert marchid == 0x1b # Hazard3
+        mhartid = await rvdebug_get_csr(dut, CSR_MHARTID)
+        cocotb.log.info(f"mhartid = {mhartid:08x}")
+        assert mhartid == hart
+
+@cocotb.test()
+async def test_iram_smoke(dut):
     """Smoke test for IWRAM (cover all four banks with 32-bit read/write)"""
     cocotb.log.info(f"Read + write all banks")
     await start_up(dut)
@@ -381,7 +435,7 @@ async def test_iwram_smoke(dut):
     await rvdebug_put_gpr(dut, 9, 0)
     expect = dict()
     for i in range(16):
-        addr = (i & 0xc) + ((i % 4) * 0x800)
+        addr = IRAM_BASE + (i & 0xc) + ((i % 4) * 0x800)
         wdata = addr * 123 ^ 0xaa55aa55
         cocotb.log.info(f"{addr:08x} <- {wdata:08x}")
         expect[addr] = wdata
@@ -392,9 +446,37 @@ async def test_iwram_smoke(dut):
         assert rdata == wdata
     cocotb.log.info(f"Re-read")
     for i in range(16):
-        addr = i & 0xc + ((i % 4) * 0x800)
+        addr = IRAM_BASE + (i & 0xc) + ((i % 4) * 0x800)
         rdata = await rvdebug_read_mem32(dut, addr)
         assert rdata == expect[addr]
+
+@cocotb.test()
+async def test_cross_apu_cpu_mem(dut):
+    """Check APU and CPU can see each other's writes to APU memory"""
+    await start_up(dut)
+    await rvdebug_init(dut)
+    for i in range(2):
+        await rvdebug_select_hart(dut, i)
+        await rvdebug_halt(dut)
+        await rvdebug_put_gpr(dut, 8, 0)
+        await rvdebug_put_gpr(dut, 9, 0)
+
+    cocotb.log.info(f"Write on CPU")
+    await rvdebug_select_hart(dut, 0)
+    await rvdebug_write_mem32(dut, APU_RAM_BASE, 0x12345678)
+    cocotb.log.info(f"Read on APU")
+    await rvdebug_select_hart(dut, 1)
+    rdata = await rvdebug_read_mem32(dut, APU_RAM_BASE)
+    assert rdata == 0x12345678
+
+    cocotb.log.info(f"Write on APU")
+    await rvdebug_select_hart(dut, 1)
+    await rvdebug_write_mem32(dut, APU_RAM_BASE, 0xabcdef5a)
+    cocotb.log.info(f"Read on CPU")
+    await rvdebug_select_hart(dut, 0)
+    rdata = await rvdebug_read_mem32(dut, APU_RAM_BASE)
+    assert rdata == 0xabcdef5a
+
 
 def chip_top_runner():
 
