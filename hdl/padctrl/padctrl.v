@@ -118,7 +118,9 @@ padctrl_regs regs_u	(
 	.lcd_dat_drive_o     (lcd_dat_drive_nofp),
 	.lcd_dat_slew_o      (lcd_dat_slew_nofp),
 	.lcd_dccs_drive_o    (lcd_dccs_drive_nofp),
-	.lcd_dccs_slew_o     (lcd_dccs_slew_nofp)
+	.lcd_dccs_slew_o     (lcd_dccs_slew_nofp),
+	.lcd_bl_drive_o      (lcd_bl_drive_nofp),
+	.lcd_bl_slew_o       (lcd_bl_slew_nofp)
 );
 
 falsepath_anchor fp_dio_schmitt_u                     (.i (dio_schmitt_nofp      ), .z (dio_schmitt      ));
