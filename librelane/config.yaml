@@ -33,6 +33,7 @@ CLOCK_PERIOD: 20 # ns
 
 # Magic, thank you Lofty
 SYNTH_STRATEGY: "AREA 3"
+SYNTH_MUL_BOOTH: True
 
 DESIGN_NAME: chip_top
 VERILOG_FILES:
