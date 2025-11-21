@@ -37,6 +37,9 @@ proc cdc_maxdelay {clk_from clk_to period_to} {
 cdc_maxdelay dck clk_sys $CLK_SYS_PERIOD
 cdc_maxdelay clk_sys dck $DCK_PERIOD
 
+# Apply RTL-inserted false path constraints
+set_false_path -through [get_pins *.magic_falsepath_anchor_u/Z]
+
 ###############################################################################
 # IO constraints
 
@@ -45,9 +48,6 @@ cdc_maxdelay clk_sys dck $DCK_PERIOD
 
 # Asynchronous reset, resynchronised internally
 set_false_path -through [get_pins pad_RSTn/Y]
-
-# You know what, fuck you *falses your paths*
-set_false_path -through [get_pins *.magic_falsepath_anchor_u/Z]
 
 # Deliberately too aggressive, want the flops to be slammed right up against
 # the pads

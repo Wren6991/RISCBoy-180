@@ -242,12 +242,6 @@ IGNORE_DISCONNECTED_MODULES:
 - gf180mcu_ws_ip__id
 - gf180mcu_ws_ip__logo
 
-# Clock
-CLOCK_PORT: clk_PAD
-CLOCK_NET: clk_pad/Y
-
-CLOCK_PERIOD: 40 # 25 MHz
-
 # Floorplanning
 FP_SIZING: absolute
 # 3880umx5070um including 26um
@@ -262,6 +256,10 @@ GRT_ALLOW_CONGESTION: true
 
 # Magic incantation from Discord to make the antenna violations go away
 DRT_ANTENNA_REPAIR_ITERS: 10
+
+# Try to avoid occasional hold failures on short paths into SRAM address. Original: PL 0.1 GRT 0.05
+PL_RESIZER_HOLD_SLACK_MARGIN: 0.13
+GRT_RESIZER_HOLD_SLACK_MARGIN: 0.08
 
 # PDN - Straps
 PDN_VWIDTH: 5
