@@ -563,6 +563,9 @@ assign eram_hexokay = 1'b1;
 assign apu_hexokay  = 1'b0;
 assign apb_hexokay  = 1'b1;
 
+// Fabric and SRAM  can be clocked from CPU clock; we don't use SBA so the
+// processor will always wake (into Debug Mode) before performing a bus
+// access.
 ahbl_splitter #(
     .N_PORTS   (4),
     .W_ADDR    (20),
@@ -570,7 +573,7 @@ ahbl_splitter #(
     .ADDR_MAP  (80'he0000_c0000_80000_00000),
     .ADDR_MASK (80'he0000_e0000_c0000_80000)
 ) splitter_u (
-    .clk             (clk_sys),
+    .clk             (clk_sys_gated_cpu),
     .rst_n           (rst_n_sys),
 
     .src_hready      (cpu_hready),
@@ -620,7 +623,7 @@ ahbl_to_apb #(
     .W_PADDR (20),
     .W_DATA  (32)
 ) inst_ahbl_to_apb (
-    .clk               (clk_sys),
+    .clk               (clk_sys_gated_cpu),
     .rst_n             (rst_n_sys),
 
     .ahbls_haddr       (apb_haddr),
@@ -701,7 +704,7 @@ ahb_sync_sram #(
     .VDD               (VDD),
     .VSS               (VSS),
 
-    .clk               (clk_sys),
+    .clk               (clk_sys_gated_cpu),
     .rst_n             (rst_n_sys),
 
     .ahbls_hready_resp (iram_hready_resp),
@@ -766,7 +769,7 @@ audio_processor #(
 padctrl #(
     .N_GPIO(N_GPIO)
 ) padctrl_u (
-    .clk               (clk_sys),
+    .clk               (clk_sys_gated_cpu),
     .rst_n             (rst_n_sys),
 
     .apbs_psel         (padctrl_psel),
@@ -805,11 +808,13 @@ padctrl #(
     .gpio_pd           (gpio_pd)
 );
 
+// Runs from ungated clk_sys so it can wake the processor from sleep.
 hazard3_riscv_timer #(
     .TICK_IS_NRZ (0) // TODO
 ) inst_hazard3_riscv_timer (
     .clk       (clk_sys),
     .rst_n     (rst_n_sys),
+
     .paddr     (timer_paddr[15:0]),
     .psel      (timer_psel),
     .penable   (timer_penable),
