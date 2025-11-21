@@ -73,13 +73,13 @@ assign ahbls_hresp       = sbus_err_q;
 
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
-		sbus_addr    <= 32'd0;
-		sbus_vld     <= 1'b0;
-		sbus_size    <= 1'b0;
-		sbus_write   <= 1'b0;
+		sbus_addr <= 32'd0;
+		sbus_vld <= 1'b0;
+		sbus_size <= 2'd0;
+		sbus_write <= 1'b0;
 		sbus_rdata_q <= 32'd0;
-		sbus_err_q   <= 1'b0;
-		sbus_rdy_q   <= 1'b1;
+		sbus_err_q <= 1'b0;
+		sbus_rdy_q <= 1'b1;
 	end else if (ahbls_hready) begin
 		sbus_vld <= ahbls_htrans[1];
 		sbus_rdy_q <= !ahbls_htrans[1];

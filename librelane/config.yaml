@@ -65,7 +65,7 @@ VERILOG_FILES:
 
 - dir::../hdl/hazard3/example_soc/soc/peri/hazard3_riscv_timer.v
 
-- dir::..//hdl/libfpga/common/onehot_mux.v
+- dir::../hdl/libfpga/common/onehot_mux.v
 - dir::../hdl/libfpga/cdc/sync_1bit.v
 - dir::../hdl/libfpga/busfabric/ahbl_to_apb.v
 - dir::../hdl/libfpga/busfabric/ahbl_splitter.v
@@ -77,12 +77,15 @@ VERILOG_FILES:
 - dir::../hdl/cells/cell_clkxor.v
 - dir::../hdl/cells/cell_ddr_out.v
 - dir::../hdl/cells/reset_sync.v
+- dir::../hdl/cells/async_sram_phy_gf180mcu.v
 
 - dir::../hdl/twowiredebug/hdl/twowire_dtm_core.v
 - dir::../hdl/twowiredebug/hdl/twowire_dtm_serial_comms.v
 - dir::../hdl/twowiredebug/hdl/cells/twowire_dtm_io_flops.v
 - dir::../hdl/twowiredebug/hdl/twowire_dtm_connect_monitor.v
 - dir::../hdl/twowiredebug/hdl/twowire_dtm.v
+
+- dir::../hdl/riscboy/hdl/sram_ctrl/riscboy_sram_ctrl.v
 
 VERILOG_INCLUDE_DIRS:
 - dir::../hdl/hazard3/hdl
@@ -257,6 +260,9 @@ CORE_AREA: [442, 442, 3490, 4680]
 PL_TARGET_DENSITY_PCT: 35
 GRT_ALLOW_CONGESTION: true
 
+# Magic incantation from Discord to make the antenna violations go away
+DRT_ANTENNA_REPAIR_ITERS: 10
+
 # PDN - Straps
 PDN_VWIDTH: 5
 PDN_HWIDTH: 5
@@ -398,52 +404,52 @@ MACROS:
       # Make sure to specify the SRAMs in pdn_cfg.tcl
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[0].ram_u:
         location: [3000, 600]
-        orientation: "N"
+        orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[1].ram_u:
         location: [3000, 1200]
-        orientation: "N"
+        orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[2].ram_u:
         location: [3000, 1800]
-        orientation: "S"
+        orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[3].ram_u:
         location: [3000, 2400]
-        orientation: "S"
+        orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[0].ram_u:
         location: [2500, 600]
-        orientation: "N"
+        orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[1].ram_u:
         location: [2500, 1200]
-        orientation: "N"
+        orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[2].ram_u:
         location: [2500, 1800]
-        orientation: "S"
+        orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[3].ram_u:
         location: [2500, 2400]
-        orientation: "S"
+        orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[0].ram_u:
         location: [1000, 600]
-        orientation: "N"
+        orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[1].ram_u:
         location: [1000, 1200]
-        orientation: "N"
+        orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[2].ram_u:
         location: [1000, 1800]
-        orientation: "S"
+        orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[3].ram_u:
         location: [1000, 2400]
-        orientation: "S"
+        orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[0].ram_u:
         location: [500, 600]
-        orientation: "N"
+        orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[1].ram_u:
         location: [500, 1200]
-        orientation: "N"
+        orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[2].ram_u:
         location: [500, 1800]
-        orientation: "S"
+        orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[3].ram_u:
         location: [500, 2400]
-        orientation: "S"
+        orientation: "N"
 
       i_chip_core.apu_u.ram_u.sram.g_d512.g_width[0].ram_u:
         location: [500, 3500]

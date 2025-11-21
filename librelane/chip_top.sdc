@@ -49,6 +49,18 @@ set_false_path -through [get_pins pad_RSTn/Y]
 # You know what, fuck you *falses your paths*
 set_false_path -through [get_pins *.magic_falsepath_anchor_u/Z]
 
+# Deliberately too aggressive, want the flops to be slammed right up against
+# the pads
+set_output_delay $CLK_SYS_PERIOD -clock [get_clock clk_sys] [get_ports {
+    SRAM_DQ[*]
+    SRAM_A[*]
+    SRAM_OEn
+    SRAM_CSn
+    SRAM_WEn
+    SRAM_UBn
+    SRAM_LBn
+}]
+
 # # Bidirectional pads
 # set clk_core_inout_ports [get_ports { 
 #     bidir_PAD[*]

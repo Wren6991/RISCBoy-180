@@ -725,10 +725,6 @@ ahb_sync_sram #(
     .ahbls_hrdata      (iram_hrdata)
 );
 
-assign eram_hrdata = 32'd0;
-assign eram_hready_resp = 1'b1;
-assign eram_hresp = 1'b0;
-
 // ------------------------------------------------------------------------
 // Audio processor
 
@@ -835,17 +831,87 @@ hazard3_riscv_timer #(
 );
 
 // ------------------------------------------------------------------------
+// External SRAM controller and std cell "PHY"
+
+localparam W_SRAM_ADDR = N_SRAM_A;
+localparam W_SRAM_DATA =  N_SRAM_DQ;
+
+wire [W_SRAM_ADDR-1:0]   sram_ctrl_addr;
+wire [W_SRAM_DATA-1:0]   sram_ctrl_dq_out;
+wire [W_SRAM_DATA-1:0]   sram_ctrl_dq_oe;
+wire [W_SRAM_DATA-1:0]   sram_ctrl_dq_in;
+wire                     sram_ctrl_ce_n;
+wire                     sram_ctrl_we_n;
+wire                     sram_ctrl_oe_n;
+wire [W_SRAM_DATA/8-1:0] sram_ctrl_byte_n;
+
+riscboy_sram_ctrl #(
+    .W_HADDR     (20),
+    .W_SRAM_ADDR (N_SRAM_A)
+) eram_ctrl_u (
+    .clk               (clk_sys),
+    .rst_n             (rst_n_sys),
+
+    .ahbls_haddr       (eram_haddr),
+    .ahbls_htrans      (eram_htrans),
+    .ahbls_hburst      (eram_hburst),
+    .ahbls_hprot       (eram_hprot),
+    .ahbls_hmastlock   (eram_hmastlock),
+    .ahbls_hwrite      (eram_hwrite),
+    .ahbls_hsize       (eram_hsize),
+    .ahbls_hready      (eram_hready),
+    .ahbls_hready_resp (eram_hready_resp),
+    .ahbls_hresp       (eram_hresp),
+    .ahbls_hwdata      (eram_hwdata),
+    .ahbls_hrdata      (eram_hrdata),
+
+    .dma_addr          ({N_SRAM_A{1'b0}}),
+    .dma_addr_vld      (1'b0),
+    .dma_addr_rdy      (/* fixme */),
+    .dma_rdata         (/* fixme */),
+    .dma_rdata_vld     (/* fixme */),
+
+    .sram_addr         (sram_ctrl_addr),
+    .sram_dq_out       (sram_ctrl_dq_out),
+    .sram_dq_oe        (sram_ctrl_dq_oe),
+    .sram_dq_in        (sram_ctrl_dq_in),
+    .sram_ce_n         (sram_ctrl_ce_n),
+    .sram_we_n         (sram_ctrl_we_n),
+    .sram_oe_n         (sram_ctrl_oe_n),
+    .sram_byte_n       (sram_ctrl_byte_n)
+);
+
+async_sram_phy_gf180mcu #(
+    .N_SRAM_A  (N_SRAM_A),
+    .N_SRAM_DQ (N_SRAM_DQ)
+) sram_phy_u (
+    .clk              (clk_sys),
+    .rst_n            (rst_n_sys),
+
+    .ctrl_addr        (sram_ctrl_addr),
+    .ctrl_dq_out      (sram_ctrl_dq_out),
+    .ctrl_dq_oe       (sram_ctrl_dq_oe),
+    .ctrl_dq_in       (sram_ctrl_dq_in),
+    .ctrl_ce_n        (sram_ctrl_ce_n),
+    .ctrl_we_n        (sram_ctrl_we_n),
+    .ctrl_oe_n        (sram_ctrl_oe_n),
+    .ctrl_byte_n      (sram_ctrl_byte_n),
+
+    .padin_sram_dq    (padin_sram_dq),
+    .padoe_sram_dq    (padoe_sram_dq),
+    .padout_sram_dq   (padout_sram_dq),
+    .padout_sram_a    (padout_sram_a),
+    .padout_sram_oe_n (padout_sram_oe_n),
+    .padout_sram_cs_n (padout_sram_cs_n),
+    .padout_sram_we_n (padout_sram_we_n),
+    .padout_sram_ub_n (padout_sram_ub_n),
+    .padout_sram_lb_n (padout_sram_lb_n)
+);
+
+
+// ------------------------------------------------------------------------
 // Tie off unused outputs
 
-// Disable outputs
-assign padoe_sram_dq     = {N_SRAM_DQ{1'b0}};
-assign padout_sram_dq    = {N_SRAM_DQ{1'b0}};
-assign padout_sram_a     = {N_SRAM_A{1'b0}};
-assign padout_sram_oe_n  = 1'b0;
-assign padout_sram_cs_n  = 1'b0;
-assign padout_sram_we_n  = 1'b0;
-assign padout_sram_ub_n  = 1'b0;
-assign padout_sram_lb_n  = 1'b0;
 assign padout_lcd_clk    = 1'b0;
 assign padout_lcd_dat    = 1'b0;
 assign padout_lcd_cs_n   = 1'b0;
