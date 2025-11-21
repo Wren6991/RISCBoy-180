@@ -97,13 +97,6 @@ module chip_core #(
 
 // ------------------------------------------------------------------------
 
-// External pad is our stand-in for a PoR.
-wire rst_n_por;
-falsepath_anchor fp_rst_n_u (
-    .i (padin_rst_n),
-    .z (rst_n_por)
-);
-
 // External clock used directly as system clock (for now).
 wire clk_sys;
 clkroot_anchor clkroot_sys_u (
@@ -120,7 +113,7 @@ clkroot_anchor clkroot_sys_u (
 wire        drst_n;
 reset_sync sync_drst_n_u (
     .clk       (padin_dck),
-    .rst_n_in  (rst_n_por),
+    .rst_n_in  (padin_rst_n),
     .rst_n_out (drst_n)
 );
 
@@ -174,7 +167,7 @@ falsepath_anchor fp_ndtmresetreq_u (
     .z (ndtmresetreq_fp)
 );
 
-wire rst_n_sys_unsync = rst_n_por && !ndtmresetreq_fp;
+wire rst_n_sys_unsync = padin_rst_n && !ndtmresetreq_fp;
 
 wire rst_n_sys;
 reset_sync sync_root_rst_n_u (

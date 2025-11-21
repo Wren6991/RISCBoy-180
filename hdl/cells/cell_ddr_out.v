@@ -12,6 +12,7 @@
 `default_nettype none
 
 module cell_ddr_out #(
+	parameter USE_RESET = 1,
 	parameter RESET_VALUE = 0
 ) (
 	input  wire clk,
@@ -23,26 +24,47 @@ module cell_ddr_out #(
 
 reg q1p;
 reg q0p;
+reg q1n;
 
 // Transition encoded.
-always @ (posedge clk or negedge rst_n) begin
-	if (!rst_n) begin
-		q0p <= |RESET_VALUE;
-		q1p <= 1'b0;
-	end else begin
-		q0p <= q0p ^ q1p ^ dp;
-		q1p <= q0p ^ q1p ^ dp ^ dn;
-	end
-end
+wire q0p_nxt = q0p <= q0p ^ q1p ^ dp;
+wire q1p_nxt = q1p <= q0p ^ q1p ^ dp ^ dn;
 
-reg q1n;
-always @ (negedge clk or negedge rst_n) begin
-	if (!rst_n) begin
-		q1n <= 1'b0;
-	end else begin
+generate
+if (USE_RESET) begin: reset_g
+
+	always @ (posedge clk or negedge rst_n) begin
+		if (!rst_n) begin
+			q0p <= |RESET_VALUE;
+			q1p <= 1'b0;
+		end else begin
+			q0p <= q0p_nxt;
+			q1p <= q1p_nxt;
+		end
+	end
+
+	always @ (negedge clk or negedge rst_n) begin
+		if (!rst_n) begin
+			q1n <= 1'b0;
+		end else begin
+			q1n <= q1p;
+		end
+	end
+
+end else begin: no_reset_g
+
+	always @ (posedge clk) begin
+		q0p <= q0p_nxt;
+		q1p <= q1p_nxt;
+	end
+
+	always @ (negedge clk) begin
 		q1n <= q1p;
 	end
+
 end
+endgenerate
+
 
 cell_clkxor xor_out_u (
 	.a0 (q0p),

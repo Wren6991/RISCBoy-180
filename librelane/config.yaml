@@ -29,7 +29,7 @@ meta:
 # are not present, and your clock ends up totally unbuffered.
 CLOCK_PORT: pad_CLK
 CLOCK_NET: pad_CLK/Y
-CLOCK_PERIOD: 40 # 25 MHz
+CLOCK_PERIOD: 20 # ns
 
 DESIGN_NAME: chip_top
 VERILOG_FILES:

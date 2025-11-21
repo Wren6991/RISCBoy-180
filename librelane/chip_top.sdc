@@ -20,6 +20,8 @@ create_clock [get_pins pad_DCK/PAD] \
     -name dck \
     -period $DCK_PERIOD
 
+set SRAM_A_TO_Q 12
+
 ###############################################################################
 # CDC constraints
 
@@ -37,22 +39,17 @@ proc cdc_maxdelay {clk_from clk_to period_to} {
 cdc_maxdelay dck clk_sys $CLK_SYS_PERIOD
 cdc_maxdelay clk_sys dck $DCK_PERIOD
 
-# Apply RTL-inserted false path constraints
-set_false_path -through [get_pins *.magic_falsepath_anchor_u/Z]
+# Apply RTL-inserted false path constraints (setup/hold only, still constrain slew)
+set_false_path -setup -hold -through [get_pins *.magic_falsepath_anchor_u/Z]
 
 ###############################################################################
 # IO constraints
 
-# set input_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_DELAY_CONSTRAINT) / 100]
-# set output_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_DELAY_CONSTRAINT) / 100]
+set_output_delay 5                            [get_ports DIO] -clock [get_clock dck]
+set_input_delay -min 0                        [get_ports DIO] -clock [get_clock dck]
+set_input_delay -max [expr 0.5 * $DCK_PERIOD] [get_ports DIO] -clock [get_clock dck]
 
-# Asynchronous reset, resynchronised internally
-set_false_path -through [get_pins pad_RSTn/Y]
-
-# Deliberately too aggressive, want the flops to be slammed right up against
-# the pads
-set_output_delay $CLK_SYS_PERIOD -clock [get_clock clk_sys] [get_ports {
-    SRAM_DQ[*]
+set_output_delay [expr 0.50 * $CLK_SYS_PERIOD - $SRAM_A_TO_Q] -clock [get_clock clk_sys] [get_ports {
     SRAM_A[*]
     SRAM_OEn
     SRAM_CSn
@@ -61,14 +58,11 @@ set_output_delay $CLK_SYS_PERIOD -clock [get_clock clk_sys] [get_ports {
     SRAM_LBn
 }]
 
-# # Bidirectional pads
-# set clk_core_inout_ports [get_ports { 
-#     bidir_PAD[*]
-# }] 
+set_input_delay [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {
+    SRAM_DQ[*]
+}]
 
-# set_input_delay -min 0 -clock $clocks $clk_core_inout_ports
-# set_input_delay -max $input_delay_value -clock $clocks $clk_core_inout_ports
-# set_output_delay $output_delay_value -clock $clocks $clk_core_inout_ports
+# TODO SRAM_DQ outputs 
 
 ###############################################################################
 # Cargo-culted from project template :)
