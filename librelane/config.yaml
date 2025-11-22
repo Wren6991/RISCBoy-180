@@ -124,6 +124,8 @@ VERILOG_FILES:
 - dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_shift_unshift.v
 - dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_pixel_unpack.v
 - dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_cproc.v
+- dir::../hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny.v
+- dir::../hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny_regs.v
 
 VERILOG_INCLUDE_DIRS:
 - dir::../hdl/hazard3/hdl

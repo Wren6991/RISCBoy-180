@@ -696,12 +696,21 @@ wire        dispctrl_pready;
 wire [31:0] dispctrl_prdata;
 wire        dispctrl_pslverr;
 
+wire [19:0] lcd_pwm_paddr;
+wire        lcd_pwm_psel;
+wire        lcd_pwm_penable;
+wire        lcd_pwm_pwrite;
+wire [31:0] lcd_pwm_pwdata;
+wire        lcd_pwm_pready;
+wire [31:0] lcd_pwm_prdata;
+wire        lcd_pwm_pslverr;
+
 apb_splitter #(
     .W_ADDR    (20),
     .W_DATA    (32),
-    .N_SLAVES  (4),
-    .ADDR_MAP  (80'h03000_02000_01000_00000),
-    .ADDR_MASK (80'h0f000_0f000_0f000_0f000)
+    .N_SLAVES  (5),
+    .ADDR_MAP  ({20'h04000, 20'h03000, 20'h02000, 20'h01000, 20'h00000}),
+    .ADDR_MASK ({20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000})
 ) inst_apb_splitter (
     .apbs_paddr   (peri_paddr),
     .apbs_psel    (peri_psel),
@@ -712,14 +721,14 @@ apb_splitter #(
     .apbs_prdata  (peri_prdata),
     .apbs_pslverr (peri_pslverr),
 
-    .apbm_paddr   ({dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
-    .apbm_psel    ({dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
-    .apbm_penable ({dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
-    .apbm_pwrite  ({dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
-    .apbm_pwdata  ({dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
-    .apbm_pready  ({dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
-    .apbm_prdata  ({dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
-    .apbm_pslverr ({dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
+    .apbm_paddr   ({lcd_pwm_paddr   , dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
+    .apbm_psel    ({lcd_pwm_psel    , dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
+    .apbm_penable ({lcd_pwm_penable , dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
+    .apbm_pwrite  ({lcd_pwm_pwrite  , dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
+    .apbm_pwdata  ({lcd_pwm_pwdata  , dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
+    .apbm_pready  ({lcd_pwm_pready  , dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
+    .apbm_prdata  ({lcd_pwm_prdata  , dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
+    .apbm_pslverr ({lcd_pwm_pslverr , dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
 );
 
 // ------------------------------------------------------------------------
@@ -867,6 +876,21 @@ riscboy_ppu_dispctrl_spi #(
     .lcd_mosi            (padout_lcd_dat)
 );
 
+pwm_tiny lcd_bl_pwm_u (
+    .clk          (clk_sys),
+    .rst_n        (rst_n_sys),
+
+    .apbs_psel    (lcd_pwm_psel),
+    .apbs_penable (lcd_pwm_penable),
+    .apbs_pwrite  (lcd_pwm_pwrite),
+    .apbs_paddr   (lcd_pwm_paddr),
+    .apbs_pwdata  (lcd_pwm_pwdata),
+    .apbs_prdata  (lcd_pwm_prdata),
+    .apbs_pready  (lcd_pwm_pready),
+    .apbs_pslverr (lcd_pwm_pslverr),
+
+    .padout       (padout_lcd_bl)
+);
 
 // ------------------------------------------------------------------------
 // APB peripherals and control registers
@@ -1013,7 +1037,6 @@ async_sram_phy_gf180mcu #(
 // ------------------------------------------------------------------------
 // Tie off unused outputs
 
-assign padout_lcd_bl     = 1'b0;
 assign padoe_gpio        = {N_GPIO{1'b0}};
 assign padout_gpio       = {N_GPIO{1'b0}};
 
