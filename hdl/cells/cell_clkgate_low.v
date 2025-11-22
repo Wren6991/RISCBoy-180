@@ -17,7 +17,11 @@ module cell_clkgate_low (
 	output wire clk_out
 );
 
-`ifdef GF180MCU
+`ifdef NOCLOCKGATES
+
+assign clk_out = clk_in;
+
+`elsif GF180MCU
 
 gf180mcu_fd_sc_mcu7t5v0__icgtp_1 clkgate_u (
 	.TE  (1'b0),
