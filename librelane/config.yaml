@@ -31,6 +31,13 @@ CLOCK_PORT: pad_CLK
 CLOCK_NET: pad_CLK/Y
 CLOCK_PERIOD: 20 # ns
 
+# Otherwise CTS doesn't seem to balance properly through ICGs?
+# Actually even with this it doesn't balance through ICGs, ugh.
+CTS_BALANCE_LEVELS: True
+# Force use of chonky bois to reduce clock skew (default list is 2, 4, 8)
+CTS_CLK_BUFFERS:
+  - "gf180mcu_fd_sc_mcu7t5v0__clkbuf_16"
+
 # Magic, thank you Lofty
 SYNTH_STRATEGY: "AREA 3"
 
@@ -132,6 +139,7 @@ VERILOG_INCLUDE_DIRS:
 - dir::../hdl/riscboy/hdl/graphics/ppu
 
 VERILOG_DEFINES:
+- NOCLOCKGATES
 - GF180MCU
 - USE_POWER_PINS
 
@@ -426,10 +434,10 @@ MACROS:
         - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram256x8m8wm1__ss_125C_4v50.lib
     instances:
       i_chip_core.ppu_u.blender.palette_mapper.pram_u.g_d256.g_width[0].ram_u:
-        location: [500, 2900]
+        location: [1500, 4250]
         orientation: "N"
       i_chip_core.ppu_u.blender.palette_mapper.pram_u.g_d256.g_width[1].ram_u:
-        location: [1000, 2900]
+        location: [2000, 4250]
         orientation: "N"
 
   gf180mcu_fd_ip_sram__sram512x8m8wm1:
@@ -512,13 +520,13 @@ MACROS:
 
       i_chip_core.ppu_u.scanbuf0_u.g_d512.g_width[0].ram_u:
         location: [500, 3500]
-        orientation: "N"
+        orientation: "S"
       i_chip_core.ppu_u.scanbuf0_u.g_d512.g_width[1].ram_u:
         location: [500, 4100]
         orientation: "N"
       i_chip_core.ppu_u.scanbuf1_u.g_d512.g_width[0].ram_u:
         location: [1000, 3500]
-        orientation: "N"
+        orientation: "S"
       i_chip_core.ppu_u.scanbuf1_u.g_d512.g_width[1].ram_u:
         location: [1000, 4100]
         orientation: "N"
@@ -526,9 +534,9 @@ MACROS:
 
 PDN_CFG: dir::pdn_cfg.tcl
 
-PDN_VERTICAL_HALO: 5
+PDN_VERTICAL_HALO: 1
 
-PDN_HORIZONTAL_HALO: 5
+PDN_HORIZONTAL_HALO: 1
 
 # Make sure netgen doesn't create 'no_connect' nets
 # Not needed since netgen 1.5.303

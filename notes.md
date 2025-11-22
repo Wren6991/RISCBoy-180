@@ -9,7 +9,7 @@
 	* IRQ to/from main CPU
 * Debug
 	* Write virtual UART peripheral
-	* Add short-form STAT response to TWD
+	* Add write-address-read-bus command
 * PPU
 	* Think harder about palette RAM read/write collisions
 	* Possible to reduce RAM bandwidth for ABLIT/ATILE? (possibly have timing budget for 1-entry tilenum cache)
@@ -21,7 +21,13 @@
 	* Software GPIO registers (currently just have PU/PD in padctrl)
 * Flash XIP
 	* Drop?
-* Backlight PWM
+* Clocking
+	* Create DCO
+		* Hard macro?
+	* Create clock muxes and dividers
+	* Create control registers and hook everything up
+* Sea-of-gates ROM
+* Review resettable flops and see if they can be made non-reset for better density/routing
 
 ## "Verification"
 

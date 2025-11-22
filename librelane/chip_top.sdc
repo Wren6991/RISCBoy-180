@@ -75,6 +75,9 @@ set_input_delay [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_po
 
 # TODO SRAM_DQ outputs 
 
+# Backlight PWM: low-frequency, timing unimportant
+set_false_path -setup -hold -through [get_ports LCD_BL]
+
 ###############################################################################
 # Cargo-culted from project template :)
 
