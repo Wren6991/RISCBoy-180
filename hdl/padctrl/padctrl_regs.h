@@ -32,16 +32,19 @@
 // Pad controls for DIO (debug in/out)
 
 // Field: DIO_DRIVE  Access: RW
+// Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
 #define PADCTRL_DIO_DRIVE_LSB  0
 #define PADCTRL_DIO_DRIVE_BITS 2
 #define PADCTRL_DIO_DRIVE_MASK 0x3
 // Field: DIO_SLEW  Access: RW
+// Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
 #define PADCTRL_DIO_SLEW_LSB  2
 #define PADCTRL_DIO_SLEW_BITS 1
 #define PADCTRL_DIO_SLEW_MASK 0x4
 // Field: DIO_SCHMITT  Access: RW
+// Reset: 0x1
 // Schmitt trigger: 1 = enabled
 #define PADCTRL_DIO_SCHMITT_LSB  3
 #define PADCTRL_DIO_SCHMITT_BITS 1
@@ -54,16 +57,19 @@
 // Pad controls for GPIOs
 
 // Field: GPIO_DRIVE  Access: RW
+// Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
 #define PADCTRL_GPIO_DRIVE_LSB  0
 #define PADCTRL_GPIO_DRIVE_BITS 2
 #define PADCTRL_GPIO_DRIVE_MASK 0x3
 // Field: GPIO_SLEW  Access: RW
+// Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
 #define PADCTRL_GPIO_SLEW_LSB  2
 #define PADCTRL_GPIO_SLEW_BITS 1
 #define PADCTRL_GPIO_SLEW_MASK 0x4
 // Field: GPIO_SCHMITT  Access: RW
+// Reset: 0x1
 // Schmitt trigger: 1 = enabled
 #define PADCTRL_GPIO_SCHMITT_LSB  3
 #define PADCTRL_GPIO_SCHMITT_BITS 1
@@ -76,6 +82,7 @@
 // Pull-up enable for GPIOs
 
 // Field: GPIO_PU  Access: RW
+// Reset: 0x3f
 #define PADCTRL_GPIO_PU_LSB  0
 #define PADCTRL_GPIO_PU_BITS 6
 #define PADCTRL_GPIO_PU_MASK 0x3f
@@ -87,6 +94,7 @@
 // Pull-down enable for GPIOs
 
 // Field: GPIO_PD  Access: RW
+// Reset: 0x0
 #define PADCTRL_GPIO_PD_LSB  0
 #define PADCTRL_GPIO_PD_BITS 6
 #define PADCTRL_GPIO_PD_MASK 0x3f
@@ -98,16 +106,19 @@
 // Pad controls for SRAM_DQx (data in/out)
 
 // Field: SRAM_DQ_DRIVE  Access: RW
+// Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
 #define PADCTRL_SRAM_DQ_DRIVE_LSB  0
 #define PADCTRL_SRAM_DQ_DRIVE_BITS 2
 #define PADCTRL_SRAM_DQ_DRIVE_MASK 0x3
 // Field: SRAM_DQ_SLEW  Access: RW
+// Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
 #define PADCTRL_SRAM_DQ_SLEW_LSB  2
 #define PADCTRL_SRAM_DQ_SLEW_BITS 1
 #define PADCTRL_SRAM_DQ_SLEW_MASK 0x4
 // Field: SRAM_DQ_SCHMITT  Access: RW
+// Reset: 0x1
 // Schmitt trigger: 1 = enabled
 #define PADCTRL_SRAM_DQ_SCHMITT_LSB  3
 #define PADCTRL_SRAM_DQ_SCHMITT_BITS 1
@@ -120,11 +131,13 @@
 // Pad controls for SRAM_Ax (address)
 
 // Field: SRAM_A_DRIVE  Access: RW
+// Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
 #define PADCTRL_SRAM_A_DRIVE_LSB  0
 #define PADCTRL_SRAM_A_DRIVE_BITS 2
 #define PADCTRL_SRAM_A_DRIVE_MASK 0x3
 // Field: SRAM_A_SLEW  Access: RW
+// Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
 #define PADCTRL_SRAM_A_SLEW_LSB  2
 #define PADCTRL_SRAM_A_SLEW_BITS 1
@@ -137,11 +150,13 @@
 // Pad controls for SRAM strobes (CSn WEn OEn UBn LBn)
 
 // Field: SRAM_STROBE_DRIVE  Access: RW
+// Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
 #define PADCTRL_SRAM_STROBE_DRIVE_LSB  0
 #define PADCTRL_SRAM_STROBE_DRIVE_BITS 2
 #define PADCTRL_SRAM_STROBE_DRIVE_MASK 0x3
 // Field: SRAM_STROBE_SLEW  Access: RW
+// Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
 #define PADCTRL_SRAM_STROBE_SLEW_LSB  2
 #define PADCTRL_SRAM_STROBE_SLEW_BITS 1
@@ -154,11 +169,13 @@
 // Pad controls for AUDIO_L and AUDIO_R
 
 // Field: AUDIO_DRIVE  Access: RW
+// Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
 #define PADCTRL_AUDIO_DRIVE_LSB  0
 #define PADCTRL_AUDIO_DRIVE_BITS 2
 #define PADCTRL_AUDIO_DRIVE_MASK 0x3
 // Field: AUDIO_SLEW  Access: RW
+// Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
 #define PADCTRL_AUDIO_SLEW_LSB  2
 #define PADCTRL_AUDIO_SLEW_BITS 1
@@ -171,11 +188,13 @@
 // Pad controls for LCD_CLK
 
 // Field: LCD_CLK_DRIVE  Access: RW
+// Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
 #define PADCTRL_LCD_CLK_DRIVE_LSB  0
 #define PADCTRL_LCD_CLK_DRIVE_BITS 2
 #define PADCTRL_LCD_CLK_DRIVE_MASK 0x3
 // Field: LCD_CLK_SLEW  Access: RW
+// Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
 #define PADCTRL_LCD_CLK_SLEW_LSB  2
 #define PADCTRL_LCD_CLK_SLEW_BITS 1
@@ -188,11 +207,13 @@
 // Pad controls for LCD_DAT
 
 // Field: LCD_DAT_DRIVE  Access: RW
+// Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
 #define PADCTRL_LCD_DAT_DRIVE_LSB  0
 #define PADCTRL_LCD_DAT_DRIVE_BITS 2
 #define PADCTRL_LCD_DAT_DRIVE_MASK 0x3
 // Field: LCD_DAT_SLEW  Access: RW
+// Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
 #define PADCTRL_LCD_DAT_SLEW_LSB  2
 #define PADCTRL_LCD_DAT_SLEW_BITS 1
@@ -205,11 +226,13 @@
 // Pad controls for LCD_DC and LCD_CS
 
 // Field: LCD_DCCS_DRIVE  Access: RW
+// Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
 #define PADCTRL_LCD_DCCS_DRIVE_LSB  0
 #define PADCTRL_LCD_DCCS_DRIVE_BITS 2
 #define PADCTRL_LCD_DCCS_DRIVE_MASK 0x3
 // Field: LCD_DCCS_SLEW  Access: RW
+// Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
 #define PADCTRL_LCD_DCCS_SLEW_LSB  2
 #define PADCTRL_LCD_DCCS_SLEW_BITS 1
@@ -222,11 +245,13 @@
 // Pad controls for LCD_BL
 
 // Field: LCD_BL_DRIVE  Access: RW
+// Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
 #define PADCTRL_LCD_BL_DRIVE_LSB  0
 #define PADCTRL_LCD_BL_DRIVE_BITS 2
 #define PADCTRL_LCD_BL_DRIVE_MASK 0x3
 // Field: LCD_BL_SLEW  Access: RW
+// Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
 #define PADCTRL_LCD_BL_SLEW_LSB  2
 #define PADCTRL_LCD_BL_SLEW_BITS 1

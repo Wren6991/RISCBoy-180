@@ -10,45 +10,45 @@
 // Bus address width    : 20
 
 module padctrl_regs (
-	input wire clk,
-	input wire rst_n,
+	input wire         clk,
+	input wire         rst_n,
 	
 	// APB Port
-	input wire apbs_psel,
-	input wire apbs_penable,
-	input wire apbs_pwrite,
-	input wire [19:0] apbs_paddr,
-	input wire [31:0] apbs_pwdata,
+	input  wire        apbs_psel,
+	input  wire        apbs_penable,
+	input  wire        apbs_pwrite,
+	input  wire [19:0] apbs_paddr,
+	input  wire [31:0] apbs_pwdata,
 	output wire [31:0] apbs_prdata,
-	output wire apbs_pready,
-	output wire apbs_pslverr,
+	output wire        apbs_pready,
+	output wire        apbs_pslverr,
 	
 	// Register interfaces
-	output reg [1:0] dio_drive_o,
-	output reg  dio_slew_o,
-	output reg  dio_schmitt_o,
-	output reg [1:0] gpio_drive_o,
-	output reg  gpio_slew_o,
-	output reg  gpio_schmitt_o,
-	output reg [5:0] gpio_pu_o,
-	output reg [5:0] gpio_pd_o,
-	output reg [1:0] sram_dq_drive_o,
-	output reg  sram_dq_slew_o,
-	output reg  sram_dq_schmitt_o,
-	output reg [1:0] sram_a_drive_o,
-	output reg  sram_a_slew_o,
-	output reg [1:0] sram_strobe_drive_o,
-	output reg  sram_strobe_slew_o,
-	output reg [1:0] audio_drive_o,
-	output reg  audio_slew_o,
-	output reg [1:0] lcd_clk_drive_o,
-	output reg  lcd_clk_slew_o,
-	output reg [1:0] lcd_dat_drive_o,
-	output reg  lcd_dat_slew_o,
-	output reg [1:0] lcd_dccs_drive_o,
-	output reg  lcd_dccs_slew_o,
-	output reg [1:0] lcd_bl_drive_o,
-	output reg  lcd_bl_slew_o
+	output reg  [1:0]  dio_drive_o,
+	output reg         dio_slew_o,
+	output reg         dio_schmitt_o,
+	output reg  [1:0]  gpio_drive_o,
+	output reg         gpio_slew_o,
+	output reg         gpio_schmitt_o,
+	output reg  [5:0]  gpio_pu_o,
+	output reg  [5:0]  gpio_pd_o,
+	output reg  [1:0]  sram_dq_drive_o,
+	output reg         sram_dq_slew_o,
+	output reg         sram_dq_schmitt_o,
+	output reg  [1:0]  sram_a_drive_o,
+	output reg         sram_a_slew_o,
+	output reg  [1:0]  sram_strobe_drive_o,
+	output reg         sram_strobe_slew_o,
+	output reg  [1:0]  audio_drive_o,
+	output reg         audio_slew_o,
+	output reg  [1:0]  lcd_clk_drive_o,
+	output reg         lcd_clk_slew_o,
+	output reg  [1:0]  lcd_dat_drive_o,
+	output reg         lcd_dat_slew_o,
+	output reg  [1:0]  lcd_dccs_drive_o,
+	output reg         lcd_dccs_slew_o,
+	output reg  [1:0]  lcd_bl_drive_o,
+	output reg         lcd_bl_slew_o
 );
 
 // APB adapter
@@ -99,101 +99,101 @@ wire __lcd_dccs_ren = ren && addr == ADDR_LCD_DCCS;
 wire __lcd_bl_wen = wen && addr == ADDR_LCD_BL;
 wire __lcd_bl_ren = ren && addr == ADDR_LCD_BL;
 
-wire [1:0] dio_drive_wdata = wdata[1:0];
-wire [1:0] dio_drive_rdata;
-wire  dio_slew_wdata = wdata[2];
-wire  dio_slew_rdata;
-wire  dio_schmitt_wdata = wdata[3];
-wire  dio_schmitt_rdata;
+wire [1:0]  dio_drive_wdata = wdata[1:0];
+wire [1:0]  dio_drive_rdata;
+wire        dio_slew_wdata = wdata[2];
+wire        dio_slew_rdata;
+wire        dio_schmitt_wdata = wdata[3];
+wire        dio_schmitt_rdata;
 wire [31:0] __dio_rdata = {28'h0, dio_schmitt_rdata, dio_slew_rdata, dio_drive_rdata};
 assign dio_drive_rdata = dio_drive_o;
 assign dio_slew_rdata = dio_slew_o;
 assign dio_schmitt_rdata = dio_schmitt_o;
 
-wire [1:0] gpio_drive_wdata = wdata[1:0];
-wire [1:0] gpio_drive_rdata;
-wire  gpio_slew_wdata = wdata[2];
-wire  gpio_slew_rdata;
-wire  gpio_schmitt_wdata = wdata[3];
-wire  gpio_schmitt_rdata;
+wire [1:0]  gpio_drive_wdata = wdata[1:0];
+wire [1:0]  gpio_drive_rdata;
+wire        gpio_slew_wdata = wdata[2];
+wire        gpio_slew_rdata;
+wire        gpio_schmitt_wdata = wdata[3];
+wire        gpio_schmitt_rdata;
 wire [31:0] __gpio_rdata = {28'h0, gpio_schmitt_rdata, gpio_slew_rdata, gpio_drive_rdata};
 assign gpio_drive_rdata = gpio_drive_o;
 assign gpio_slew_rdata = gpio_slew_o;
 assign gpio_schmitt_rdata = gpio_schmitt_o;
 
-wire [5:0] gpio_pu_wdata = wdata[5:0];
-wire [5:0] gpio_pu_rdata;
+wire [5:0]  gpio_pu_wdata = wdata[5:0];
+wire [5:0]  gpio_pu_rdata;
 wire [31:0] __gpio_pu_rdata = {26'h0, gpio_pu_rdata};
 assign gpio_pu_rdata = gpio_pu_o;
 
-wire [5:0] gpio_pd_wdata = wdata[5:0];
-wire [5:0] gpio_pd_rdata;
+wire [5:0]  gpio_pd_wdata = wdata[5:0];
+wire [5:0]  gpio_pd_rdata;
 wire [31:0] __gpio_pd_rdata = {26'h0, gpio_pd_rdata};
 assign gpio_pd_rdata = gpio_pd_o;
 
-wire [1:0] sram_dq_drive_wdata = wdata[1:0];
-wire [1:0] sram_dq_drive_rdata;
-wire  sram_dq_slew_wdata = wdata[2];
-wire  sram_dq_slew_rdata;
-wire  sram_dq_schmitt_wdata = wdata[3];
-wire  sram_dq_schmitt_rdata;
+wire [1:0]  sram_dq_drive_wdata = wdata[1:0];
+wire [1:0]  sram_dq_drive_rdata;
+wire        sram_dq_slew_wdata = wdata[2];
+wire        sram_dq_slew_rdata;
+wire        sram_dq_schmitt_wdata = wdata[3];
+wire        sram_dq_schmitt_rdata;
 wire [31:0] __sram_dq_rdata = {28'h0, sram_dq_schmitt_rdata, sram_dq_slew_rdata, sram_dq_drive_rdata};
 assign sram_dq_drive_rdata = sram_dq_drive_o;
 assign sram_dq_slew_rdata = sram_dq_slew_o;
 assign sram_dq_schmitt_rdata = sram_dq_schmitt_o;
 
-wire [1:0] sram_a_drive_wdata = wdata[1:0];
-wire [1:0] sram_a_drive_rdata;
-wire  sram_a_slew_wdata = wdata[2];
-wire  sram_a_slew_rdata;
+wire [1:0]  sram_a_drive_wdata = wdata[1:0];
+wire [1:0]  sram_a_drive_rdata;
+wire        sram_a_slew_wdata = wdata[2];
+wire        sram_a_slew_rdata;
 wire [31:0] __sram_a_rdata = {29'h0, sram_a_slew_rdata, sram_a_drive_rdata};
 assign sram_a_drive_rdata = sram_a_drive_o;
 assign sram_a_slew_rdata = sram_a_slew_o;
 
-wire [1:0] sram_strobe_drive_wdata = wdata[1:0];
-wire [1:0] sram_strobe_drive_rdata;
-wire  sram_strobe_slew_wdata = wdata[2];
-wire  sram_strobe_slew_rdata;
+wire [1:0]  sram_strobe_drive_wdata = wdata[1:0];
+wire [1:0]  sram_strobe_drive_rdata;
+wire        sram_strobe_slew_wdata = wdata[2];
+wire        sram_strobe_slew_rdata;
 wire [31:0] __sram_strobe_rdata = {29'h0, sram_strobe_slew_rdata, sram_strobe_drive_rdata};
 assign sram_strobe_drive_rdata = sram_strobe_drive_o;
 assign sram_strobe_slew_rdata = sram_strobe_slew_o;
 
-wire [1:0] audio_drive_wdata = wdata[1:0];
-wire [1:0] audio_drive_rdata;
-wire  audio_slew_wdata = wdata[2];
-wire  audio_slew_rdata;
+wire [1:0]  audio_drive_wdata = wdata[1:0];
+wire [1:0]  audio_drive_rdata;
+wire        audio_slew_wdata = wdata[2];
+wire        audio_slew_rdata;
 wire [31:0] __audio_rdata = {29'h0, audio_slew_rdata, audio_drive_rdata};
 assign audio_drive_rdata = audio_drive_o;
 assign audio_slew_rdata = audio_slew_o;
 
-wire [1:0] lcd_clk_drive_wdata = wdata[1:0];
-wire [1:0] lcd_clk_drive_rdata;
-wire  lcd_clk_slew_wdata = wdata[2];
-wire  lcd_clk_slew_rdata;
+wire [1:0]  lcd_clk_drive_wdata = wdata[1:0];
+wire [1:0]  lcd_clk_drive_rdata;
+wire        lcd_clk_slew_wdata = wdata[2];
+wire        lcd_clk_slew_rdata;
 wire [31:0] __lcd_clk_rdata = {29'h0, lcd_clk_slew_rdata, lcd_clk_drive_rdata};
 assign lcd_clk_drive_rdata = lcd_clk_drive_o;
 assign lcd_clk_slew_rdata = lcd_clk_slew_o;
 
-wire [1:0] lcd_dat_drive_wdata = wdata[1:0];
-wire [1:0] lcd_dat_drive_rdata;
-wire  lcd_dat_slew_wdata = wdata[2];
-wire  lcd_dat_slew_rdata;
+wire [1:0]  lcd_dat_drive_wdata = wdata[1:0];
+wire [1:0]  lcd_dat_drive_rdata;
+wire        lcd_dat_slew_wdata = wdata[2];
+wire        lcd_dat_slew_rdata;
 wire [31:0] __lcd_dat_rdata = {29'h0, lcd_dat_slew_rdata, lcd_dat_drive_rdata};
 assign lcd_dat_drive_rdata = lcd_dat_drive_o;
 assign lcd_dat_slew_rdata = lcd_dat_slew_o;
 
-wire [1:0] lcd_dccs_drive_wdata = wdata[1:0];
-wire [1:0] lcd_dccs_drive_rdata;
-wire  lcd_dccs_slew_wdata = wdata[2];
-wire  lcd_dccs_slew_rdata;
+wire [1:0]  lcd_dccs_drive_wdata = wdata[1:0];
+wire [1:0]  lcd_dccs_drive_rdata;
+wire        lcd_dccs_slew_wdata = wdata[2];
+wire        lcd_dccs_slew_rdata;
 wire [31:0] __lcd_dccs_rdata = {29'h0, lcd_dccs_slew_rdata, lcd_dccs_drive_rdata};
 assign lcd_dccs_drive_rdata = lcd_dccs_drive_o;
 assign lcd_dccs_slew_rdata = lcd_dccs_slew_o;
 
-wire [1:0] lcd_bl_drive_wdata = wdata[1:0];
-wire [1:0] lcd_bl_drive_rdata;
-wire  lcd_bl_slew_wdata = wdata[2];
-wire  lcd_bl_slew_rdata;
+wire [1:0]  lcd_bl_drive_wdata = wdata[1:0];
+wire [1:0]  lcd_bl_drive_rdata;
+wire        lcd_bl_slew_wdata = wdata[2];
+wire        lcd_bl_slew_rdata;
 wire [31:0] __lcd_bl_rdata = {29'h0, lcd_bl_slew_rdata, lcd_bl_drive_rdata};
 assign lcd_bl_drive_rdata = lcd_bl_drive_o;
 assign lcd_bl_slew_rdata = lcd_bl_slew_o;
