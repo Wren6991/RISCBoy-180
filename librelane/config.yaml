@@ -444,52 +444,52 @@ MACROS:
     instances:
       # Make sure to specify the SRAMs in pdn_cfg.tcl
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[0].ram_u:
-        location: [3000, 600]
+        location: [3000, 500]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[1].ram_u:
-        location: [3000, 1200]
+        location: [3000, 1100]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[2].ram_u:
-        location: [3000, 1800]
+        location: [3000, 1700]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[3].ram_u:
-        location: [3000, 2400]
+        location: [3000, 2300]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[0].ram_u:
-        location: [2500, 600]
+        location: [2500, 500]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[1].ram_u:
-        location: [2500, 1200]
+        location: [2500, 1100]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[2].ram_u:
-        location: [2500, 1800]
+        location: [2500, 1700]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[3].ram_u:
-        location: [2500, 2400]
+        location: [2500, 2300]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[0].ram_u:
-        location: [1000, 600]
+        location: [1000, 500]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[1].ram_u:
-        location: [1000, 1200]
+        location: [1000, 1100]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[2].ram_u:
-        location: [1000, 1800]
+        location: [1000, 1700]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[3].ram_u:
-        location: [1000, 2400]
+        location: [1000, 2300]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[0].ram_u:
-        location: [500, 600]
+        location: [500, 500]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[1].ram_u:
-        location: [500, 1200]
+        location: [500, 1100]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[2].ram_u:
-        location: [500, 1800]
+        location: [500, 1700]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[3].ram_u:
-        location: [500, 2400]
+        location: [500, 2300]
         orientation: "N"
 
       i_chip_core.apu_u.ram_u.sram.g_d512.g_width[0].ram_u:
