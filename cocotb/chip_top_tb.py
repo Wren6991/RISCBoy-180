@@ -54,6 +54,7 @@ TWD_CMD_R_DATA     = 0x7
 TWD_CMD_R_BUFF     = 0x8
 TWD_CMD_W_DATA     = 0x9
 TWD_CMD_R_AINFO    = 0xb
+TWD_CMD_R_STAT     = 0xd
 
 TWD_CSR_VERSION_LSB       = 28
 TWD_CSR_VERSION_BITS      = 0xf << TWD_CSR_VERSION_LSB
@@ -96,20 +97,20 @@ async def twd_shift_in(dut, n):
 def odd_parity(x):
     return 1 - (x.bit_count() & 1)
 
-async def twd_command(dut, cmd, n_bytes, wdata=None):
+async def twd_command(dut, cmd, n_bits, wdata=None):
     await twd_shift_out(dut, 1 << 5 | (cmd << 1) | (odd_parity(cmd)), 6)
     if cmd == TWD_CMD_DISCONNECT:
         return None
     if wdata is None:
         _ = await twd_shift_in(dut, 2)
-        rdata = await twd_shift_in(dut, 8 * n_bytes)
+        rdata = await twd_shift_in(dut, n_bits)
         parity = await twd_shift_in(dut, 1)
         assert parity == odd_parity(rdata)
         _ = await twd_shift_in(dut, 3)
         return rdata
     else:
         await twd_shift_out(dut, 0, 2)
-        await twd_shift_out(dut, wdata, 8 * n_bytes)
+        await twd_shift_out(dut, wdata, n_bits)
         await twd_shift_out(dut, odd_parity(wdata) << 3, 4)
 
 twd_cached_addr = None
@@ -124,42 +125,42 @@ async def twd_connect(dut):
     await twd_command(dut, TWD_CMD_DISCONNECT, 0)
     for b in connect_seq:
         await twd_shift_out(dut, b, 8)
-    csr_rdata = await twd_command(dut, TWD_CMD_R_CSR, 4)
+    csr_rdata = await twd_command(dut, TWD_CMD_R_CSR, 32)
     assert ((csr_rdata & TWD_CSR_VERSION_BITS) >> TWD_CSR_VERSION_LSB) == 1
     assert ((csr_rdata & TWD_CSR_ASIZE_BITS) >> TWD_CSR_ASIZE_LSB) == 0
-    await twd_command(dut, TWD_CMD_W_CSR, 4,
+    await twd_command(dut, TWD_CMD_W_CSR, 32,
         TWD_CSR_EPARITY_BITS |
         TWD_CSR_EBUSFAULT_BITS |
         TWD_CSR_EBUSY_BITS
     )
 
 async def twd_read_idcode(dut):
-    return await twd_command(dut, TWD_CMD_R_IDCODE, 4)
+    return await twd_command(dut, TWD_CMD_R_IDCODE, 32)
 
 async def twd_write_bus(dut, addr, wdata):
     global twd_cached_addr
     if addr != twd_cached_addr:
-        await twd_command(dut, TWD_CMD_W_ADDR, 1, addr)
+        await twd_command(dut, TWD_CMD_W_ADDR, 8, addr)
         twd_cached_addr = addr
-    await twd_command(dut, TWD_CMD_W_DATA, 4, wdata)
+    await twd_command(dut, TWD_CMD_W_DATA, 32, wdata)
     while True:
-        csr = await twd_command(dut, TWD_CMD_R_CSR, 4)
-        if (csr & TWD_CSR_BUSY_BITS) == 0:
+        stat = await twd_command(dut, TWD_CMD_R_STAT, 4)
+        if (stat & 1) == 0:
             break
 
 async def twd_read_bus(dut, addr):
     global twd_cached_addr
     if addr != twd_cached_addr:
-        await twd_command(dut, TWD_CMD_W_ADDR, 1, addr)
+        await twd_command(dut, TWD_CMD_W_ADDR, 8, addr)
         twd_cached_addr = addr
-    _ = await twd_command(dut, TWD_CMD_R_DATA, 4)
+    _ = await twd_command(dut, TWD_CMD_R_DATA, 32)
     for i in range(10):
-        csr = await twd_command(dut, TWD_CMD_R_CSR, 4)
-        if (csr & TWD_CSR_BUSY_BITS) == 0:
+        stat = await twd_command(dut, TWD_CMD_R_STAT, 4)
+        if (stat & 1) == 0:
             break
     else:
         assert False
-    return await twd_command(dut, TWD_CMD_R_BUFF, 4)
+    return await twd_command(dut, TWD_CMD_R_BUFF, 32)
 
 ###############################################################################
 # RISC-V debug helpers

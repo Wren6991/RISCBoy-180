@@ -9,6 +9,7 @@
 	* IRQ to/from main CPU
 * Debug
 	* Write virtual UART peripheral
+	* Add short-form STAT response to TWD
 * PPU
 	* Think harder about palette RAM read/write collisions
 	* Possible to reduce RAM bandwidth for ABLIT/ATILE? (possibly have timing budget for 1-entry tilenum cache)
@@ -253,6 +254,10 @@ After spending some time fiddling with this I chucked in the RISCBoy PPU. I had 
 
 I could work around this by adding an explicit write buffer for the palette to hold the write until it's ready (like an interrupter gear for a fighter plane with a propeller) or by adding a PPU command to write to its own APB registers. The second one sounds potentially funnier although all the useful knobs are exposed directly (and only) to the command processor anyway.
 
+The clock tree synthesis seems quite temperamental. I tried moving the main CPU's bus fabric and IRAM onto the gated processor clock, and this caused a 7 ns degradation in setup WNS. Also the clock tree viewer in OpenRoad doesn't show any clock tree branches after the clock gate, although inspecting the netlist shows buffers have been inserted. I think what might be happening is the tool is inserting buffers to respect max fanout/capacitance constraints but making no attempt to actually balance the clock tree across the gates; this would be disappointing as an ICG is just a buffer from a CTS point of view. It's also possible I'm just making the clock tree routing much harder by routing the gated clock out to the SRAMs as well as the ungated clock out to the SRAM IO flops, but surely it's not **7 ns** harder?
+
+I looked through the Triton CTS documentation and it had a flag for balancing cells across clock gates, which defaults to `false`. Maybe that is worth revisiting.
+
 ### Day 5: TEN DAYS REMAIN
 
 Today is software day. I have some useful components in the system now, so it would be nice to exercise them a bit and confirm they still work as expected.
@@ -260,4 +265,7 @@ Today is software day. I have some useful components in the system now, so it wo
 Actually first let's put in some time making the software environment a bit nicer and more compliant. Currently only the main CPU has access to the (extravagant) 64-bit RISC-V timer; I don't plan to change this. However I do want to add some nice custom looping timers in the APU for timing your bleeps and bloops accurately, and I need some interrupts going back and forth between the processors, etc.
 
 So let's push one _more_ stack frame and add AHB-Lite support to my register block generator so I can have single-cycle access to those registers from the APU. Today is software day, remember?
+
+When testing the AHB regblock support and the new IPC registers for soft IRQs, I got frustrated with how slow debugger-based tests were. I don't want to make the test code any more complicated so instead I expanded the TWD spec to include a short-form status response to make polling more efficient for hosts that just want to implement polled IO. This took a full test run from 34.1 s to 24.3 s.
+
 
