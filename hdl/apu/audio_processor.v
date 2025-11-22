@@ -41,6 +41,8 @@ module audio_processor #(
 	input  wire [31:0] ahbls_hwdata,
 	output wire [31:0] ahbls_hrdata,
 
+    output wire        irq_cpu_softirq,
+
 	output wire        audio_l,
 	output wire        audio_r
 );
@@ -140,12 +142,12 @@ wire [7:0]          cpu_hmaster;
 wire                cpu_hexcl;
 wire                cpu_hready;
 wire                cpu_hresp;
-wire                cpu_hexokay = 1'b1;
+wire                cpu_hexokay;
 wire [31:0]         cpu_hwdata;
 wire [31:0]         cpu_hrdata;
 
 wire [NUM_IRQS-1:0] irq = 1'b0;
-wire                soft_irq = 1'b0;
+wire                soft_irq;
 wire                timer_irq = 1'b0;
 
 wire                fence_i_vld;
@@ -273,10 +275,89 @@ hazard3_cpu_1port #(
 );
 
 // ------------------------------------------------------------------------
+// Bus components
+
+// APU nominally has a 128 kB address space, mapped at c0000 to dffff in the
+// system address space. We actually just decode the 16 LSBs: RAM in the lower
+// 32k and up to 8 x 4k peripherals in the upper 32k.
+
+wire [15:0] ram_haddr;
+wire        ram_hwrite;
+wire [1:0]  ram_htrans;
+wire [2:0]  ram_hsize;
+wire [2:0]  ram_hburst;
+wire [3:0]  ram_hprot;
+wire        ram_hmastlock;
+wire [7:0]  ram_hmaster;
+wire        ram_hready;
+wire        ram_hready_resp;
+wire        ram_hresp;
+wire [31:0] ram_hwdata;
+wire [31:0] ram_hrdata;
+
+wire [15:0] ipc_haddr;
+wire        ipc_hwrite;
+wire [1:0]  ipc_htrans;
+wire [2:0]  ipc_hsize;
+wire [2:0]  ipc_hburst;
+wire [3:0]  ipc_hprot;
+wire        ipc_hmastlock;
+wire [7:0]  ipc_hmaster;
+wire        ipc_hready;
+wire        ipc_hready_resp;
+wire        ipc_hresp;
+wire [31:0] ipc_hwdata;
+wire [31:0] ipc_hrdata;
+
+ahbl_splitter #(
+    .N_PORTS   (2),
+    .W_ADDR    (16),
+    .ADDR_MAP  ({16'h8000, 16'h0000}),
+    .ADDR_MASK ({16'hf000, 16'h8000})
+) inst_ahbl_splitter (
+    .clk             (clk),
+    .rst_n           (rst_n),
+
+    .src_hready      (cpu_hready),
+    .src_hready_resp (cpu_hready),
+    .src_hresp       (cpu_hresp),
+    .src_hexokay     (cpu_hexokay),
+    .src_haddr       (cpu_haddr[15:0]),
+    .src_hwrite      (cpu_hwrite),
+    .src_htrans      (cpu_htrans),
+    .src_hsize       (cpu_hsize),
+    .src_hburst      (cpu_hburst),
+    .src_hprot       (cpu_hprot),
+    .src_hmaster     (cpu_hmaster),
+    .src_hmastlock   (cpu_hmastlock),
+    .src_hexcl       (cpu_hexcl),
+    .src_hwdata      (cpu_hwdata),
+    .src_hrdata      (cpu_hrdata),
+
+    .dst_hexokay     ('0),
+    .dst_hexcl       (/* unused */),
+
+    .dst_hready      ({ipc_hready      , ram_hready     }),
+    .dst_hready_resp ({ipc_hready_resp , ram_hready_resp}),
+    .dst_hresp       ({ipc_hresp       , ram_hresp      }),
+    .dst_haddr       ({ipc_haddr       , ram_haddr      }),
+    .dst_hwrite      ({ipc_hwrite      , ram_hwrite     }),
+    .dst_htrans      ({ipc_htrans      , ram_htrans     }),
+    .dst_hsize       ({ipc_hsize       , ram_hsize      }),
+    .dst_hburst      ({ipc_hburst      , ram_hburst     }),
+    .dst_hprot       ({ipc_hprot       , ram_hprot      }),
+    .dst_hmaster     ({ipc_hmaster     , ram_hmaster    }),
+    .dst_hmastlock   ({ipc_hmastlock   , ram_hmastlock  }),
+    .dst_hwdata      ({ipc_hwdata      , ram_hwdata     }),
+    .dst_hrdata      ({ipc_hrdata      , ram_hrdata     })
+);
+
+// ------------------------------------------------------------------------
 // Memories
 
 ahb_sync_sram #(
     .W_DATA (32),
+    .W_ADDR (16),
     .DEPTH  (RAM_DEPTH)
 ) ram_u (
     .VDD               (VDD),
@@ -284,18 +365,38 @@ ahb_sync_sram #(
     .clk               (clk),
     .rst_n             (rst_n),
 
-    .ahbls_hready_resp (cpu_hready),
-    .ahbls_hready      (cpu_hready),
-    .ahbls_hresp       (cpu_hresp),
-    .ahbls_haddr       (cpu_haddr),
-    .ahbls_hwrite      (cpu_hwrite),
-    .ahbls_htrans      (cpu_htrans),
-    .ahbls_hsize       (cpu_hsize),
-    .ahbls_hburst      (cpu_hburst),
-    .ahbls_hprot       (cpu_hprot),
-    .ahbls_hmastlock   (cpu_hmastlock),
-    .ahbls_hwdata      (cpu_hwdata),
-    .ahbls_hrdata      (cpu_hrdata)
+    .ahbls_hready_resp (ram_hready_resp),
+    .ahbls_hready      (ram_hready),
+    .ahbls_hresp       (ram_hresp),
+    .ahbls_haddr       (ram_haddr),
+    .ahbls_hwrite      (ram_hwrite),
+    .ahbls_htrans      (ram_htrans),
+    .ahbls_hsize       (ram_hsize),
+    .ahbls_hburst      (ram_hburst),
+    .ahbls_hprot       (ram_hprot),
+    .ahbls_hmastlock   (ram_hmastlock),
+    .ahbls_hwdata      (ram_hwdata),
+    .ahbls_hrdata      (ram_hrdata)
+);
+
+// ----------------------------------------------------------------------------
+// Inter-processor communication registers
+
+apu_ipc ipc_u (
+    .clk               (clk),
+    .rst_n             (rst_n),
+
+    .ahbls_haddr       (ipc_haddr),
+    .ahbls_htrans      (ipc_htrans),
+    .ahbls_hwrite      (ipc_hwrite),
+    .ahbls_hsize       (ipc_hsize),
+    .ahbls_hready      (ipc_hready),
+    .ahbls_hready_resp (ipc_hready_resp),
+    .ahbls_hwdata      (ipc_hwdata),
+    .ahbls_hrdata      (ipc_hrdata),
+    .ahbls_hresp       (ipc_hresp),
+
+    .riscv_softirq     ({soft_irq, irq_cpu_softirq})
 );
 
 // ----------------------------------------------------------------------------

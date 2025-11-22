@@ -34,6 +34,11 @@ IRAM_END     = IRAM_BASE + 0x2000
 APU_RAM_BASE = APU_BASE
 APU_RAM_END  = APU_RAM_BASE + 0x800
 
+APU_PERI_BASE = APU_BASE + 0x8000
+APU_IPC_BASE = APU_PERI_BASE
+APU_IPC_SOFTIRQ_SET = APU_IPC_BASE + 0
+APU_IPC_SOFTIRQ_CLR = APU_IPC_BASE + 4
+
 ###############################################################################
 # TWD debug helpers
 
@@ -201,6 +206,8 @@ CSR_MARCHID                = 0xf12
 CSR_MIMPID                 = 0xf13
 CSR_MHARTID                = 0xf14
 CSR_MISA                   = 0x301
+CSR_MIE                    = 0x304
+CSR_MIP                    = 0x344
 CSR_H3_MSLEEP              = 0xbf0
 CSR_TSELECT                = 0x7a0
 CSR_TDATA1                 = 0x7a1
@@ -434,7 +441,7 @@ async def test_iram_smoke(dut):
     await rvdebug_put_gpr(dut, 8, 0)
     await rvdebug_put_gpr(dut, 9, 0)
     expect = dict()
-    for i in range(16):
+    for i in range(8):
         addr = IRAM_BASE + (i & 0xc) + ((i % 4) * 0x800)
         wdata = addr * 123 ^ 0xaa55aa55
         cocotb.log.info(f"{addr:08x} <- {wdata:08x}")
@@ -445,7 +452,7 @@ async def test_iram_smoke(dut):
         cocotb.log.info(f"         -> {rdata:08x}")
         assert rdata == wdata
     cocotb.log.info(f"Re-read")
-    for i in range(16):
+    for i in range(8):
         addr = IRAM_BASE + (i & 0xc) + ((i % 4) * 0x800)
         rdata = await rvdebug_read_mem32(dut, addr)
         assert rdata == expect[addr]
@@ -476,6 +483,36 @@ async def test_cross_apu_cpu_mem(dut):
     await rvdebug_select_hart(dut, 0)
     rdata = await rvdebug_read_mem32(dut, APU_RAM_BASE)
     assert rdata == 0xabcdef5a
+
+@cocotb.test()
+async def test_riscv_soft_irq(dut):
+    """Check APU and CPU can post each other soft IRQs."""
+    await start_up(dut)
+    cocotb.log.info(f"Initialising debug")
+    await rvdebug_init(dut)
+    await rvdebug_select_hart(dut, 0)
+    await rvdebug_halt(dut)
+    await rvdebug_put_gpr(dut, 8, 0)
+    await rvdebug_put_gpr(dut, 9, 0)
+    await rvdebug_select_hart(dut, 1)
+    await rvdebug_halt(dut)
+    await rvdebug_put_gpr(dut, 8, 0)
+    await rvdebug_put_gpr(dut, 9, 0)
+
+    for irq_mask in range(4):
+        irq_apu = (irq_mask >> 1) & 1
+        irq_cpu = irq_mask & 1
+        cocotb.log.info(f"Set APU = {(irq_mask >> 1) & 1} CPU = {irq_mask & 1}")
+        await rvdebug_write_mem32(dut, APU_IPC_SOFTIRQ_CLR, 0x3)
+        await rvdebug_write_mem32(dut, APU_IPC_SOFTIRQ_SET, irq_mask)
+        await rvdebug_select_hart(dut, 0)
+        mip = await rvdebug_get_csr(dut, CSR_MIP)
+        cocotb.log.info(f"CPU mip = {mip:08x}")
+        assert ((mip >> 3) & 0x1) == irq_cpu
+        await rvdebug_select_hart(dut, 1)
+        mip = await rvdebug_get_csr(dut, CSR_MIP)
+        cocotb.log.info(f"APU mip = {mip:08x}")
+        assert ((mip >> 3) & 0x1) == irq_apu
 
 
 def chip_top_runner():

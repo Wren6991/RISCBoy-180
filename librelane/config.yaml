@@ -38,7 +38,9 @@ DESIGN_NAME: chip_top
 VERILOG_FILES:
 - dir::../hdl/chip_top.sv
 - dir::../hdl/chip_core.sv
-- dir::../hdl/audio_processor.v
+- dir::../hdl/apu/audio_processor.v
+- dir::../hdl/apu/ipc/apu_ipc.v
+- dir::../hdl/apu/ipc/ipc_regs.v
 
 - dir::../hdl/mem/ahb_sync_sram.v
 - dir::../hdl/mem/sram_wrapper.v
@@ -125,6 +127,7 @@ VERILOG_FILES:
 
 VERILOG_INCLUDE_DIRS:
 - dir::../hdl/hazard3/hdl
+- dir::../hdl/riscboy/hdl/graphics/ppu
 
 VERILOG_DEFINES:
 - GF180MCU

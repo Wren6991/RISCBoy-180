@@ -369,7 +369,7 @@ wire [31:0]         cpu_hwdata;
 wire [31:0]         cpu_hrdata;
 
 wire [NUM_IRQS-1:0] irq;
-wire                soft_irq = 1'b0;
+wire                soft_irq;
 wire                timer_irq;
 
 wire                fence_i_vld;
@@ -785,6 +785,8 @@ audio_processor #(
     .ahbls_hresp                (apu_hresp),
     .ahbls_hwdata               (apu_hwdata),
     .ahbls_hrdata               (apu_hrdata),
+
+    .irq_cpu_softirq            (soft_irq),
 
     .audio_l                    (padout_audio_l),
     .audio_r                    (padout_audio_r)
