@@ -421,10 +421,10 @@ MACROS:
         - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram256x8m8wm1__ss_125C_4v50.lib
     instances:
       i_chip_core.ppu_u.blender.palette_mapper.pram_u.g_d256.g_width[0].ram_u:
-        location: [500, 3000]
+        location: [500, 2900]
         orientation: "N"
       i_chip_core.ppu_u.blender.palette_mapper.pram_u.g_d256.g_width[1].ram_u:
-        location: [1000, 3000]
+        location: [1000, 2900]
         orientation: "N"
 
   gf180mcu_fd_ip_sram__sram512x8m8wm1:
