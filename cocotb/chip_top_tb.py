@@ -486,11 +486,11 @@ def chip_top_runner():
     defines = {}
     includes = []
 
-    if gl:
-        # SCL models
-        sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v")
-        sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / "primitives.v")
+    # SCL models: included even for RTL sims, as RTL may instantiate cells in some rare cases
+    sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v")
+    sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / "primitives.v")
 
+    if gl:
         # We use the powered netlist
         sources.append(proj_path / f"../final/pnl/{hdl_toplevel}.pnl.v")
 
