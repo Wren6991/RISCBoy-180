@@ -76,10 +76,17 @@ VERILOG_FILES:
 - dir::../hdl/hazard3/example_soc/soc/peri/hazard3_riscv_timer.v
 
 - dir::../hdl/libfpga/common/onehot_mux.v
+- dir::../hdl/libfpga/common/onehot_priority.v
+- dir::../hdl/libfpga/common/onehot_encoder.v
+- dir::../hdl/libfpga/common/sync_fifo.v
 - dir::../hdl/libfpga/cdc/sync_1bit.v
+- dir::../hdl/libfpga/cdc/async_fifo.v
+- dir::../hdl/libfpga/cdc/gray_counter.v
+- dir::../hdl/libfpga/cdc/gray_decode.v
 - dir::../hdl/libfpga/busfabric/ahbl_to_apb.v
 - dir::../hdl/libfpga/busfabric/ahbl_splitter.v
 - dir::../hdl/libfpga/busfabric/apb_splitter.v
+- dir::../hdl/libfpga/mem/sram_sync_1r1w.v
 
 - dir::../hdl/cells/clkroot_anchor.v
 - dir::../hdl/cells/falsepath_anchor.v
@@ -96,6 +103,25 @@ VERILOG_FILES:
 - dir::../hdl/twowiredebug/hdl/twowire_dtm.v
 
 - dir::../hdl/riscboy/hdl/sram_ctrl/riscboy_sram_ctrl.v
+
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_cproc_frontend.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_palette_mapper.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_blender.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_ahbl_adapter.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_tile_agu.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/dispctrl/riscboy_ppu_dispctrl_spi.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/dispctrl/regs/ppu_dispctrl_dvi_regs.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/dispctrl/regs/ppu_dispctrl_spi_regs.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/dispctrl/riscboy_ppu_dispctrl_dvi.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_affine_coord_gen.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/regs/ppu_regs.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_phase_accum.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_pixel_agu.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_bus_arbiter.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_shift_unshift.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_pixel_unpack.v
+- dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_cproc.v
 
 VERILOG_INCLUDE_DIRS:
 - dir::../hdl/hazard3/hdl
@@ -393,6 +419,13 @@ MACROS:
         - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram256x8m8wm1__ff_n40C_5v50.lib
       "*_ss_125C_4v50":
         - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram256x8m8wm1__ss_125C_4v50.lib
+    instances:
+      i_chip_core.ppu_u.blender.palette_mapper.pram_u.g_d256.g_width[0].ram_u:
+        location: [500, 3000]
+        orientation: "N"
+      i_chip_core.ppu_u.blender.palette_mapper.pram_u.g_d256.g_width[1].ram_u:
+        location: [1000, 3000]
+        orientation: "N"
 
   gf180mcu_fd_ip_sram__sram512x8m8wm1:
     gds:
@@ -460,17 +493,31 @@ MACROS:
         orientation: "N"
 
       i_chip_core.apu_u.ram_u.sram.g_d512.g_width[0].ram_u:
-        location: [500, 3500]
+        location: [2500, 3500]
         orientation: "S"
       i_chip_core.apu_u.ram_u.sram.g_d512.g_width[1].ram_u:
-        location: [500, 4100]
+        location: [2500, 4100]
         orientation: "N"
       i_chip_core.apu_u.ram_u.sram.g_d512.g_width[2].ram_u:
-        location: [1000, 3500]
+        location: [3000, 3500]
         orientation: "S"
       i_chip_core.apu_u.ram_u.sram.g_d512.g_width[3].ram_u:
+        location: [3000, 4100]
+        orientation: "N"
+
+      i_chip_core.ppu_u.scanbuf0_u.g_d512.g_width[0].ram_u:
+        location: [500, 3500]
+        orientation: "N"
+      i_chip_core.ppu_u.scanbuf0_u.g_d512.g_width[1].ram_u:
+        location: [500, 4100]
+        orientation: "N"
+      i_chip_core.ppu_u.scanbuf1_u.g_d512.g_width[0].ram_u:
+        location: [1000, 3500]
+        orientation: "N"
+      i_chip_core.ppu_u.scanbuf1_u.g_d512.g_width[1].ram_u:
         location: [1000, 4100]
         orientation: "N"
+
 
 PDN_CFG: dir::pdn_cfg.tcl
 

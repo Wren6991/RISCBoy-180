@@ -6,14 +6,21 @@ set_units -time ns
 
 set CLK_SYS_MHZ 18
 set DCK_MHZ 20
+set CLK_LCD_MHz 36
 
 set CLK_SYS_PERIOD [expr 1000.0 / $CLK_SYS_MHZ]
 set DCK_PERIOD     [expr 1000.0 / $DCK_MHZ]
+set CLK_LCD_PERIOD [expr 1000.0 / $CLK_LCD_MHz]
 
 # System clock: main CPU, SRAM, digital peripherals and external SRAM interface
 create_clock [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z] \
     -name clk_sys \
     -period $CLK_SYS_PERIOD
+
+# LCD serial clock
+create_clock [get_pins i_chip_core.clkroot_lcd_u.magic_clkroot_anchor_u/Z] \
+    -name clk_lcd \
+    -period $CLK_LCD_PERIOD
 
 # Debug clock: clocks the debug transport module and one side of its bus CDC
 create_clock [get_pins pad_DCK/PAD] \
@@ -38,6 +45,10 @@ proc cdc_maxdelay {clk_from clk_to period_to} {
 # sufficient.
 cdc_maxdelay dck clk_sys $CLK_SYS_PERIOD
 cdc_maxdelay clk_sys dck $DCK_PERIOD
+
+# Should just be an async FIFO and some 2DFF'd control signals
+cdc_maxdelay clk_sys clk_lcd $CLK_LCD_PERIOD
+cdc_maxdelay clk_lcd clk_sys $CLK_SYS_PERIOD
 
 # Apply RTL-inserted false path constraints (setup/hold only, still constrain slew)
 set_false_path -setup -hold -through [get_pins *.magic_falsepath_anchor_u/Z]

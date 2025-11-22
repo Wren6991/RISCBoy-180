@@ -104,6 +104,13 @@ clkroot_anchor clkroot_sys_u (
     .z (clk_sys)
 );
 
+// External clock used directly as LCD serial clock (for now).
+wire clk_lcd;
+clkroot_anchor clkroot_lcd_u (
+    .i (padin_clk),
+    .z (clk_lcd)
+);
+
 // ------------------------------------------------------------------------
 // Debug Transport Module
 
@@ -176,6 +183,12 @@ reset_sync sync_root_rst_n_u (
     .rst_n_out (rst_n_sys)
 );
 
+wire rst_n_lcd;
+reset_sync sync_lcd_rst_n_u (
+    .clk       (clk_lcd),
+    .rst_n_in  (rst_n_sys_unsync),
+    .rst_n_out (rst_n_lcd)
+);
 // Fixed outputs are enabled once the system is out of reset. This is
 // falsepathed because it only transitions once and has high fanout.
 
@@ -331,6 +344,7 @@ hazard3_dm #(
 // Processor instantiation
 
 localparam NUM_IRQS = 1;
+localparam IRQ_PPU = 0;
 
 wire                cpu_pwrup_req;
 wire                cpu_pwrup_ack = cpu_pwrup_req;
@@ -354,7 +368,7 @@ wire                cpu_hexokay;
 wire [31:0]         cpu_hwdata;
 wire [31:0]         cpu_hrdata;
 
-wire [NUM_IRQS-1:0] irq = 1'b0;
+wire [NUM_IRQS-1:0] irq;
 wire                soft_irq = 1'b0;
 wire                timer_irq;
 
@@ -664,12 +678,30 @@ wire        padctrl_pready;
 wire [31:0] padctrl_prdata;
 wire        padctrl_pslverr;
 
+wire [19:0] ppu_paddr;
+wire        ppu_psel;
+wire        ppu_penable;
+wire        ppu_pwrite;
+wire [31:0] ppu_pwdata;
+wire        ppu_pready;
+wire [31:0] ppu_prdata;
+wire        ppu_pslverr;
+
+wire [19:0] dispctrl_paddr;
+wire        dispctrl_psel;
+wire        dispctrl_penable;
+wire        dispctrl_pwrite;
+wire [31:0] dispctrl_pwdata;
+wire        dispctrl_pready;
+wire [31:0] dispctrl_prdata;
+wire        dispctrl_pslverr;
+
 apb_splitter #(
     .W_ADDR    (20),
     .W_DATA    (32),
-    .N_SLAVES  (2),
-    .ADDR_MAP  (40'h01000_00000),
-    .ADDR_MASK (40'h0f000_0f000)
+    .N_SLAVES  (4),
+    .ADDR_MAP  (80'h03000_02000_01000_00000),
+    .ADDR_MASK (80'h0f000_0f000_0f000_0f000)
 ) inst_apb_splitter (
     .apbs_paddr   (peri_paddr),
     .apbs_psel    (peri_psel),
@@ -680,14 +712,14 @@ apb_splitter #(
     .apbs_prdata  (peri_prdata),
     .apbs_pslverr (peri_pslverr),
 
-    .apbm_paddr   ({padctrl_paddr   , timer_paddr  }),
-    .apbm_psel    ({padctrl_psel    , timer_psel   }),
-    .apbm_penable ({padctrl_penable , timer_penable}),
-    .apbm_pwrite  ({padctrl_pwrite  , timer_pwrite }),
-    .apbm_pwdata  ({padctrl_pwdata  , timer_pwdata }),
-    .apbm_pready  ({padctrl_pready  , timer_pready }),
-    .apbm_prdata  ({padctrl_prdata  , timer_prdata }),
-    .apbm_pslverr ({padctrl_pslverr , timer_pslverr})
+    .apbm_paddr   ({dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
+    .apbm_psel    ({dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
+    .apbm_penable ({dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
+    .apbm_pwrite  ({dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
+    .apbm_pwdata  ({dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
+    .apbm_pready  ({dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
+    .apbm_prdata  ({dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
+    .apbm_pslverr ({dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
 );
 
 // ------------------------------------------------------------------------
@@ -719,9 +751,7 @@ ahb_sync_sram #(
 );
 
 // ------------------------------------------------------------------------
-// Audio processor
-
-assign apu_hexokay = 1'b0;
+// Audio processing unit
 
 audio_processor #(
     .RAM_DEPTH (512)
@@ -759,6 +789,82 @@ audio_processor #(
     .audio_l                    (padout_audio_l),
     .audio_r                    (padout_audio_r)
 );
+
+// ------------------------------------------------------------------------
+// Pixel processing unit
+
+wire [N_SRAM_A-1:0] ppu_mem_addr;
+wire                ppu_mem_addr_vld;
+wire                ppu_mem_addr_rdy;
+wire [15:0]         ppu_mem_rdata;
+wire                ppu_mem_rdata_vld;
+
+wire [8:0]          ppu_scanout_raddr;
+wire                ppu_scanout_ren;
+wire [15:0]         ppu_scanout_rdata;
+wire                ppu_scanout_buf_rdy;
+wire                ppu_scanout_buf_release;
+
+riscboy_ppu #(
+    .W_MEM_ADDR (N_SRAM_A)
+) ppu_u (
+    .clk                 (clk_sys),
+    .rst_n               (rst_n_sys),
+
+    .irq                 (irq[IRQ_PPU]),
+
+    .mem_addr            (ppu_mem_addr),
+    .mem_addr_vld        (ppu_mem_addr_vld),
+    .mem_addr_rdy        (ppu_mem_addr_rdy),
+    .mem_rdata           (ppu_mem_rdata),
+    .mem_rdata_vld       (ppu_mem_rdata_vld),
+
+    .apbs_psel           (ppu_psel),
+    .apbs_penable        (ppu_penable),
+    .apbs_pwrite         (ppu_pwrite),
+    .apbs_paddr          (ppu_paddr[15:0]),
+    .apbs_pwdata         (ppu_pwdata),
+    .apbs_prdata         (ppu_prdata),
+    .apbs_pready         (ppu_pready),
+    .apbs_pslverr        (ppu_pslverr),
+
+    .scanout_raddr       (ppu_scanout_raddr),
+    .scanout_ren         (ppu_scanout_ren),
+    .scanout_rdata       (ppu_scanout_rdata),
+    .scanout_buf_rdy     (ppu_scanout_buf_rdy),
+    .scanout_buf_release (ppu_scanout_buf_release)
+);
+
+riscboy_ppu_dispctrl_spi #(
+    .PXFIFO_DEPTH (8)
+) ppu_dispctrl_spi_u (
+    .clk_sys             (clk_sys),
+    .rst_n_sys           (rst_n_sys),
+
+    .clk_tx              (clk_lcd),
+    .rst_n_tx            (rst_n_lcd),
+
+    .apbs_psel           (dispctrl_psel),
+    .apbs_penable        (dispctrl_penable),
+    .apbs_pwrite         (dispctrl_pwrite),
+    .apbs_paddr          (dispctrl_paddr[15:0]),
+    .apbs_pwdata         (dispctrl_pwdata),
+    .apbs_prdata         (dispctrl_prdata),
+    .apbs_pready         (dispctrl_pready),
+    .apbs_pslverr        (dispctrl_pslverr),
+
+    .scanout_raddr       (ppu_scanout_raddr),
+    .scanout_ren         (ppu_scanout_ren),
+    .scanout_rdata       (ppu_scanout_rdata),
+    .scanout_buf_rdy     (ppu_scanout_buf_rdy),
+    .scanout_buf_release (ppu_scanout_buf_release),
+
+    .lcd_cs              (padout_lcd_cs_n),
+    .lcd_dc              (padout_lcd_dc),
+    .lcd_sck             (padout_lcd_clk),
+    .lcd_mosi            (padout_lcd_dat)
+);
+
 
 // ------------------------------------------------------------------------
 // APB peripherals and control registers
@@ -858,11 +964,11 @@ riscboy_sram_ctrl #(
     .ahbls_hwdata      (eram_hwdata),
     .ahbls_hrdata      (eram_hrdata),
 
-    .dma_addr          ({N_SRAM_A{1'b0}}),
-    .dma_addr_vld      (1'b0),
-    .dma_addr_rdy      (/* fixme */),
-    .dma_rdata         (/* fixme */),
-    .dma_rdata_vld     (/* fixme */),
+    .dma_addr          (ppu_mem_addr),
+    .dma_addr_vld      (ppu_mem_addr_vld),
+    .dma_addr_rdy      (ppu_mem_addr_rdy),
+    .dma_rdata         (ppu_mem_rdata),
+    .dma_rdata_vld     (ppu_mem_rdata_vld),
 
     .sram_addr         (sram_ctrl_addr),
     .sram_dq_out       (sram_ctrl_dq_out),
@@ -905,10 +1011,6 @@ async_sram_phy_gf180mcu #(
 // ------------------------------------------------------------------------
 // Tie off unused outputs
 
-assign padout_lcd_clk    = 1'b0;
-assign padout_lcd_dat    = 1'b0;
-assign padout_lcd_cs_n   = 1'b0;
-assign padout_lcd_dc     = 1'b0;
 assign padout_lcd_bl     = 1'b0;
 assign padoe_gpio        = {N_GPIO{1'b0}};
 assign padout_gpio       = {N_GPIO{1'b0}};

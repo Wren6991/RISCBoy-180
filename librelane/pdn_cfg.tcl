@@ -224,6 +224,7 @@ proc sram_pdn_ns {pdnname macrolist} {
 
 sram_pdn_ns pdn_cpu_iram {i_chip_core.iram_u.sram.*.ram_u}
 sram_pdn_ns pdn_apu_ram {i_chip_core.apu_u.ram_u.sram.*.ram_u}
+sram_pdn_ns pdn_ppu_sbram {i_chip_core.ppu_u.*.ram_u}
 
 
 # define_pdn_grid \
