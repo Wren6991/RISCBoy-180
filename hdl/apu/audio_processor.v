@@ -213,8 +213,8 @@ hazard3_cpu_1port #(
     .BRANCH_PREDICTOR    (0),
     .MTVEC_WMASK         (32'h000ffffd)
 ) cpu_u (
-    .clk                        (clk),
-    .clk_always_on              (clk_gated_cpu),
+    .clk                        (clk_gated_cpu),
+    .clk_always_on              (clk),
     .rst_n                      (rst_n),
 
     .pwrup_req                  (cpu_pwrup_req),
