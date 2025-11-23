@@ -15,6 +15,17 @@
 #define IPC_SOFTIRQ_SET_OFFS 0
 #define IPC_SOFTIRQ_CLR_OFFS 4
 
+#ifndef __ASSEMBLER__
+#include <stdint.h>
+
+typedef struct {
+	volatile uint32_t softirq_set;
+	volatile uint32_t softirq_clr;
+} ipc_hw_t;
+
+#endif // !__ASSEMBLER__
+
+
 /*******************************************************************************
 *                                 SOFTIRQ_SET                                  *
 *******************************************************************************/

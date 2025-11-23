@@ -35,8 +35,8 @@ module ipc_regs (
 
 // AHB-Lite adapter
 wire [31:0] wdata = ahbls_hwdata;
-reg          wen;
-reg          ren;
+reg         wen;
+reg         ren;
 reg  [15:0] addr;
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin

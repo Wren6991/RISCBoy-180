@@ -25,6 +25,27 @@
 #define PADCTRL_LCD_DCCS_OFFS 40
 #define PADCTRL_LCD_BL_OFFS 44
 
+#ifndef __ASSEMBLER__
+#include <stdint.h>
+
+typedef struct {
+	volatile uint32_t dio;
+	volatile uint32_t gpio;
+	volatile uint32_t gpio_pu;
+	volatile uint32_t gpio_pd;
+	volatile uint32_t sram_dq;
+	volatile uint32_t sram_a;
+	volatile uint32_t sram_strobe;
+	volatile uint32_t audio;
+	volatile uint32_t lcd_clk;
+	volatile uint32_t lcd_dat;
+	volatile uint32_t lcd_dccs;
+	volatile uint32_t lcd_bl;
+} padctrl_hw_t;
+
+#endif // !__ASSEMBLER__
+
+
 /*******************************************************************************
 *                                     DIO                                      *
 *******************************************************************************/

@@ -63,6 +63,16 @@ sim-view: ## View simulation waveforms in GTKWave
 	gtkwave cocotb/sim_build/chip_top.fst
 .PHONY: sim-view
 
+reg-regenerate: ## Regenerate all register blocks and their headers
+	./scripts/regblock -a hdl/apu/ipc/ipc_regs.yml
+	./scripts/regblock -a hdl/padctrl/padctrl_regs.yml
+	./scripts/regblock -a hdl/riscboy/hdl/graphics/ppu/dispctrl/regs/ppu_dispctrl_spi_regs.yml
+	./scripts/regblock -a hdl/riscboy/hdl/graphics/ppu/regs/ppu_regs.yml
+	./scripts/regblock -a hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny_regs.yml
+	./scripts/regblock -a hdl/vuart/vuart_dev_regs.yml
+	./scripts/regblock -a hdl/vuart/vuart_host_regs.yml
+.PHONY: sim-view
+
 copy-final: ## Copy final output files from the last run
 	rm -rf final/
 	cp -r librelane/runs/${RUN_TAG}/final/ final/

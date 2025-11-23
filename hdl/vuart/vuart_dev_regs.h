@@ -17,6 +17,19 @@
 #define VUART_DEV_FIFO_OFFS 8
 #define VUART_DEV_IRQCTRL_OFFS 12
 
+#ifndef __ASSEMBLER__
+#include <stdint.h>
+
+typedef struct {
+	volatile uint32_t stat;
+	volatile uint32_t info;
+	volatile uint32_t fifo;
+	volatile uint32_t irqctrl;
+} vuart_dev_hw_t;
+
+#endif // !__ASSEMBLER__
+
+
 /*******************************************************************************
 *                                     STAT                                     *
 *******************************************************************************/

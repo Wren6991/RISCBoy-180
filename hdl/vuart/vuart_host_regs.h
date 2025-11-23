@@ -16,6 +16,18 @@
 #define VUART_HOST_INFO_OFFS 4
 #define VUART_HOST_FIFO_OFFS 8
 
+#ifndef __ASSEMBLER__
+#include <stdint.h>
+
+typedef struct {
+	volatile uint32_t stat;
+	volatile uint32_t info;
+	volatile uint32_t fifo;
+} vuart_host_hw_t;
+
+#endif // !__ASSEMBLER__
+
+
 /*******************************************************************************
 *                                     STAT                                     *
 *******************************************************************************/
