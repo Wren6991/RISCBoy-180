@@ -9,6 +9,8 @@ regs:
         info: "Returns 1 when the host RX FIFO is valid (level is not zero)"}
       - {b: 30, name: txrdy, access: rov,
         info: "Returns 1 when the host TX FIFO is ready (level is less than depth)"}
+      - {b: 24, name: force_hostconn, access: rw,
+        info: "Force the devices HOSTCONN status to read as 1 (otherwise determined by debugger status)"}
       - {b: [15, 8], name: rxlevel, access: rov,
         info: "The current occupancy of the host RX FIFO"}
       - {b: [7, 0], name: txlevel, access: rov,

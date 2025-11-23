@@ -135,6 +135,8 @@ wire        dtm_dst_pslverr;
 wire [31:0] dtm_dst_pwdata;
 wire [31:0] dtm_dst_prdata;
 
+wire        dtm_connected;
+
 wire        ndtmresetreq;
 wire        ndtmresetack;
 
@@ -150,7 +152,7 @@ twowire_dtm #(
     .doe            (padoe_dio),
     .di             (padin_dio),
 
-    .host_connected (/* unused */),
+    .host_connected (dtm_connected),
     .ndtmresetreq   (ndtmresetreq),
     .ndtmresetack   (ndtmresetack),
 
@@ -1030,6 +1032,8 @@ vuart #(
     .rst_n        (rst_n_sys),
 
     .irq          (irq[IRQ_VUART]),
+
+    .hostconn     (dtm_connected),
 
     .host_psel    (dtm_to_vuart_psel),
     .host_penable (dtm_to_vuart_penable),

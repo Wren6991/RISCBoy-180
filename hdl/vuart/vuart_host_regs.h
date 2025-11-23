@@ -44,6 +44,13 @@ typedef struct {
 #define VUART_HOST_STAT_TXRDY_LSB  30
 #define VUART_HOST_STAT_TXRDY_BITS 1
 #define VUART_HOST_STAT_TXRDY_MASK 0x40000000
+// Field: STAT_FORCE_HOSTCONN  Access: RW
+// Reset: 0x0
+// Force the devices HOSTCONN status to read as 1 (otherwise determined by DTM
+// connected state)
+#define VUART_HOST_STAT_FORCE_HOSTCONN_LSB  24
+#define VUART_HOST_STAT_FORCE_HOSTCONN_BITS 1
+#define VUART_HOST_STAT_FORCE_HOSTCONN_MASK 0x1000000
 // Field: STAT_RXLEVEL  Access: ROV
 // Reset: 0x0
 // The current occupancy of the host RX FIFO

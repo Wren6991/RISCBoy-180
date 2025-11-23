@@ -9,6 +9,8 @@ regs:
         info: "Returns 1 when the device RX FIFO is valid (level is not zero)"}
       - {b: 30, name: txrdy, access: rov,
         info: "Returns 1 when the device TX FIFO is ready (level is less than depth)"}
+      - {b: 24, name: hostconn, access: rov,
+        info: "Returns 1 when the debug host is currently connected. Use this to skip debug prints."}
       - {b: [15, 8], name: rxlevel, access: rov,
         info: "The current occupancy of the device RX FIFO"}
       - {b: [7, 0], name: txlevel, access: rov,

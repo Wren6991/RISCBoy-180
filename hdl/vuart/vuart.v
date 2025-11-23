@@ -19,6 +19,9 @@ module vuart #(
 	// Device TX/RX interrupt, synchronous to clk
 	output wire        irq,
 
+	// Host connected status, synchronous to dck
+	input  wire        hostconn,
+
 	// Host port, synchronous to dck
 	input  wire        host_psel,
 	input  wire        host_penable,
@@ -78,6 +81,16 @@ wire [1:0]                        irqctrl_tx_level;
 // ----------------------------------------------------------------------------
 // Register interfaces
 
+wire hostconn_resync;
+wire host_force_hostconn;
+
+sync_1bit sync_hostconn_u (
+	.clk   (clk),
+	.rst_n (rst_n),
+	.i     (hostconn || host_force_hostconn),
+	.o     (hostconn_resync)
+);
+
 vuart_dev_regs dev_regs_u (
 	.clk                 (clk),
 	.rst_n               (rst_n),
@@ -93,6 +106,7 @@ vuart_dev_regs dev_regs_u (
 
 	.stat_rxvld_i        (!host2dev_rempty),
 	.stat_txrdy_i        (!dev2host_wfull),
+	.stat_hostconn_i     (hostconn_resync),
 	.stat_rxlevel_i      ({{8-$clog2(DEV_RX_DEPTH+1){1'b0}}, host2dev_rlevel}),
 	.stat_txlevel_i      ({{8-$clog2(DEV_TX_DEPTH+1){1'b0}}, dev2host_wlevel}),
 
@@ -113,33 +127,34 @@ vuart_dev_regs dev_regs_u (
 );
 
 vuart_host_regs vuart_host_regs_u (
-	.clk            (dck),
-	.rst_n          (drst_n),
+	.clk                   (dck),
+	.rst_n                 (drst_n),
 
-	.apbs_psel      (host_psel),
-	.apbs_penable   (host_penable),
-	.apbs_pwrite    (host_pwrite),
-	.apbs_paddr     (host_paddr),
-	.apbs_pwdata    (host_pwdata),
-	.apbs_prdata    (host_prdata),
-	.apbs_pready    (host_pready),
-	.apbs_pslverr   (host_pslverr),
+	.apbs_psel             (host_psel),
+	.apbs_penable          (host_penable),
+	.apbs_pwrite           (host_pwrite),
+	.apbs_paddr            (host_paddr),
+	.apbs_pwdata           (host_pwdata),
+	.apbs_prdata           (host_prdata),
+	.apbs_pready           (host_pready),
+	.apbs_pslverr          (host_pslverr),
 
-	.stat_rxvld_i   (!dev2host_rempty),
-	.stat_txrdy_i   (!host2dev_wfull),
-	.stat_rxlevel_i ({{8-$clog2(DEV_TX_DEPTH+1){1'b0}}, dev2host_rlevel}),
-	.stat_txlevel_i ({{8-$clog2(DEV_RX_DEPTH+1){1'b0}}, host2dev_wlevel}),
+	.stat_rxvld_i          (!dev2host_rempty),
+	.stat_txrdy_i          (!host2dev_wfull),
+	.stat_force_hostconn_o (host_force_hostconn),
+	.stat_rxlevel_i        ({{8-$clog2(DEV_TX_DEPTH+1){1'b0}}, dev2host_rlevel}),
+	.stat_txlevel_i        ({{8-$clog2(DEV_RX_DEPTH+1){1'b0}}, host2dev_wlevel}),
 
-	.info_rxsize_i  (DEV_TX_DEPTH[7:0]),
-	.info_txsize_i  (DEV_RX_DEPTH[7:0]),
+	.info_rxsize_i         (DEV_TX_DEPTH[7:0]),
+	.info_txsize_i         (DEV_RX_DEPTH[7:0]),
 
-	.fifo_rxvld_i   (!dev2host_rempty),
-	.fifo_txrdy_i   (!host2dev_wfull),
+	.fifo_rxvld_i          (!dev2host_rempty),
+	.fifo_txrdy_i          (!host2dev_wfull),
 
-	.fifo_txrx_i    (dev2host_rdata),
-	.fifo_txrx_o    (host2dev_wdata),
-	.fifo_txrx_wen  (host2dev_wpush),
-	.fifo_txrx_ren  (dev2host_rpop)
+	.fifo_txrx_i           (dev2host_rdata),
+	.fifo_txrx_o           (host2dev_wdata),
+	.fifo_txrx_wen         (host2dev_wpush),
+	.fifo_txrx_ren         (dev2host_rpop)
 );
 
 // ----------------------------------------------------------------------------

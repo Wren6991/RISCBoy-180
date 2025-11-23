@@ -26,6 +26,7 @@ module vuart_dev_regs (
 	// Register interfaces
 	input  wire        stat_rxvld_i,
 	input  wire        stat_txrdy_i,
+	input  wire        stat_hostconn_i,
 	input  wire [7:0]  stat_rxlevel_i,
 	input  wire [7:0]  stat_txlevel_i,
 	input  wire [7:0]  info_rxsize_i,
@@ -69,13 +70,16 @@ wire        stat_rxvld_wdata = wdata[31];
 wire        stat_rxvld_rdata;
 wire        stat_txrdy_wdata = wdata[30];
 wire        stat_txrdy_rdata;
+wire        stat_hostconn_wdata = wdata[24];
+wire        stat_hostconn_rdata;
 wire [7:0]  stat_rxlevel_wdata = wdata[15:8];
 wire [7:0]  stat_rxlevel_rdata;
 wire [7:0]  stat_txlevel_wdata = wdata[7:0];
 wire [7:0]  stat_txlevel_rdata;
-wire [31:0] __stat_rdata = {stat_rxvld_rdata, stat_txrdy_rdata, 14'h0, stat_rxlevel_rdata, stat_txlevel_rdata};
+wire [31:0] __stat_rdata = {stat_rxvld_rdata, stat_txrdy_rdata, 5'h0, stat_hostconn_rdata, 8'h0, stat_rxlevel_rdata, stat_txlevel_rdata};
 assign stat_rxvld_rdata = stat_rxvld_i;
 assign stat_txrdy_rdata = stat_txrdy_i;
+assign stat_hostconn_rdata = stat_hostconn_i;
 assign stat_rxlevel_rdata = stat_rxlevel_i;
 assign stat_txlevel_rdata = stat_txlevel_i;
 

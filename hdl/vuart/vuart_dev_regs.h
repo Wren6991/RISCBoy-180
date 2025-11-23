@@ -46,6 +46,13 @@ typedef struct {
 #define VUART_DEV_STAT_TXRDY_LSB  30
 #define VUART_DEV_STAT_TXRDY_BITS 1
 #define VUART_DEV_STAT_TXRDY_MASK 0x40000000
+// Field: STAT_HOSTCONN  Access: ROV
+// Reset: 0x0
+// Returns 1 when the debug host is currently connected. Use this to skip debug
+// prints.
+#define VUART_DEV_STAT_HOSTCONN_LSB  24
+#define VUART_DEV_STAT_HOSTCONN_BITS 1
+#define VUART_DEV_STAT_HOSTCONN_MASK 0x1000000
 // Field: STAT_RXLEVEL  Access: ROV
 // Reset: 0x0
 // The current occupancy of the device RX FIFO
