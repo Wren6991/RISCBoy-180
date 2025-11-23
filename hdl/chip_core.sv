@@ -822,6 +822,9 @@ riscboy_ppu #(
     .clk                 (clk_sys),
     .rst_n               (rst_n_sys),
 
+    .VDD                 (VDD),
+    .VSS                 (VSS),
+
     .irq                 (irq[IRQ_PPU]),
 
     .mem_addr            (ppu_mem_addr),
