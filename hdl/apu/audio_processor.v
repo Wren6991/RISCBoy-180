@@ -168,7 +168,7 @@ hazard3_cpu_1port #(
 
     .EXTENSION_A         (0),
     .EXTENSION_C         (1),
-    .EXTENSION_E         (1),
+    .EXTENSION_E         (0),
     .EXTENSION_M         (1),
 
     .EXTENSION_ZBA       (1),
