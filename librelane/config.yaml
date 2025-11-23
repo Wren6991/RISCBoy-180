@@ -31,12 +31,11 @@ CLOCK_PORT: pad_CLK
 CLOCK_NET: pad_CLK/Y
 CLOCK_PERIOD: 20 # ns
 
-# Otherwise CTS doesn't seem to balance properly through ICGs?
-# Actually even with this it doesn't balance through ICGs, ugh.
-CTS_BALANCE_LEVELS: True
+STD_CELL_LIBRARY: gf180mcu_fd_sc_mcu9t5v0
+
 # Force use of chonky bois to reduce clock skew (default list is 2, 4, 8)
 CTS_CLK_BUFFERS:
-  - "gf180mcu_fd_sc_mcu7t5v0__clkbuf_16"
+  - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_16"
 
 # Magic, thank you Lofty
 SYNTH_STRATEGY: "AREA 3"

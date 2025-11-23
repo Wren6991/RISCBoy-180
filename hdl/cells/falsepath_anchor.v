@@ -22,7 +22,7 @@ module falsepath_anchor (
 `ifdef GF180MCU
 
 (* keep *)
-gf180mcu_fd_sc_mcu7t5v0__clkbuf_1 magic_falsepath_anchor_u (
+gf180mcu_fd_sc_mcu9t5v0__clkbuf_1 magic_falsepath_anchor_u (
 	.I (i),
 	.Z (z)
 );

@@ -21,7 +21,7 @@ module clkroot_anchor (
 // This gets resized, but use a 16 anyway to make the pre-repair STAs less
 // shockingly wrong
 (* keep *)
-gf180mcu_fd_sc_mcu7t5v0__clkbuf_16 magic_clkroot_anchor_u (
+gf180mcu_fd_sc_mcu9t5v0__clkbuf_16 magic_clkroot_anchor_u (
 	.I (i),
 	.Z (z)
 );

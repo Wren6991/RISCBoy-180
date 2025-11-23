@@ -19,7 +19,7 @@ module cell_clkxor (
 
 `ifdef GF180MCU
 
-gf180mcu_fd_sc_mcu7t5v0__xor2_1 cell_u (
+gf180mcu_fd_sc_mcu9t5v0__xor2_1 cell_u (
 	.A1 (a0),
 	.A2 (a1),
 	.Z  (z)

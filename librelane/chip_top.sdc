@@ -4,7 +4,7 @@ set_units -time ns
 ###############################################################################
 # Clock definitions
 
-set CLK_SYS_MHZ 18
+set CLK_SYS_MHZ 24
 set DCK_MHZ 20
 set CLK_LCD_MHz 36
 
@@ -62,6 +62,7 @@ set_input_delay -max [expr 0.5 * $DCK_PERIOD] [get_ports DIO] -clock [get_clock 
 
 set_output_delay [expr 0.50 * $CLK_SYS_PERIOD - $SRAM_A_TO_Q] -clock [get_clock clk_sys] [get_ports {
     SRAM_A[*]
+    SRAM_DQ[*]
     SRAM_OEn
     SRAM_CSn
     SRAM_WEn
@@ -72,8 +73,6 @@ set_output_delay [expr 0.50 * $CLK_SYS_PERIOD - $SRAM_A_TO_Q] -clock [get_clock 
 set_input_delay [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {
     SRAM_DQ[*]
 }]
-
-# TODO SRAM_DQ outputs 
 
 # Backlight PWM: low-frequency, timing unimportant
 set_false_path -setup -hold -through [get_ports LCD_BL]

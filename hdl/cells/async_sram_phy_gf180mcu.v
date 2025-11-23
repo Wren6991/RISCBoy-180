@@ -43,18 +43,15 @@ module async_sram_phy_gf180mcu #(
 // separately ensure the pads are disabled and pulled to a default state until
 // after the system comes out of reset.
 
-`define SRAM_PHY_FLOP_P (* keep *) gf180mcu_fd_sc_mcu7t5v0__dffq_1
-`define SRAM_PHY_FLOP_N (* keep *) gf180mcu_fd_sc_mcu7t5v0__dffnq_1
+`define SRAM_PHY_FLOP_P (* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_1
 
 `SRAM_PHY_FLOP_P reg_u_sram_addr        [N_SRAM_A-1:0]  (.CLK  (clk), .D (ctrl_addr),      .Q (padout_sram_a));
 
-// Dirty negedge trick lets us use data-phase HWDATA on SRAM_DQ in the same
-// cycle that the address-phase HADDR is valid on SRAM_A (at the cost of a
-// half-cycle path on processor HWDATA; ok as that is available early):
-`SRAM_PHY_FLOP_N reg_out_u_sram_dq_out  [N_SRAM_DQ-1:0] (.CLKN (clk), .D (ctrl_dq_out),    .Q (padout_sram_dq));
 // FIXME at least OE should be reset (technically ok as OEn is pulled high, but...)
 `SRAM_PHY_FLOP_P reg_out_u_sram_dq_oe   [N_SRAM_DQ-1:0] (.CLK  (clk), .D (ctrl_dq_oe),     .Q (padoe_sram_dq));
 `SRAM_PHY_FLOP_P reg_in_u_sram_dq_in    [N_SRAM_DQ-1:0] (.CLK  (clk), .D (padin_sram_dq),  .Q (ctrl_dq_in));
+
+assign padout_sram_dq = ctrl_dq_out;
 
 `SRAM_PHY_FLOP_P reg_out_u_sram_strobe [3:0] (
 	.CLK  (clk),
