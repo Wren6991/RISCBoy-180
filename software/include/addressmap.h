@@ -1,0 +1,38 @@
+#ifndef _ADDRESSMAP_H_
+#define _ADDRESSMAP_H_
+
+// External SRAM/main memory:
+#define ERAM_BASE 0x00000
+#define ERAM_END  0x80000
+
+// Internal SRAM:
+#define IRAM_BASE  0x80000
+#define IRAM_END   (IRAM_BASE + 0x02000)
+
+// Audio processing unit address space (accessible to both CPU and APU):
+#define APU_BASE   0xc0000
+#define APU_RAM_BASE APU_BASE
+#define APU_RAM_END  (APU_RAM_BASE + 0x800)
+#define APU_PERI_BASE (APU_BASE + 0x8000)
+#define APU_IPC_BASE (APU_PERI_BASE + 0x0000)
+
+// CPU peripherals:
+#define PERI_BASE  0xe0000
+#define PADCTRL_BASE (PERI_BASE + 0x0000)
+#define PPU_BASE     (PERI_BASE + 0x1000)
+#define DISP_BASE    (PERI_BASE + 0x2000)
+#define PWM_BASE     (PERI_BASE + 0x3000)
+
+#ifndef __ASSEMBLER__
+
+#include <stdint.h>
+
+#define DECL_REG(addr, name) volatile uint32_t * const (name) = (volatile uint32_t*)(addr)
+
+#define __time_critical __attribute__((section(".time_critical")))
+
+typedef volatile uint32_t io_rw_32;
+
+#endif
+
+#endif // _ADDRESSMAP_H_
