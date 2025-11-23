@@ -111,6 +111,13 @@ clkroot_anchor clkroot_lcd_u (
     .z (clk_lcd)
 );
 
+// External clock used directly as audio clock (for now).
+wire clk_audio;
+clkroot_anchor clkroot_audio_u (
+    .i (padin_clk),
+    .z (clk_audio)
+);
+
 // ------------------------------------------------------------------------
 // Debug Transport Module
 
@@ -194,6 +201,14 @@ reset_sync sync_lcd_rst_n_u (
     .rst_n_in  (rst_n_sys_unsync),
     .rst_n_out (rst_n_lcd)
 );
+
+wire rst_n_audio;
+reset_sync sync_audio_rst_n_u (
+    .clk       (clk_audio),
+    .rst_n_in  (rst_n_sys_unsync),
+    .rst_n_out (rst_n_audio)
+);
+
 // Fixed outputs are enabled once the system is out of reset. This is
 // falsepathed because it only transitions once and has high fanout.
 
@@ -828,8 +843,12 @@ ahb_sync_sram #(
 audio_processor #(
     .RAM_DEPTH (512)
 ) apu_u (
-    .clk                        (clk_sys),
-    .rst_n                      (rst_n_apu),
+    .clk_sys                    (clk_sys),
+    .rst_n_sys                  (rst_n_sys),
+    .rst_n_cpu                  (rst_n_apu),
+
+    .clk_audio                  (clk_audio),
+    .rst_n_audio                (rst_n_audio),
 
     .VDD                        (VDD),
     .VSS                        (VSS),

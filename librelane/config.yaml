@@ -57,6 +57,10 @@ VERILOG_FILES:
 - dir::../hdl/apu/audio_processor.v
 - dir::../hdl/apu/ipc/apu_ipc.v
 - dir::../hdl/apu/ipc/apu_ipc_regs.v
+- dir::../hdl/apu/aout/apu_aout.v
+- dir::../hdl/apu/aout/apu_aout_regs.v
+- dir::../hdl/apu/aout/apu_lowpass_filter.v
+- dir::../hdl/apu/aout/apu_sdm.v
 
 - dir::../hdl/vuart/vuart.v
 - dir::../hdl/vuart/vuart_host_regs.v

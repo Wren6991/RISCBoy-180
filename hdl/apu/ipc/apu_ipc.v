@@ -32,6 +32,8 @@ wire [1:0]  softirq_clr_i;
 wire [1:0]  softirq_clr_o;
 wire        softirq_clr_wen;
 
+wire        start_apu_nxt;
+
 apu_ipc_regs regs_u (
 	.clk               (clk),
 	.rst_n             (rst_n),
@@ -51,7 +53,9 @@ apu_ipc_regs regs_u (
 	.softirq_set_wen   (softirq_set_wen),
 	.softirq_clr_i     (softirq_clr_i),
 	.softirq_clr_o     (softirq_clr_o),
-	.softirq_clr_wen   (softirq_clr_wen)
+	.softirq_clr_wen   (softirq_clr_wen),
+
+	.start_apu_o       (start_apu_nxt)
 );
 
 reg [1:0] softirq_status;
@@ -59,13 +63,18 @@ assign softirq_clr_i = softirq_status;
 assign softirq_set_i = softirq_status;
 assign riscv_softirq = softirq_status;
 
+reg start_apu_q;
+assign start_apu = start_apu_q;
+
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
 		softirq_status <= 2'b00;
+		start_apu_q <= 1'b0;
 	end else begin
 		softirq_status <= (softirq_status
 			& ~({2{softirq_clr_wen}} & softirq_clr_o)
 		) | ({2{softirq_set_wen}} & softirq_set_o);
+		start_apu_q <= start_apu_nxt;
 	end
 end
 

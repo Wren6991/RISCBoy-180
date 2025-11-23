@@ -11,8 +11,12 @@
 module audio_processor #(
 	parameter RAM_DEPTH = 512
 ) (
-	input  wire        clk,
-	input  wire        rst_n,
+	input  wire        clk_sys,
+	input  wire        rst_n_sys,
+    input  wire        rst_n_cpu,
+
+    input  wire        clk_audio,
+    input  wire        rst_n_audio,
 
 	inout  wire        VDD,
 	inout  wire        VSS,
@@ -73,8 +77,8 @@ assign ahbls_hrdata      = sbus_rdata_q;
 assign ahbls_hready_resp = sbus_rdy_q;
 assign ahbls_hresp       = sbus_err_q;
 
-always @ (posedge clk or negedge rst_n) begin
-	if (!rst_n) begin
+always @ (posedge clk_sys or negedge rst_n_sys) begin
+	if (!rst_n_sys) begin
 		sbus_addr <= 32'd0;
 		sbus_vld <= 1'b0;
 		sbus_size <= 2'd0;
@@ -110,8 +114,8 @@ end
 // everything just works out. SBUS doesn't actually need WDATA until after the
 // downstream address is issued. Not a public API detail but :)
 
-always @ (posedge clk or negedge rst_n) begin
-	if (!rst_n) begin
+always @ (posedge clk_sys or negedge rst_n_sys) begin
+	if (!rst_n_sys) begin
 		sbus_wdata <= 32'd0;
 	end else begin
 		// TODO revisit if ICG inference is implemented
@@ -149,7 +153,7 @@ wire                cpu_hexokay;
 wire [31:0]         cpu_hwdata;
 wire [31:0]         cpu_hrdata;
 
-wire [NUM_IRQS-1:0] irq = 1'b0;
+wire [NUM_IRQS-1:0] irq;
 wire                soft_irq;
 wire                timer_irq = 1'b0;
 
@@ -160,7 +164,7 @@ wire                fence_rdy = 1'b1;
 wire                clk_gated_cpu;
 
 cell_clkgate_low clkgate_cpu_u (
-    .clk_in  (clk),
+    .clk_in  (clk_sys),
     .enable  (cpu_clk_en),
     .clk_out (clk_gated_cpu)
 );
@@ -217,8 +221,8 @@ hazard3_cpu_1port #(
     .MTVEC_WMASK         (32'h000ffffd)
 ) cpu_u (
     .clk                        (clk_gated_cpu),
-    .clk_always_on              (clk),
-    .rst_n                      (rst_n),
+    .clk_always_on              (clk_sys),
+    .rst_n                      (rst_n_cpu),
 
     .pwrup_req                  (cpu_pwrup_req),
     .pwrup_ack                  (cpu_pwrup_ack),
@@ -312,14 +316,28 @@ wire        ipc_hresp;
 wire [31:0] ipc_hwdata;
 wire [31:0] ipc_hrdata;
 
+wire [15:0] aout_haddr;
+wire        aout_hwrite;
+wire [1:0]  aout_htrans;
+wire [2:0]  aout_hsize;
+wire [2:0]  aout_hburst;
+wire [3:0]  aout_hprot;
+wire        aout_hmastlock;
+wire [7:0]  aout_hmaster;
+wire        aout_hready;
+wire        aout_hready_resp;
+wire        aout_hresp;
+wire [31:0] aout_hwdata;
+wire [31:0] aout_hrdata;
+
 ahbl_splitter #(
-    .N_PORTS   (2),
+    .N_PORTS   (3),
     .W_ADDR    (16),
-    .ADDR_MAP  ({16'h8000, 16'h0000}),
-    .ADDR_MASK ({16'hf000, 16'h8000})
-) inst_ahbl_splitter (
-    .clk             (clk),
-    .rst_n           (rst_n),
+    .ADDR_MAP  ({16'h9000, 16'h8000, 16'h0000}),
+    .ADDR_MASK ({16'hf000, 16'hf000, 16'h8000})
+) splitter_u (
+    .clk             (clk_sys),
+    .rst_n           (rst_n_sys),
 
     .src_hready      (cpu_hready),
     .src_hready_resp (cpu_hready),
@@ -340,19 +358,19 @@ ahbl_splitter #(
     .dst_hexokay     ('0),
     .dst_hexcl       (/* unused */),
 
-    .dst_hready      ({ipc_hready      , ram_hready     }),
-    .dst_hready_resp ({ipc_hready_resp , ram_hready_resp}),
-    .dst_hresp       ({ipc_hresp       , ram_hresp      }),
-    .dst_haddr       ({ipc_haddr       , ram_haddr      }),
-    .dst_hwrite      ({ipc_hwrite      , ram_hwrite     }),
-    .dst_htrans      ({ipc_htrans      , ram_htrans     }),
-    .dst_hsize       ({ipc_hsize       , ram_hsize      }),
-    .dst_hburst      ({ipc_hburst      , ram_hburst     }),
-    .dst_hprot       ({ipc_hprot       , ram_hprot      }),
-    .dst_hmaster     ({ipc_hmaster     , ram_hmaster    }),
-    .dst_hmastlock   ({ipc_hmastlock   , ram_hmastlock  }),
-    .dst_hwdata      ({ipc_hwdata      , ram_hwdata     }),
-    .dst_hrdata      ({ipc_hrdata      , ram_hrdata     })
+    .dst_hready      ({aout_hready      , ipc_hready      , ram_hready     }),
+    .dst_hready_resp ({aout_hready_resp , ipc_hready_resp , ram_hready_resp}),
+    .dst_hresp       ({aout_hresp       , ipc_hresp       , ram_hresp      }),
+    .dst_haddr       ({aout_haddr       , ipc_haddr       , ram_haddr      }),
+    .dst_hwrite      ({aout_hwrite      , ipc_hwrite      , ram_hwrite     }),
+    .dst_htrans      ({aout_htrans      , ipc_htrans      , ram_htrans     }),
+    .dst_hsize       ({aout_hsize       , ipc_hsize       , ram_hsize      }),
+    .dst_hburst      ({aout_hburst      , ipc_hburst      , ram_hburst     }),
+    .dst_hprot       ({aout_hprot       , ipc_hprot       , ram_hprot      }),
+    .dst_hmaster     ({aout_hmaster     , ipc_hmaster     , ram_hmaster    }),
+    .dst_hmastlock   ({aout_hmastlock   , ipc_hmastlock   , ram_hmastlock  }),
+    .dst_hwdata      ({aout_hwdata      , ipc_hwdata      , ram_hwdata     }),
+    .dst_hrdata      ({aout_hrdata      , ipc_hrdata      , ram_hrdata     })
 );
 
 // ------------------------------------------------------------------------
@@ -365,8 +383,8 @@ ahb_sync_sram #(
 ) ram_u (
     .VDD               (VDD),
     .VSS               (VSS),
-    .clk               (clk),
-    .rst_n             (rst_n),
+    .clk               (clk_sys),
+    .rst_n             (rst_n_sys),
 
     .ahbls_hready_resp (ram_hready_resp),
     .ahbls_hready      (ram_hready),
@@ -386,8 +404,8 @@ ahb_sync_sram #(
 // Inter-processor communication registers
 
 apu_ipc ipc_u (
-    .clk               (clk),
-    .rst_n             (rst_n),
+    .clk               (clk_sys),
+    .rst_n             (rst_n_sys),
 
     .ahbls_haddr       (ipc_haddr),
     .ahbls_htrans      (ipc_htrans),
@@ -405,19 +423,129 @@ apu_ipc ipc_u (
 );
 
 // ----------------------------------------------------------------------------
-// Mock PWM to avoid undriven outputs
+// Sample FIFO and AOUT control interface
 
-reg [7:0] ctr;
-always @ (posedge clk or negedge rst_n) begin
-	if (!rst_n) begin
-		ctr <= 8'd0;
-	end else begin
-		ctr <= ctr + 8'd1;
-	end
-end
+wire [31:0] aout_fifo_wdata;
+wire        aout_fifo_wpush;
+wire        aout_fifo_wfull;
+wire        aout_fifo_wempty;
+wire [2:0]  aout_fifo_wlevel;
 
-assign audio_l = ctr[7];
-assign audio_r = ctr[6];
+wire        aout_csr_signed;
+wire        aout_csr_running;
+wire        aout_csr_enable;
+wire [7:0]  aout_csr_interval;
+wire [2:0]  aout_csr_irqlevel;
+
+wire [15:0] aout_fifo_l_wdata;
+wire        aout_fifo_l_wen;
+wire [15:0] aout_fifo_r_wdata;
+wire        aout_fifo_r_wen;
+
+assign aout_fifo_wpush = aout_fifo_l_wen || aout_fifo_r_wen;
+assign aout_fifo_wdata =
+    {aout_csr_signed, 15'd0, aout_csr_signed, 15'd0} ^
+    {     aout_fifo_l_wdata,      aout_fifo_r_wdata};
+
+assign irq = aout_fifo_wlevel <= aout_csr_irqlevel;
+
+apu_aout_regs aout_regs_u (
+    .clk               (clk_sys),
+    .rst_n             (rst_n_sys),
+
+    .ahbls_haddr       (aout_haddr),
+    .ahbls_htrans      (aout_htrans),
+    .ahbls_hwrite      (aout_hwrite),
+    .ahbls_hsize       (aout_hsize),
+    .ahbls_hready      (aout_hready),
+    .ahbls_hready_resp (aout_hready_resp),
+    .ahbls_hwdata      (aout_hwdata),
+    .ahbls_hrdata      (aout_hrdata),
+    .ahbls_hresp       (aout_hresp),
+
+    .csr_rdy_i         (!aout_fifo_wfull),
+    .csr_signed_o      (aout_csr_signed),
+    .csr_running_i     (aout_csr_running),
+    .csr_enable_o      (aout_csr_enable),
+    .csr_interval_o    (aout_csr_interval),
+    .csr_irqlevel_o    (aout_csr_irqlevel),
+    .csr_flevel_i      (aout_fifo_wlevel),
+
+    .fifo_l_o          (aout_fifo_l_wdata),
+    .fifo_l_wen        (aout_fifo_l_wen),
+    .fifo_r_o          (aout_fifo_r_wdata),
+    .fifo_r_wen        (aout_fifo_r_wen)
+);
+
+wire [31:0] aout_fifo_rdata;
+wire        aout_fifo_rpop;
+wire        aout_fifo_rfull;
+wire        aout_fifo_rempty;
+wire [2:0]  aout_fifo_rlevel;
+
+async_fifo #(
+    .W_DATA (32),
+    .W_ADDR (2)
+) aout_fifo_u (
+    .wrst_n (rst_n_sys),
+    .wclk   (clk_sys),
+
+    .wdata  (aout_fifo_wdata),
+    .wpush  (aout_fifo_wpush),
+    .wfull  (aout_fifo_wfull),
+    .wempty (aout_fifo_wempty),
+    .wlevel (aout_fifo_wlevel),
+
+    .rrst_n (rst_n_audio),
+    .rclk   (clk_audio),
+
+    .rdata  (aout_fifo_rdata),
+    .rpop   (aout_fifo_rpop),
+    .rfull  (aout_fifo_rfull),
+    .rempty (aout_fifo_rempty),
+    .rlevel (aout_fifo_rlevel)
+);
+
+// ----------------------------------------------------------------------------
+// Digital audio output (AOUT)
+
+wire        aout_csr_enable_resync;
+wire [7:0]  aout_csr_interval_resync;
+
+sync_1bit sync_aout_enable_u (
+    .clk   (clk_audio),
+    .rst_n (rst_n_audio),
+    .i     (aout_csr_enable),
+    .o     (aout_csr_enable_resync)
+);
+
+// 2DFF used on multi-bit: ok as this should only change when software has
+// cleared ENABLE then polled RUNNING low.
+sync_1bit sync_aout_interval_u [7:0] (
+    .clk   (clk_audio),
+    .rst_n (rst_n_audio),
+    .i     (aout_csr_interval),
+    .o     (aout_csr_interval_resync)
+);
+
+// Return synchronised ENABLE as RUNNING
+sync_1bit sync_aout_running_u (
+    .clk   (clk_sys),
+    .rst_n (rst_n_sys),
+    .i     (aout_csr_enable_resync),
+    .o     (aout_csr_running)
+);
+
+apu_aout apu_aout_u (
+    .clk             (clk_audio),
+    .rst_n           (rst_n_audio),
+    .en              (aout_csr_enable_resync),
+    .repeat_interval (aout_csr_interval_resync),
+    .sample          (aout_fifo_rdata),
+    .sample_rdy      (aout_fifo_rpop),
+    .pwm_l           (audio_l),
+    .pwm_r           (audio_r)
+);
 
 endmodule
 

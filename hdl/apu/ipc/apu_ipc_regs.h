@@ -34,9 +34,9 @@ typedef struct {
 
 // Field: START_APU  Access: RW
 // Reset: 0x0
-// Set this flag to start APU execution. The APU always starts executing from
-// the first address in APU RAM, so I recommend loading some code there first.
-// Clearing this flag after the APU starts executing has no effect.
+// Write 1 to this register to start APU execution. The APU always starts
+// executing from the first address in APU RAM, so I recommend loading some code
+// there first.
 #define APU_IPC_START_APU_LSB  0
 #define APU_IPC_START_APU_BITS 1
 #define APU_IPC_START_APU_MASK 0x1

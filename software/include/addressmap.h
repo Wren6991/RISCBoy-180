@@ -16,6 +16,7 @@
 
 #define APU_PERI_BASE  (APU_BASE + 0x8000)
 #define APU_IPC_BASE   (APU_PERI_BASE + 0x0000)
+#define APU_AOUT_BASE  (APU_PERI_BASE + 0x1000)
 
 // CPU peripherals:
 #define PERI_BASE      0xe0000

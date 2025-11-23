@@ -7,10 +7,12 @@ set_units -time ns
 set CLK_SYS_MHZ 24
 set DCK_MHZ 20
 set CLK_LCD_MHz 36
+set CLK_AUDIO_MHZ 24
 
-set CLK_SYS_PERIOD [expr 1000.0 / $CLK_SYS_MHZ]
-set DCK_PERIOD     [expr 1000.0 / $DCK_MHZ]
-set CLK_LCD_PERIOD [expr 1000.0 / $CLK_LCD_MHz]
+set CLK_SYS_PERIOD   [expr 1000.0 / $CLK_SYS_MHZ]
+set DCK_PERIOD       [expr 1000.0 / $DCK_MHZ]
+set CLK_LCD_PERIOD   [expr 1000.0 / $CLK_LCD_MHz]
+set CLK_AUDIO_PERIOD [expr 1000.0 / $CLK_AUDIO_MHZ]
 
 # System clock: main CPU, SRAM, digital peripherals and external SRAM interface
 create_clock [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z] \
@@ -21,6 +23,11 @@ create_clock [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z] \
 create_clock [get_pins i_chip_core.clkroot_lcd_u.magic_clkroot_anchor_u/Z] \
     -name clk_lcd \
     -period $CLK_LCD_PERIOD
+
+# Audio clock
+create_clock [get_pins i_chip_core.clkroot_audio_u.magic_clkroot_anchor_u/Z] \
+    -name clk_audio \
+    -period $CLK_AUDIO_PERIOD
 
 # Debug clock: clocks the debug transport module and one side of its bus CDC
 create_clock [get_pins pad_DCK/PAD] \
@@ -49,6 +56,10 @@ cdc_maxdelay clk_sys dck $DCK_PERIOD
 # Should just be an async FIFO and some 2DFF'd control signals
 cdc_maxdelay clk_sys clk_lcd $CLK_LCD_PERIOD
 cdc_maxdelay clk_lcd clk_sys $CLK_SYS_PERIOD
+
+# Should just be an async FIFO and some 2DFF'd control signals
+cdc_maxdelay clk_sys clk_audio $CLK_AUDIO_PERIOD
+cdc_maxdelay clk_audio clk_sys $CLK_SYS_PERIOD
 
 # Apply RTL-inserted false path constraints (setup/hold only, still constrain slew)
 set_false_path -setup -hold -through [get_pins *.magic_falsepath_anchor_u/Z]

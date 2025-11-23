@@ -1,0 +1,28 @@
+name: apu_aout
+bus: ahbl
+addr: 16
+data: 32
+regs:
+  - name: csr
+    bits:
+      - {b: 31, name: rdy, access: rov,
+        info: "Returns 1 when the sample FIFO is ready to accept more data"}
+      - {b: 24, name: signed, access: rw,
+        info: "APU audio is natively unsigned.
+          This bit is XORed into bit 15 of each sample to map signed samples to the correct range."}
+      - {b: 17, name: running, access: rov,
+        info: "Whether the audio output is currently running. Poll after changing ENABLE before changing INTERVAL."}
+      - {b: 16, name: enable, access: rw,
+        info: "Enable the audio output"}
+      - {b: [15, 8], name: interval, access: rw, rst: 123,
+        info: "Sample period in audio clock cycles is 4 x (INTERVAL + 2).
+          Nominal value of 123 yields 48 kSa/s with a 22 kHz cutoff on the upsampling filter,
+          from a 24 MHz audio clock."}
+      - {b: [6, 4], name: irqlevel, access: rw, rst: 2,
+        info: "IRQ is asserted when FIFO level is less than or equal to IRQLEVEL."}
+      - {b: [2, 0], name: flevel, access: rov,
+        info: "Returns the current occupancy of the sample FIFO (4 x 32-bit)."}
+  - name: fifo
+    bits:
+      - {b: [31, 16], name: l, access: wf, info: "Left audio sample"}
+      - {b: [15,  0], name: r, access: wf, info: "Right audio sample"}

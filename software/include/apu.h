@@ -16,7 +16,6 @@ static inline void load_apu_ram(const uint8_t *src, int len_bytes) {
 
 static inline void start_apu() {
 	apu_ipc_hw->start_apu = 1;
-	apu_ipc_hw->start_apu = 0;
 }
 
 static inline void softirq_post_other_core(void) {
