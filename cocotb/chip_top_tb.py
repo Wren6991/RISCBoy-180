@@ -48,15 +48,16 @@ TWD_PERIOD = 50
 
 TWD_CMD_DISCONNECT = 0x0
 TWD_CMD_R_IDCODE   = 0x1
-TWD_CMD_R_CSR      = 0x2
-TWD_CMD_W_CSR      = 0x3
-TWD_CMD_R_ADDR     = 0x4
-TWD_CMD_W_ADDR     = 0x5
-TWD_CMD_R_DATA     = 0x7
-TWD_CMD_R_BUFF     = 0x8
-TWD_CMD_W_DATA     = 0x9
-TWD_CMD_R_AINFO    = 0xb
-TWD_CMD_R_STAT     = 0xd
+TWD_CMD_R_AINFO    = 0x2
+TWD_CMD_R_STAT     = 0x4
+TWD_CMD_W_CSR      = 0x6
+TWD_CMD_R_CSR      = 0x7
+TWD_CMD_R_ADDR     = 0x8
+TWD_CMD_W_ADDR     = 0x9
+TWD_CMD_W_ADDR_R   = 0xa
+TWD_CMD_R_DATA     = 0xb
+TWD_CMD_W_DATA     = 0xc
+TWD_CMD_R_BUFF     = 0xd
 
 TWD_CSR_VERSION_LSB       = 28
 TWD_CSR_VERSION_BITS      = 0xf << TWD_CSR_VERSION_LSB
@@ -158,10 +159,8 @@ async def twd_write_bus(dut, addr, wdata):
 
 async def twd_read_bus(dut, addr):
     global twd_cached_addr
-    if addr != twd_cached_addr:
-        await twd_command(dut, TWD_CMD_W_ADDR, 8, addr)
-        twd_cached_addr = addr
-    _ = await twd_command(dut, TWD_CMD_R_DATA, 32)
+    twd_cached_addr = addr
+    await twd_command(dut, TWD_CMD_W_ADDR_R, 8, addr)
     for i in range(10):
         stat = await twd_command(dut, TWD_CMD_R_STAT, 4)
         if (stat & 1) == 0:

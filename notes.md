@@ -6,7 +6,6 @@
 	* Sample pipeline
 	* PWM/PDM output
 	* Timers
-	* IRQ to/from main CPU
 * Debug
 	* Write virtual UART peripheral
 	* Add write-address-read-bus command
@@ -294,5 +293,7 @@ void main() {
 }
 ```
 
+I have the testbench polling for characters, like the probe will poll on the real hardware.
 
+My tests are taking an annoyingly long time to run again, so let's do the other TWD optimisation feature I was thinking of (triggering a bus read with an address write). I re-orderd all the TWD command opcodes, which was a bit fiddly because I force all read opcodes to have a parity bit of 0 to park the bus before turnaround. This takes me from 44.77 to 37.19 seconds for a test run -- a bit less than I hoped but I'll take it.
 

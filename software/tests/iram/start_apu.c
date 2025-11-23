@@ -9,8 +9,6 @@ void __attribute__((noreturn, used)) apu_main(void) {
 	}
 }
 
-extern char apu_main_end;
-
 void main() {
 	load_apu_ram((const uint8_t*)&apu_main, 64);
 	vuart_puts("Starting APU\n");
