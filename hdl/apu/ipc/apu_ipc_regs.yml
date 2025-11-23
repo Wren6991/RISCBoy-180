@@ -1,0 +1,18 @@
+name: apu_ipc
+bus: ahbl
+addr: 16
+data: 32
+regs:
+  - name: start_apu
+    bits:
+      - {b: 0, access: rw, info: "Set this flag to start APU execution.
+      The APU always starts executing from the first address in APU RAM, so I recommend loading some code there first.
+      Clearing this flag after the APU starts executing has no effect."}
+  - name: softirq_set
+    info: Write bits to 1 to set soft IRQs. Read to check RISC-V soft IRQ status. Bit 1 is the APU's flag, bit 0 is the CPU's flag.
+    bits:
+      - {b: [1, 0], access: rwv}
+  - name: softirq_clr
+    info: Write bits to 1 to clear soft IRQs. Read to check RISC-V soft IRQ status. Bit 1 is the APU's flag, bit 0 is the CPU's flag.
+    bits:
+      - {b: [1, 0], access: rwv}

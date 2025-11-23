@@ -1,6 +1,7 @@
 // memcpy/memset are from https://github.com/raspberrypi/pico-bootrom-rp2350/blob/master/src/main/riscv/riscv_misc.S
-// (Original licence BSD 3-clause)
+// (Original licence BSD 3-clause, copyright Raspberry Pi Ltd)
 
+.section .text.memcpy
 .global memcpy
 memcpy:
     mv a3, a0
@@ -35,7 +36,7 @@ memcpy:
 6:
     ret
 
-
+.section .text.memset
 .global memset
 memset:
     mv a3, a0

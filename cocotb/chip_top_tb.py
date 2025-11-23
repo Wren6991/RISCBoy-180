@@ -38,8 +38,8 @@ APU_RAM_END  = APU_RAM_BASE + 0x800
 
 APU_PERI_BASE = APU_BASE + 0x8000
 APU_IPC_BASE = APU_PERI_BASE
-APU_IPC_SOFTIRQ_SET = APU_IPC_BASE + 0
-APU_IPC_SOFTIRQ_CLR = APU_IPC_BASE + 4
+APU_IPC_SOFTIRQ_SET = APU_IPC_BASE + 4
+APU_IPC_SOFTIRQ_CLR = APU_IPC_BASE + 8
 
 ###############################################################################
 # TWD debug helpers
@@ -537,7 +537,8 @@ async def test_riscv_soft_irq(dut):
 
 @cocotb.test()
 @cocotb.parametrize(app=[
-    "hellow"
+    "hellow",
+    "start_apu"
 ])
 async def test_execute_iram(dut, app="hellow"):
     """Execute code from IRAM"""
@@ -547,9 +548,10 @@ async def test_execute_iram(dut, app="hellow"):
     with open(swtest_dir / f"build/{app}.bin", "rb") as f:
         prog_bytes = f.read()
     cocotb.log.info(f"Program size = {len(prog_bytes)}")
-    for i, word in enumerate(struct.iter_unpack("<l", prog_bytes)):
-        dut.i_chip_core.iram_u.sram.mem[i].value = word[0]
-
+    prog_words = list(w[0] for w in struct.iter_unpack("<l", prog_bytes))
+    for i, word in enumerate(prog_words):
+        dut.i_chip_core.iram_u.sram.mem[i].value = word
+        dut.i_chip_core.iram_u.sram.mem[i].value = Release()
 
     await start_up(dut)
     await twd_connect(dut)
@@ -573,6 +575,8 @@ async def test_execute_iram(dut, app="hellow"):
     cocotb.log.info(f"Processor standard output:\n\n{vuart_stdout}\n")
     if app == "hellow":
         assert vuart_stdout == "Hello, world!\r\n"
+    elif app == "start_apu":
+        assert vuart_stdout == "Starting APU\r\n" + "Received IRQ\r\n"
 
 ###############################################################################
 # Test infrastructure

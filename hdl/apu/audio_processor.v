@@ -124,8 +124,11 @@ end
 
 localparam NUM_IRQS = 1;
 
+
+wire                start_apu;
+
 wire                cpu_pwrup_req;
-wire                cpu_pwrup_ack = cpu_pwrup_req;
+wire                cpu_pwrup_ack = cpu_pwrup_req || start_apu;
 wire                cpu_clk_en;
 
 wire                unblock_out;
@@ -186,7 +189,7 @@ hazard3_cpu_1port #(
     .EXTENSION_XH3BEXTM  (0),
     .EXTENSION_XH3IRQ    (0),
     .EXTENSION_XH3PMPM   (0),
-    .EXTENSION_XH3POWER  (0),
+    .EXTENSION_XH3POWER  (1),
 
     .CSR_M_MANDATORY     (1),
     .CSR_M_TRAP          (1),
@@ -395,6 +398,8 @@ apu_ipc ipc_u (
     .ahbls_hwdata      (ipc_hwdata),
     .ahbls_hrdata      (ipc_hrdata),
     .ahbls_hresp       (ipc_hresp),
+
+    .start_apu         (start_apu),
 
     .riscv_softirq     ({soft_irq, irq_cpu_softirq})
 );

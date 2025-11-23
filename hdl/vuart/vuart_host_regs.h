@@ -46,8 +46,8 @@ typedef struct {
 #define VUART_HOST_STAT_TXRDY_MASK 0x40000000
 // Field: STAT_FORCE_HOSTCONN  Access: RW
 // Reset: 0x0
-// Force the devices HOSTCONN status to read as 1 (otherwise determined by DTM
-// connected state)
+// Force the devices HOSTCONN status to read as 1 (otherwise determined by
+// debugger status)
 #define VUART_HOST_STAT_FORCE_HOSTCONN_LSB  24
 #define VUART_HOST_STAT_FORCE_HOSTCONN_BITS 1
 #define VUART_HOST_STAT_FORCE_HOSTCONN_MASK 0x1000000

@@ -1,5 +1,5 @@
 APP       := hellow
-MARCH     := rv32imb_zca_zcb_zbkb
+MARCH     := rv32imb_zca_zcb_zbkb_zicsr
 
 EXTRA_SRC := ../../common/crt0_iram.S ../../common/libc.S
 LDSCRIPT  := ../../ldscript/iram.ld

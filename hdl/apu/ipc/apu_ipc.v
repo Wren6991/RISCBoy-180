@@ -18,6 +18,8 @@ module apu_ipc (
 	input  wire [31:0] ahbls_hwdata,
 	output wire [31:0] ahbls_hrdata,
 	output wire        ahbls_hresp,
+
+	output wire        start_apu,
 	
 	output wire [1:0]  riscv_softirq
 
@@ -30,7 +32,7 @@ wire [1:0]  softirq_clr_i;
 wire [1:0]  softirq_clr_o;
 wire        softirq_clr_wen;
 
-ipc_regs regs_u (
+apu_ipc_regs regs_u (
 	.clk               (clk),
 	.rst_n             (rst_n),
 

@@ -274,4 +274,25 @@ So let's push one _more_ stack frame and add AHB-Lite support to my register blo
 
 When testing the AHB regblock support and the new IPC registers for soft IRQs, I got frustrated with how slow debugger-based tests were. I don't want to make the test code any more complicated so instead I expanded the TWD spec to include a short-form status response to make polling more efficient for hosts that just want to implement polled IO. This took a full test run from 34.1 s to 24.3 s.
 
+...ok so software didn't happen today. I spent a while fighting CTS again, and eventually gave up as there's no obvious way to stop it from inferring a clock root at a clock gate output. For those not in the know a "clock root" essentially means "do not look above this point in the clock tree when balancing below this point" and this is an _absurdly dangerous_ thing for a tool to infer. They should always be specified manually. I was seeing multi-ns hold violations on SRAM addresses _after_ hold buffer insertion.
+
+I did enable clock gate inferencing via `USE_LIGHTER`. This also makes the clock tree less balanced but since the inferred flop groups are small, the amount of skew is limited and can be fixed later with buffer insertion and resizing on the datapath. This is not ideal; CTS issues should be fixed during CTS. Still the QoR is ok and I'm less likely to burn a hole in the die. It's actually a little better on setup (compared to no clock gates) because the inferred clock gates make up for the lack of DFFEs in the cell library.
+
+I also moved to the 9-track cell library, which helps out with fmax a bit. Not much to say here: the cells are a bit bigger but a bit faster.
+
+I implemented the virtual UART for printing to debug. This is really just a pair of async FIFOs which are accessed on one side by the TWD-DTM (in the DCK domain) and on the other side by the main CPU. You can get IRQs on RX fullness or TX emptiness, just like a UART. There's also a status flag for whether the host is currently connected, so you can skip through debug prints when nobody is at the other end of the FIFO.
+
+### Day 6: NINE DAYS REMAIN
+
+Finally I wrote a hello world C binary which runs from IRAM.
+
+```c
+#include "vuart.h"
+
+void main() {
+	vuart_puts("Hello, world!\n");
+}
+```
+
+
 

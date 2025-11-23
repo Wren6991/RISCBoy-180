@@ -4,12 +4,12 @@
 *          Edit the source file (or regblock utility) and regenerate.          *
 *******************************************************************************/
 
-// Block name           : ipc
+// Block name           : apu_ipc
 // Bus type             : ahbl
 // Bus data width       : 32
 // Bus address width    : 16
 
-module ipc_regs (
+module apu_ipc_regs (
 	input wire         clk,
 	input wire         rst_n,
 	
@@ -25,6 +25,7 @@ module ipc_regs (
 	output wire        ahbls_hresp,
 	
 	// Register interfaces
+	output reg         start_apu_o,
 	input  wire [1:0]  softirq_set_i,
 	output reg  [1:0]  softirq_set_o,
 	output reg         softirq_set_wen,
@@ -46,7 +47,7 @@ always @ (posedge clk or negedge rst_n) begin
 	end else if (ahbls_hready) begin
 		wen <= ahbls_htrans[1] && ahbls_hwrite;
 		ren <= ahbls_htrans[1] && !ahbls_hwrite;
-		addr <= ahbls_haddr & 16'h4;
+		addr <= ahbls_haddr & 16'hc;
 	end
 end
 
@@ -55,13 +56,21 @@ assign ahbls_hrdata = rdata;
 assign ahbls_hready_resp = 1'b1;
 assign ahbls_hresp = 1'b0;
 
-localparam ADDR_SOFTIRQ_SET = 0;
-localparam ADDR_SOFTIRQ_CLR = 4;
+localparam ADDR_START_APU = 0;
+localparam ADDR_SOFTIRQ_SET = 4;
+localparam ADDR_SOFTIRQ_CLR = 8;
 
+wire __start_apu_wen = wen && addr == ADDR_START_APU;
+wire __start_apu_ren = ren && addr == ADDR_START_APU;
 wire __softirq_set_wen = wen && addr == ADDR_SOFTIRQ_SET;
 wire __softirq_set_ren = ren && addr == ADDR_SOFTIRQ_SET;
 wire __softirq_clr_wen = wen && addr == ADDR_SOFTIRQ_CLR;
 wire __softirq_clr_ren = ren && addr == ADDR_SOFTIRQ_CLR;
+
+wire        start_apu_wdata = wdata[0];
+wire        start_apu_rdata;
+wire [31:0] __start_apu_rdata = {31'h0, start_apu_rdata};
+assign start_apu_rdata = start_apu_o;
 
 wire [1:0]  softirq_set_wdata = wdata[1:0];
 wire [1:0]  softirq_set_rdata;
@@ -75,6 +84,7 @@ assign softirq_clr_rdata = softirq_clr_i;
 
 always @ (*) begin
 	case (addr)
+		ADDR_START_APU: rdata = __start_apu_rdata;
 		ADDR_SOFTIRQ_SET: rdata = __softirq_set_rdata;
 		ADDR_SOFTIRQ_CLR: rdata = __softirq_clr_rdata;
 		default: rdata = 32'h0;
@@ -87,7 +97,10 @@ end
 
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
+		start_apu_o <= 1'h0;
 	end else begin
+		if (__start_apu_wen)
+			start_apu_o <= start_apu_wdata;
 	end
 end
 
