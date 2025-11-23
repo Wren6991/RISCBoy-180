@@ -3,12 +3,7 @@
 ## RTL
 
 * APU
-	* Sample pipeline
-	* PWM/PDM output
 	* Timers
-* Debug
-	* Write virtual UART peripheral
-	* Add write-address-read-bus command
 * PPU
 	* Think harder about palette RAM read/write collisions
 	* Possible to reduce RAM bandwidth for ABLIT/ATILE? (possibly have timing budget for 1-entry tilenum cache)
