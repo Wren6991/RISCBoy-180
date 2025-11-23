@@ -222,9 +222,11 @@ proc sram_pdn_ns {pdnname macrolist} {
         -number_of_straps 2
 }
 
-sram_pdn_ns pdn_cpu_iram {i_chip_core.iram_u.sram.*.ram_u}
-sram_pdn_ns pdn_apu_ram {i_chip_core.apu_u.ram_u.sram.*.ram_u}
-sram_pdn_ns pdn_ppu_sbram {i_chip_core.ppu_u.*.ram_u}
+sram_pdn_ns pdn_cpu_iram   {i_chip_core.iram_u.sram.*.ram_u}
+sram_pdn_ns pdn_apu_ram    {i_chip_core.apu_u.ram_u.sram.*.ram_u}
+sram_pdn_ns pdn_ppu_sbram0 {i_chip_core.ppu_u.scanbuf0_u.g_d512.*.ram_u}
+sram_pdn_ns pdn_ppu_sbram1 {i_chip_core.ppu_u.scanbuf1_u.g_d512.*.ram_u}
+sram_pdn_ns pdn_ppu_pram   {i_chip_core.ppu_u.blender.palette_mapper.pram_u.g_d256.*.ram_u}
 
 
 # define_pdn_grid \

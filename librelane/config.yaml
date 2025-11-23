@@ -40,6 +40,15 @@ CTS_CLK_BUFFERS:
 # Magic, thank you Lofty
 SYNTH_STRATEGY: "AREA 3"
 
+# Why is this not the default???
+SYNTH_SIZING: True
+
+# ICG inference; the CTS still inexplicably puts a clock root after each gate
+# but this doesn't affect the skew too much for the small gate groups inferred
+# by this pass (unlike explicit top-level ICGs which are catastrophic). Clock
+# skew is a little worse but we get better DFFE mapping.
+USE_LIGHTER: True
+
 DESIGN_NAME: chip_top
 VERILOG_FILES:
 - dir::../hdl/chip_top.sv
