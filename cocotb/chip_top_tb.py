@@ -17,7 +17,7 @@ from cocotb.handle import Release
 sim = os.getenv("SIM", "icarus")
 pdk_root = "../gf180mcu"
 pdk = os.getenv("PDK", "gf180mcuD")
-scl = os.getenv("SCL", "gf180mcu_fd_sc_mcu7t5v0")
+scl = os.getenv("SCL", "gf180mcu_fd_sc_mcu9t5v0")
 gl = os.getenv("GL", False)
 
 hdl_toplevel = "chip_top"

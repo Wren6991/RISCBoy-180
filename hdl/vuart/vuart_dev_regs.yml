@@ -1,0 +1,40 @@
+name: vuart_dev
+bus: apb
+addr: 16
+data: 32
+regs:
+  - name: stat
+    bits:
+      - {b: 31, name: rxvld, access: rov,
+        info: "Returns 1 when the device RX FIFO is valid (level is not zero)"}
+      - {b: 30, name: txrdy, access: rov,
+        info: "Returns 1 when the device TX FIFO is ready (level is less than depth)"}
+      - {b: [15, 8], name: rxlevel, access: rov,
+        info: "The current occupancy of the device RX FIFO"}
+      - {b: [7, 0], name: txlevel, access: rov,
+        info: "The current occupancy of the device RX FIFO"}
+  - name: info
+    bits:
+      - {b: [15, 8], name: rxsize, access: rov,
+        info: "The maximum occupancy of the device RX FIFO, minus one."}
+      - {b: [7, 0], name: txsize, access: rov,
+        info: "The maximum occupancy of the device TX FIFO, minus one."}
+  - name: fifo
+    bits:
+      - {b: 31, name: rxvld, access: rov,
+        info: "Returns 1 when the device RX FIFO is valid (level is not zero)"}
+      - {b: 30, name: txrdy, access: rov,
+        info: "Returns 1 when the device TX FIFO is ready (level is less than depth)"}
+      - {b: [7, 0], name: txrx, access: rwf,
+        info: "
+          Bits written here are pushed to the device TX FIFO.
+          Bits read from here are popped from the device RX FIFO."
+        }
+  - name: irqctrl
+    bits:
+      - {b: 0, name: rx_enable, access: rw,
+        info: "Enable IRQ assertion when RX FIFO is not empty"}
+      - {b: 1, name: tx_enable, access: rw,
+        info: "Enable IRQ assertion when TX FIFO is below the configured level"}
+      - {b: [3, 2], name: tx_level, access: rw,
+        info: "0: TX empty, 1, TX < 1/2, 2: TX < 3/4, 3: TX not full"}

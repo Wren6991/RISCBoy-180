@@ -126,7 +126,7 @@ reset_sync sync_drst_n_u (
 
 // DTM downstream bus (DCK domain). Note the address from the DTM is a word
 // address, not a byte address.
-wire [7:0]  dtm_dst_paddr;
+wire [9:0]  dtm_dst_paddr;
 wire        dtm_dst_psel;
 wire        dtm_dst_penable;
 wire        dtm_dst_pwrite;
@@ -137,6 +137,8 @@ wire [31:0] dtm_dst_prdata;
 
 wire        ndtmresetreq;
 wire        ndtmresetack;
+
+assign dtm_dst_paddr[1:0] = 2'b00;
 
 twowire_dtm #(
     .IDCODE (32'h00280035), // Mfr Zilog, Part 280
@@ -154,7 +156,7 @@ twowire_dtm #(
 
     .ainfo_present  (1'b0),
 
-    .dst_paddr      (dtm_dst_paddr),
+    .dst_paddr      (dtm_dst_paddr[9:2]),
     .dst_psel       (dtm_dst_psel),
     .dst_penable    (dtm_dst_penable),
     .dst_pwrite     (dtm_dst_pwrite),
@@ -163,6 +165,7 @@ twowire_dtm #(
     .dst_pwdata     (dtm_dst_pwdata),
     .dst_prdata     (dtm_dst_prdata)
 );
+
 
 // ------------------------------------------------------------------------
 // Generate system reset based on PoR (pad) reset and the global reset output
@@ -205,6 +208,56 @@ sync_1bit sync_ndtmresetac_u (
 );
 
 // ------------------------------------------------------------------------
+// Split VUART APB before async bridge
+
+// (VUART is accessed directly from the DTM; everything else goes via the
+// RISC-V Debug Module which is in the core clock domain)
+
+wire [9:0]  dtm_to_bridge_paddr;
+wire        dtm_to_bridge_psel;
+wire        dtm_to_bridge_penable;
+wire        dtm_to_bridge_pwrite;
+wire        dtm_to_bridge_pready;
+wire        dtm_to_bridge_pslverr;
+wire [31:0] dtm_to_bridge_pwdata;
+wire [31:0] dtm_to_bridge_prdata;
+
+wire [9:0]  dtm_to_vuart_paddr;
+wire        dtm_to_vuart_psel;
+wire        dtm_to_vuart_penable;
+wire        dtm_to_vuart_pwrite;
+wire        dtm_to_vuart_pready;
+wire        dtm_to_vuart_pslverr;
+wire [31:0] dtm_to_vuart_pwdata;
+wire [31:0] dtm_to_vuart_prdata;
+
+apb_splitter #(
+    .W_ADDR    (10),
+    .W_DATA    (32),
+    .N_SLAVES  (2),
+    .ADDR_MAP  ({10'h200, 10'h000}),
+    .ADDR_MASK ({10'h200, 10'h200})
+) dtm_apb_splitter_u (
+    .apbs_paddr   (dtm_dst_paddr),
+    .apbs_psel    (dtm_dst_psel),
+    .apbs_penable (dtm_dst_penable),
+    .apbs_pwrite  (dtm_dst_pwrite),
+    .apbs_pwdata  (dtm_dst_pwdata),
+    .apbs_pready  (dtm_dst_pready),
+    .apbs_prdata  (dtm_dst_prdata),
+    .apbs_pslverr (dtm_dst_pslverr),
+
+    .apbm_paddr   ({dtm_to_vuart_paddr   , dtm_to_bridge_paddr  }),
+    .apbm_psel    ({dtm_to_vuart_psel    , dtm_to_bridge_psel   }),
+    .apbm_penable ({dtm_to_vuart_penable , dtm_to_bridge_penable}),
+    .apbm_pwrite  ({dtm_to_vuart_pwrite  , dtm_to_bridge_pwrite }),
+    .apbm_pwdata  ({dtm_to_vuart_pwdata  , dtm_to_bridge_pwdata }),
+    .apbm_pready  ({dtm_to_vuart_pready  , dtm_to_bridge_pready }),
+    .apbm_prdata  ({dtm_to_vuart_prdata  , dtm_to_bridge_prdata }),
+    .apbm_pslverr ({dtm_to_vuart_pslverr , dtm_to_bridge_pslverr})
+);
+
+// ------------------------------------------------------------------------
 // Clock crossing: DTM (DCK) to DM (clk_sys)
 
 wire        dmi_psel;
@@ -219,7 +272,7 @@ wire        dmi_pslverr;
 // This is a Hazard3 component normally hidden inside the JTAG-DTM, but we can
 // use it standalone.
 hazard3_apb_async_bridge #(
-    .W_ADDR        (8),
+    .W_ADDR        (10),
     .W_DATA        (32),
     .N_SYNC_STAGES (2)
 ) dtm_async_bridge_u (
@@ -229,26 +282,24 @@ hazard3_apb_async_bridge #(
     .clk_dst     (clk_sys),
     .rst_n_dst   (rst_n_sys),
 
-    .src_psel    (dtm_dst_psel),
-    .src_penable (dtm_dst_penable),
-    .src_pwrite  (dtm_dst_pwrite),
-    .src_paddr   (dtm_dst_paddr),
-    .src_pwdata  (dtm_dst_pwdata),
-    .src_prdata  (dtm_dst_prdata),
-    .src_pready  (dtm_dst_pready),
-    .src_pslverr (dtm_dst_pslverr),
+    .src_psel    (dtm_to_bridge_psel),
+    .src_penable (dtm_to_bridge_penable),
+    .src_pwrite  (dtm_to_bridge_pwrite),
+    .src_paddr   (dtm_to_bridge_paddr),
+    .src_pwdata  (dtm_to_bridge_pwdata),
+    .src_prdata  (dtm_to_bridge_prdata),
+    .src_pready  (dtm_to_bridge_pready),
+    .src_pslverr (dtm_to_bridge_pslverr),
 
     .dst_psel    (dmi_psel),
     .dst_penable (dmi_penable),
     .dst_pwrite  (dmi_pwrite),
-    .dst_paddr   (dmi_paddr[9:2]),
+    .dst_paddr   (dmi_paddr),
     .dst_pwdata  (dmi_pwdata),
     .dst_prdata  (dmi_prdata),
     .dst_pready  (dmi_pready),
     .dst_pslverr (dmi_pslverr)
 );
-
-assign dmi_paddr[1:0] = 2'b00;
 
 // ------------------------------------------------------------------------
 // Debug Module and processor reset control
@@ -343,8 +394,9 @@ hazard3_dm #(
 // ------------------------------------------------------------------------
 // Processor instantiation
 
-localparam NUM_IRQS = 1;
 localparam IRQ_PPU = 0;
+localparam IRQ_VUART = 1;
+localparam NUM_IRQS = 2;
 
 wire                cpu_pwrup_req;
 wire                cpu_pwrup_ack = cpu_pwrup_req;
@@ -406,7 +458,7 @@ hazard3_cpu_1port #(
     .EXTENSION_ZILSD     (0),
 
     .EXTENSION_XH3BEXTM  (0),
-    .EXTENSION_XH3IRQ    (0),
+    .EXTENSION_XH3IRQ    (1),
     .EXTENSION_XH3PMPM   (0),
     .EXTENSION_XH3POWER  (0),
 
@@ -705,12 +757,21 @@ wire        lcd_pwm_pready;
 wire [31:0] lcd_pwm_prdata;
 wire        lcd_pwm_pslverr;
 
+wire [19:0] vuart_dev_paddr;
+wire        vuart_dev_psel;
+wire        vuart_dev_penable;
+wire        vuart_dev_pwrite;
+wire [31:0] vuart_dev_pwdata;
+wire        vuart_dev_pready;
+wire [31:0] vuart_dev_prdata;
+wire        vuart_dev_pslverr;
+
 apb_splitter #(
     .W_ADDR    (20),
     .W_DATA    (32),
-    .N_SLAVES  (5),
-    .ADDR_MAP  ({20'h04000, 20'h03000, 20'h02000, 20'h01000, 20'h00000}),
-    .ADDR_MASK ({20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000})
+    .N_SLAVES  (6),
+    .ADDR_MAP  ({20'h05000, 20'h04000, 20'h03000, 20'h02000, 20'h01000, 20'h00000}),
+    .ADDR_MASK ({20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000})
 ) inst_apb_splitter (
     .apbs_paddr   (peri_paddr),
     .apbs_psel    (peri_psel),
@@ -721,14 +782,14 @@ apb_splitter #(
     .apbs_prdata  (peri_prdata),
     .apbs_pslverr (peri_pslverr),
 
-    .apbm_paddr   ({lcd_pwm_paddr   , dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
-    .apbm_psel    ({lcd_pwm_psel    , dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
-    .apbm_penable ({lcd_pwm_penable , dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
-    .apbm_pwrite  ({lcd_pwm_pwrite  , dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
-    .apbm_pwdata  ({lcd_pwm_pwdata  , dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
-    .apbm_pready  ({lcd_pwm_pready  , dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
-    .apbm_prdata  ({lcd_pwm_prdata  , dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
-    .apbm_pslverr ({lcd_pwm_pslverr , dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
+    .apbm_paddr   ({vuart_dev_paddr   , lcd_pwm_paddr   , dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
+    .apbm_psel    ({vuart_dev_psel    , lcd_pwm_psel    , dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
+    .apbm_penable ({vuart_dev_penable , lcd_pwm_penable , dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
+    .apbm_pwrite  ({vuart_dev_pwrite  , lcd_pwm_pwrite  , dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
+    .apbm_pwdata  ({vuart_dev_pwdata  , lcd_pwm_pwdata  , dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
+    .apbm_pready  ({vuart_dev_pready  , lcd_pwm_pready  , dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
+    .apbm_prdata  ({vuart_dev_prdata  , lcd_pwm_prdata  , dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
+    .apbm_pslverr ({vuart_dev_pslverr , lcd_pwm_pslverr , dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
 );
 
 // ------------------------------------------------------------------------
@@ -942,7 +1003,7 @@ padctrl #(
 
 hazard3_riscv_timer #(
     .TICK_IS_NRZ (0) // TODO
-) inst_hazard3_riscv_timer (
+) riscv_timer_u (
     .clk       (clk_sys),
     .rst_n     (rst_n_sys),
     .paddr     (timer_paddr[15:0]),
@@ -956,6 +1017,37 @@ hazard3_riscv_timer #(
     .dbg_halt  (dbg_halted[0]),
     .tick      (1'b1),
     .timer_irq (timer_irq)
+);
+
+vuart #(
+    .DEV_TX_DEPTH (16),
+    .DEV_RX_DEPTH (8)
+) vuart_u (
+    .dck          (padin_dck),
+    .drst_n       (drst_n),
+
+    .clk          (clk_sys),
+    .rst_n        (rst_n_sys),
+
+    .irq          (irq[IRQ_VUART]),
+
+    .host_psel    (dtm_to_vuart_psel),
+    .host_penable (dtm_to_vuart_penable),
+    .host_pwrite  (dtm_to_vuart_pwrite),
+    .host_paddr   (dtm_to_vuart_paddr),
+    .host_pwdata  (dtm_to_vuart_pwdata),
+    .host_prdata  (dtm_to_vuart_prdata),
+    .host_pready  (dtm_to_vuart_pready),
+    .host_pslverr (dtm_to_vuart_pslverr),
+
+    .dev_psel     (vuart_dev_psel),
+    .dev_penable  (vuart_dev_penable),
+    .dev_pwrite   (vuart_dev_pwrite),
+    .dev_paddr    (vuart_dev_paddr[15:0]),
+    .dev_pwdata   (vuart_dev_pwdata),
+    .dev_prdata   (vuart_dev_prdata),
+    .dev_pready   (vuart_dev_pready),
+    .dev_pslverr  (vuart_dev_pslverr)
 );
 
 // ------------------------------------------------------------------------

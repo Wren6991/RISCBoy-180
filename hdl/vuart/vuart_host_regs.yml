@@ -1,0 +1,32 @@
+name: vuart_host
+bus: apb
+addr: 10
+data: 32
+regs:
+  - name: stat
+    bits:
+      - {b: 31, name: rxvld, access: rov,
+        info: "Returns 1 when the host RX FIFO is valid (level is not zero)"}
+      - {b: 30, name: txrdy, access: rov,
+        info: "Returns 1 when the host TX FIFO is ready (level is less than depth)"}
+      - {b: [15, 8], name: rxlevel, access: rov,
+        info: "The current occupancy of the host RX FIFO"}
+      - {b: [7, 0], name: txlevel, access: rov,
+        info: "The current occupancy of the host RX FIFO"}
+  - name: info
+    bits:
+      - {b: [15, 8], name: rxsize, access: rov,
+        info: "The maximum occupancy of the host RX FIFO, minus one."}
+      - {b: [7, 0], name: txsize, access: rov,
+        info: "The maximum occupancy of the host TX FIFO, minus one."}
+  - name: fifo
+    bits:
+      - {b: 31, name: rxvld, access: rov,
+        info: "Returns 1 when the host RX FIFO is valid (level is not zero)"}
+      - {b: 30, name: txrdy, access: rov,
+        info: "Returns 1 when the host TX FIFO is ready (level is less than depth)"}
+      - {b: [7, 0], name: txrx, access: rwf,
+        info: "
+          Bits written here are pushed to the host TX FIFO.
+          Bits read from here are popped from the host RX FIFO."
+        }

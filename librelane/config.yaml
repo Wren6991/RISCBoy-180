@@ -53,9 +53,14 @@ DESIGN_NAME: chip_top
 VERILOG_FILES:
 - dir::../hdl/chip_top.sv
 - dir::../hdl/chip_core.sv
+
 - dir::../hdl/apu/audio_processor.v
 - dir::../hdl/apu/ipc/apu_ipc.v
 - dir::../hdl/apu/ipc/ipc_regs.v
+
+- dir::../hdl/vuart/vuart.v
+- dir::../hdl/vuart/vuart_host_regs.v
+- dir::../hdl/vuart/vuart_dev_regs.v
 
 - dir::../hdl/mem/ahb_sync_sram.v
 - dir::../hdl/mem/sram_wrapper.v
