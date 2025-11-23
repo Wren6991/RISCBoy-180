@@ -7,30 +7,30 @@ OUTPUT_ARCH(riscv)
 ENTRY(_start)
 
 SECTIONS {
-	.text {
+	.text : {
 		KEEP(*(.init))
 		*(*.text *.text.*)
 		. = ALIGN(4);
 	} > IRAM
 
-	.rodata  {
+	.rodata : {
 		*(.rodata .rodata.*)
 		. = ALIGN(4);
 	} > IRAM
 
-	.data {
+	.data : {
 		*(.data .data.*)
 		. = ALIGN(4);
 	} > IRAM
 
-	.bss {
+	.bss : {
 		PROVIDE(__sbss = .);
 		*(.bss .bss.*)
 		. = ALIGN(4);
 		PROVIDE(__ebss = .);
 	} > IRAM
 
-	.sdata {
+	.sdata : {
 		__global_pointer$ = . + 2K;
 		*(.srodata*)
 		*(.sdata*)

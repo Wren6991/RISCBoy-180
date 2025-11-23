@@ -1,3 +1,6 @@
+.section .init, "ax"
+
+.global _start
 _start:
 .option push
 .option norelax
@@ -7,13 +10,15 @@ _start:
 _bss_clear:
 	la a0, __sbss
 	la a1, __ebss
-	bgeu a0, a2, 2f
+	bgeu a0, a1, 2f
 	li a2, 0
 1:
 	sw a2, (a0)
 	addi a0, a0, 4
 	bltu a0, a1, 1b
-
+2:
 	// Set argc=0
 	li a0, 0
 	jal main
+1:
+	j 1b

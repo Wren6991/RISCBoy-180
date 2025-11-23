@@ -1,0 +1,109 @@
+
+build/hellow.elf:     file format elf32-littleriscv
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000e4  00080000  00080000  00001000  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .rodata       00000010  000800e4  000800e4  000010e4  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  2 .data         00000000  000800f4  000800f4  000010f4  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  3 .bss          00000000  000800f4  000800f4  000010f4  2**0
+                  ALLOC
+  4 .sdata        00000000  000800f4  000800f4  000010f4  2**0
+                  CONTENTS
+  5 .comment      00000019  00000000  00000000  000010f4  2**0
+                  CONTENTS, READONLY
+  6 .riscv.attributes 0000005a  00000000  00000000  0000110d  2**0
+                  CONTENTS, READONLY
+
+Disassembly of section .text:
+
+00080000 <_start>:
+   80000:	00001197          	auipc	gp,0x1
+   80004:	8f418193          	addi	gp,gp,-1804 # 808f4 <__global_pointer$>
+   80008:	00002117          	auipc	sp,0x2
+   8000c:	ff810113          	addi	sp,sp,-8 # 82000 <__stacktop>
+
+00080010 <_bss_clear>:
+   80010:	00000517          	auipc	a0,0x0
+   80014:	0e450513          	addi	a0,a0,228 # 800f4 <__ebss>
+   80018:	00000597          	auipc	a1,0x0
+   8001c:	0dc58593          	addi	a1,a1,220 # 800f4 <__ebss>
+   80020:	00b57763          	bgeu	a0,a1,8002e <_bss_clear+0x1e>
+   80024:	4601                	li	a2,0
+   80026:	c110                	sw	a2,0(a0)
+   80028:	0511                	addi	a0,a0,4
+   8002a:	feb56ee3          	bltu	a0,a1,80026 <_bss_clear+0x16>
+   8002e:	4501                	li	a0,0
+   80030:	006000ef          	jal	80036 <main>
+   80034:	a001                	j	80034 <_bss_clear+0x24>
+
+00080036 <main>:
+   80036:	000e5737          	lui	a4,0xe5
+   8003a:	431c                	lw	a5,0(a4)
+   8003c:	00779693          	slli	a3,a5,0x7
+   80040:	0206df63          	bgez	a3,8007e <main+0x48>
+   80044:	000807b7          	lui	a5,0x80
+   80048:	000806b7          	lui	a3,0x80
+   8004c:	0e478793          	addi	a5,a5,228 # 800e4 <memset+0x32>
+   80050:	45a9                	li	a1,10
+   80052:	4535                	li	a0,13
+   80054:	0f268693          	addi	a3,a3,242 # 800f2 <memset+0x40>
+   80058:	8390                	lbu	a2,0(a5)
+   8005a:	00b61863          	bne	a2,a1,8006a <main+0x34>
+   8005e:	4310                	lw	a2,0(a4)
+   80060:	00161813          	slli	a6,a2,0x1
+   80064:	fe085de3          	bgez	a6,8005e <main+0x28>
+   80068:	c708                	sw	a0,8(a4)
+   8006a:	4310                	lw	a2,0(a4)
+   8006c:	00161813          	slli	a6,a2,0x1
+   80070:	fe085de3          	bgez	a6,8006a <main+0x34>
+   80074:	8390                	lbu	a2,0(a5)
+   80076:	0785                	addi	a5,a5,1
+   80078:	c710                	sw	a2,8(a4)
+   8007a:	fcd79fe3          	bne	a5,a3,80058 <main+0x22>
+   8007e:	8082                	ret
+
+00080080 <memcpy>:
+   80080:	86aa                	mv	a3,a0
+   80082:	9636                	add	a2,a2,a3
+   80084:	00d5e733          	or	a4,a1,a3
+   80088:	8b0d                	andi	a4,a4,3
+   8008a:	e30d                	bnez	a4,800ac <memcpy+0x2c>
+   8008c:	1675                	addi	a2,a2,-3
+   8008e:	00c6f863          	bgeu	a3,a2,8009e <memcpy+0x1e>
+   80092:	4198                	lw	a4,0(a1)
+   80094:	c298                	sw	a4,0(a3)
+   80096:	0591                	addi	a1,a1,4
+   80098:	0691                	addi	a3,a3,4
+   8009a:	fec6ece3          	bltu	a3,a2,80092 <memcpy+0x12>
+   8009e:	060d                	addi	a2,a2,3
+   800a0:	00c6f863          	bgeu	a3,a2,800b0 <memcpy+0x30>
+   800a4:	8198                	lbu	a4,0(a1)
+   800a6:	8a98                	sb	a4,0(a3)
+   800a8:	0585                	addi	a1,a1,1
+   800aa:	0685                	addi	a3,a3,1
+   800ac:	fec6ece3          	bltu	a3,a2,800a4 <memcpy+0x24>
+   800b0:	8082                	ret
+
+000800b2 <memset>:
+   800b2:	86aa                	mv	a3,a0
+   800b4:	9636                	add	a2,a2,a3
+   800b6:	0036f713          	andi	a4,a3,3
+   800ba:	e30d                	bnez	a4,800dc <memset+0x2a>
+   800bc:	1675                	addi	a2,a2,-3
+   800be:	00c6fa63          	bgeu	a3,a2,800d2 <memset+0x20>
+   800c2:	08b5f5b3          	packh	a1,a1,a1
+   800c6:	08b5c5b3          	pack	a1,a1,a1
+   800ca:	c28c                	sw	a1,0(a3)
+   800cc:	0691                	addi	a3,a3,4
+   800ce:	fec6eee3          	bltu	a3,a2,800ca <memset+0x18>
+   800d2:	060d                	addi	a2,a2,3
+   800d4:	00c6f663          	bgeu	a3,a2,800e0 <memset+0x2e>
+   800d8:	8a8c                	sb	a1,0(a3)
+   800da:	0685                	addi	a3,a3,1
+   800dc:	fec6eee3          	bltu	a3,a2,800d8 <memset+0x26>
+   800e0:	8082                	ret
+	...

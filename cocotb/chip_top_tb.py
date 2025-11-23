@@ -5,13 +5,15 @@ import os
 import random
 import logging
 import yaml
+import struct
+import subprocess
+import sys
 from pathlib import Path
 
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import Timer, Edge, RisingEdge, FallingEdge, ClockCycles
 from cocotb_tools.runner import get_runner
-from cocotb.types import Logic
 from cocotb.handle import Release
 
 sim = os.getenv("SIM", "icarus")
@@ -68,6 +70,12 @@ TWD_CSR_BUSY_BITS         = 1 << 8
 TWD_CSR_NDTMRESETACK_BITS = 1 << 5
 TWD_CSR_NDTMRESETREQ_BITS = 1 << 4
 TWD_CSR_MDROPADDR_BITS    = 0xf
+
+VUART_STAT = 0x80
+VUART_STAT_RXVLD = 1 << 31
+VUART_STAT_TXRDY = 1 << 30
+VUART_INFO = 0x81
+VUART_FIFO = 0x82
 
 async def twd_shift_out(dut, bits, n):
     if n % 8 != 0:
@@ -161,6 +169,15 @@ async def twd_read_bus(dut, addr):
     else:
         assert False
     return await twd_command(dut, TWD_CMD_R_BUFF, 32)
+
+async def twd_vuart_getchar(dut, max_poll=10):
+    # The status flags are also present in the FIFO register, but still use
+    # STAT because the FIFO storage flops are Xs initially.
+    for i in range(max_poll):
+        fifo_stat = await twd_read_bus(dut, VUART_STAT)
+        if fifo_stat & VUART_STAT_RXVLD:
+            return (await twd_read_bus(dut, VUART_FIFO)) & 0xff
+    return None
 
 ###############################################################################
 # RISC-V debug helpers
@@ -360,6 +377,7 @@ async def rvdebug_read_mem32(dut, addr):
     return rdata
 
 ###############################################################################
+# Helpers
 
 async def enable_power(dut):
     dut.VDD.value = 1
@@ -374,13 +392,15 @@ async def reset(reset, active_low=True, time_ns=1000):
     await Timer(time_ns, "ns")
     reset.value = active_low
 
-
 async def start_up(dut):
     """Startup sequence"""
     if gl:
         await enable_power(dut)
     await start_clock(dut.CLK)
     await reset(dut.RSTn)
+
+###############################################################################
+# Testcases
 
 @cocotb.test()
 async def test_twd_idcode(dut):
@@ -515,11 +535,51 @@ async def test_riscv_soft_irq(dut):
         cocotb.log.info(f"APU mip = {mip:08x}")
         assert ((mip >> 3) & 0x1) == irq_apu
 
+@cocotb.test()
+@cocotb.parametrize(app=[
+    "hellow"
+])
+async def test_execute_iram(dut, app="hellow"):
+    """Execute code from IRAM"""
+    swtest_dir = Path(__file__).resolve().parent.parent / "software/tests/iram"
+    rc = subprocess.run(["make", "-C", swtest_dir, f"APP={app}"])
+    assert rc.returncode == 0
+    with open(swtest_dir / f"build/{app}.bin", "rb") as f:
+        prog_bytes = f.read()
+    cocotb.log.info(f"Program size = {len(prog_bytes)}")
+    for i, word in enumerate(struct.iter_unpack("<l", prog_bytes)):
+        dut.i_chip_core.iram_u.sram.mem[i].value = word[0]
 
-def chip_top_runner():
+
+    await start_up(dut)
+    await twd_connect(dut)
+
+    await rvdebug_init(dut)
+    await rvdebug_halt(dut)
+    await rvdebug_put_gpr(dut, 8, 0)
+    await rvdebug_put_csr(dut, CSR_DPC, IRAM_BASE)
+    cocotb.log.info(f"Resuming at {IRAM_BASE:x}")
+    await rvdebug_resume(dut)
+
+    vuart_stdout = []
+    while True:
+        c = await twd_vuart_getchar(dut)
+        if c is None: break
+        sys.stdout.write(chr(c))
+        vuart_stdout.append(chr(c))
+
+    vuart_stdout = "".join(vuart_stdout)
+
+    cocotb.log.info(f"Processor standard output:\n\n{vuart_stdout}\n")
+    if app == "hellow":
+        assert vuart_stdout == "Hello, world!\r\n"
+
+###############################################################################
+# Test infrastructure
+
+def get_sources_defines_includes():
 
     proj_path = Path(__file__).resolve().parent
-
     sources = []
     defines = {}
     includes = []
@@ -550,6 +610,11 @@ def chip_top_runner():
         proj_path / "../ip/gf180mcu_ws_ip__id/vh/gf180mcu_ws_ip__id.v",
         proj_path / "../ip/gf180mcu_ws_ip__logo/vh/gf180mcu_ws_ip__logo.v",
     ]
+
+    return (sources, defines, includes)
+
+def chip_top_runner():
+    sources, defines, includes = get_sources_defines_includes()
 
     build_args = []
 
