@@ -45,6 +45,8 @@ wire [W_PWM:0] pwm_level = accum[W_SAMPLE -: W_PWM + 1];
 
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
+		q <= 1'b0;
+	end else begin
 		q <= pwm_level > {1'b0, pwm_ctr};
 	end
 end
