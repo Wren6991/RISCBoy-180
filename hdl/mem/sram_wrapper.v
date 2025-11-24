@@ -4,7 +4,7 @@
 // Limitations:
 //
 // * WIDTH must be a multiple of 8.
-// * DEPTH must be a power of 2, >= 128.
+// * DEPTH must be 128, 256 or a multiple of 512
 // * Write enable granularity is 8 bits (implemented using GWEN, so WEN can be
 //   tied low to save routing).
 
@@ -35,8 +35,8 @@ module sram_wrapper #(
 
 genvar x, y;
 generate
-if (DEPTH < 128 || (DEPTH & (DEPTH - 1))) begin: err_depth
-	initial $fatal("DEPTH must be a power of two, >= 128");
+if (DEPTH == 0 || (DEPTH != 128 && DEPTH != 256 && (DEPTH % 512) != 0)) begin: err_depth
+	initial $fatal("DEPTH must be 128, 256 or a multiple of 512");
 end
 
 if (WIDTH % 8 != 0) begin: err_width
