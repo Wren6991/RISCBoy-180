@@ -211,6 +211,7 @@ proc sram_pdn_ns {pdnname macrolist} {
         -grid $pdnname \
         -layers "$::env(PDN_VERTICAL_LAYER) Metal3"
 
+    # Strap pins on east/west edges of RAM
     add_pdn_stripe \
         -grid $pdnname \
         -layer Metal4 \
@@ -220,6 +221,21 @@ proc sram_pdn_ns {pdnname macrolist} {
         -pitch 426.86 \
         -starts_with GROUND \
         -number_of_straps 2
+
+    # Due to the above, we've punched an SRAM-sized hole in our M4 vertical
+    # rails. Put some small rails over the top of the macro just to nail M5
+    # back together. We still have an awful slot in the M4 routing above and
+    # below the macro; it's 5V, I'm sure it's ok
+    add_pdn_stripe \
+        -grid $pdnname \
+        -layer Metal4 \
+        -width 2.36 \
+        -offset 65.93 \
+        -spacing 0.28 \
+        -pitch 50 \
+        -starts_with GROUND \
+        -number_of_straps 7
+
 }
 
 sram_pdn_ns pdn_cpu_iram   {i_chip_core.iram_u.sram.*.ram_u}
