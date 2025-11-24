@@ -41,7 +41,7 @@ always @ (posedge clk or negedge rst_n) begin
 	end
 end
 
-wire [W_PWM:0] pwm_level = accum[W_SAMPLE + 1 -: W_PWM + 1];
+wire [W_PWM:0] pwm_level = accum[W_SAMPLE -: W_PWM + 1];
 
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
