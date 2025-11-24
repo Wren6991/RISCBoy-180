@@ -61,6 +61,8 @@ VERILOG_FILES:
 - dir::../hdl/apu/aout/apu_aout_regs.v
 - dir::../hdl/apu/aout/apu_lowpass_filter.v
 - dir::../hdl/apu/aout/apu_sdm.v
+- dir::../hdl/apu/timer/apu_timer.v
+- dir::../hdl/apu/timer/apu_timer_regs.v
 
 - dir::../hdl/vuart/vuart.v
 - dir::../hdl/vuart/vuart_host_regs.v

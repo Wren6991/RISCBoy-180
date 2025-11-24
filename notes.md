@@ -9,6 +9,7 @@
 	* Possible to reduce RAM bandwidth for ABLIT/ATILE? (possibly have timing budget for 1-entry tilenum cache)
 * CPU
 	* Investigate long reg2reg paths
+	* Remove x0 (surviving synthesis)
 * GPIOs
 	* Finalise list of peripherals
 	* IO muxing scheme
@@ -291,4 +292,45 @@ void main() {
 I have the testbench polling for characters, like the probe will poll on the real hardware.
 
 My tests are taking an annoyingly long time to run again, so let's do the other TWD optimisation feature I was thinking of (triggering a bus read with an address write). I re-orderd all the TWD command opcodes, which was a bit fiddly because I force all read opcodes to have a parity bit of 0 to park the bus before turnaround. This takes me from 44.77 to 37.19 seconds for a test run -- a bit less than I hoped but I'll take it.
+
+I also wrote some simple code to copy from IRAM to APU RAM, and start the APU core. Until this point I didn't have a register to hold APU execution until it was launched, so I added that too.
+
+I spent the rest of the day building the APU audio output pipeline. This runs from a 24 MHz clock and has three stages:
+
+* Upsample from stereo 16-bit 48 kSa/s to stereo 16-bit 8 x 48 kSa/s (384 kSa/s) with a 33-tap FIR lowpass 
+	* Quantised to 7-bit coefficients, scaled to not overflow but use full integer range
+	* Filter cutoff set to 22 kHz
+	* 33 taps puts the filter window edges roughly on the second zero crossing on each side of the sinc pulse
+* Sigma-delta up to 4-bit 1.5 MSa/s
+* Output 4-bit PWM with a 1.5 MHz carrier
+
+This is probably terribly suboptimal but I could bang it together in a few hours including designing the filter, and it should be well-behaved wrt overflow and whatnot. I'm aware of CIC but to be honest the fact the integrator stages can just overflow without issue has always been slightly mysterious to me, especially once the stuffing/dropping is involved. I'm worried there will be an edge case I missed, and I don't have much time to verify this, so good ol' reliable FIR it is.
+
+I want to look into higher-order sigma-delta in future to push more of the quantisation noise up out of the audio band but a first-order is basically one line of RTL so the engineering choice is clear here.
+
+I wrote some software to start up the audio output pipeline and generate ramps to/from midrail (which is necessary to avoid popping on startup, and will be done entirely in software).
+
+I was going to design some fancy timers for the APU but right now I'm attracted to the idea that samples are time, and APU software just counts samples to get things at the right point in time. The sample train must never stop after all. I'll probably add some simple repeating timers but scale back my ideas for things like a timer that executes delay sequences from a FIFO.
+
+### Day 7: EIGHT DAYS REMAIN
+
+I spent a bit of time today looking at why my SRAMs are carving a big hole in my vertical power routing. It turns out the straps Leo added down the east and west side of the RAMs to connect those edge pins cause pdngen to emit _no other metal 4 routing_ within the macro's halo. There's no easy solution to that one (it requires a redesign of the macro's power connections to hook up with M4 PDN strapping over M3 bars, and possibly an M3 ring to make it hook up nicely in both orientations) so I settled for adding some extra vertical stripes within the macro halo to ensure the internal M3 rails on the SRAM are nailed up to the M5 PDN routing, and also to keep the M5 nailed together. I still have a really awful slot in M4 below each RAM macro but lucky alignment means this gap is (tenuously) bridged above the macro. Overall the RAMs are much better-connected than they were, and it's 5V Vcore so we can tolerate some supply bounce.
+
+My goals for today are:
+
+* Write the APU timers (if any)
+* Implement the flash XIP interface (if any)
+* Finalise the GPIO pinout
+
+Just to recap I have 18 SRAM address inputs now (up to 512 kB with a 16-bit bus) and am moderately attached to them, partly since I could find 256k x 16 5V SRAMs on Digikey that weren't obsolete, but not 128k x 16. Would be shame to have that much RAM connected and not address all of it. This leaves me with 6 GPIOs. I have thoroughly eliminated UART since my virtual UART over TWD works great. So I need:
+
+* Flash (SPI or dual SPI): SCK, IO0, IO1, CS0n
+* GPIO: either an SPI GPIO expander (expensive) or a PISO shift register.
+
+A common PISO register is the 74HC165. This lacks an output enable, so I'll connect it in a slightly sneaky way: clock will be the flash SCK, LOADn will be the flash chip select, and the data output QH will always be connected to the GPIO. So, after at least one flash read (or just pulsing the chip select low without issuing any other clocks) I just read in on QH for eight SCK cycles, or however many buttons are connected. Delightfully devilish, Seymour.
+
+I have one spare pin. I don't have any particular need for it (it could be a blinkylight) but I think it would be fun to have infrared on here, for multiplayer. I have a (kinda shitty) UART already, so if you have an external demodulator then all that's necessary is to modulate the output by mixing in a 38 or 40 kHz carrier. Having an actual hardware UART output might be handy for low-level debug, and 
+
+Ok enough navel gazing, let's get on with it. APU timers first, as they're very simple.
+
 

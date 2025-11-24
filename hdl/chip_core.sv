@@ -10,8 +10,8 @@
 
 module chip_core #(
     parameter N_SRAM_DQ = 16,
-    parameter N_SRAM_A  = 17,
-    parameter N_GPIO    = 7
+    parameter N_SRAM_A  = 18,
+    parameter N_GPIO    = 6
 ) (
     inout  wire                 VDD,
     inout  wire                 VSS,
@@ -411,9 +411,11 @@ hazard3_dm #(
 // ------------------------------------------------------------------------
 // Processor instantiation
 
-localparam IRQ_PPU = 0;
-localparam IRQ_VUART = 1;
-localparam NUM_IRQS = 2;
+localparam IRQ_PPU       = 0;
+localparam IRQ_VUART     = 1;
+localparam IRQ_APU_AOUT  = 2;
+localparam IRQ_APU_TIMER = 3;
+localparam NUM_IRQS      = 4;
 
 wire                cpu_pwrup_req;
 wire                cpu_pwrup_ack = cpu_pwrup_req;
@@ -878,6 +880,8 @@ audio_processor #(
     .ahbls_hrdata               (apu_hrdata),
 
     .irq_cpu_softirq            (soft_irq),
+    .irq_apu_aout_to_cpu        (irq[IRQ_APU_AOUT]),
+    .irq_apu_timer_to_cpu       (irq[IRQ_APU_TIMER]),
 
     .audio_l                    (padout_audio_l),
     .audio_r                    (padout_audio_r)

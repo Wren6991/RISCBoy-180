@@ -46,6 +46,8 @@ module audio_processor #(
 	output wire [31:0] ahbls_hrdata,
 
     output wire        irq_cpu_softirq,
+    output wire        irq_apu_timer_to_cpu,
+    output wire        irq_apu_aout_to_cpu,
 
 	output wire        audio_l,
 	output wire        audio_r
@@ -126,8 +128,13 @@ end
 // ------------------------------------------------------------------------
 // Processor instantiation
 
-localparam NUM_IRQS = 1;
+wire                irq;        // mip.meip: from AOUT
+wire                soft_irq;   // mip.msip: from IPC
+wire                timer_irq;  // mip.mtip: from APU timer
 
+// Also make these IRQs available to main CPU
+assign irq_apu_aout_to_cpu = irq;
+assign irq_apu_timer_to_cpu = timer_irq;
 
 wire                start_apu;
 
@@ -152,10 +159,6 @@ wire                cpu_hresp;
 wire                cpu_hexokay;
 wire [31:0]         cpu_hwdata;
 wire [31:0]         cpu_hrdata;
-
-wire [NUM_IRQS-1:0] irq;
-wire                soft_irq;
-wire                timer_irq = 1'b0;
 
 wire                fence_i_vld;
 wire                fence_d_vld;
@@ -204,7 +207,7 @@ hazard3_cpu_1port #(
 
     .DEBUG_SUPPORT       (1),
     .BREAKPOINT_TRIGGERS (0),
-    .NUM_IRQS            (NUM_IRQS),
+    .NUM_IRQS            (1),
     .IRQ_PRIORITY_BITS   (0),
 
     .MVENDORID_VAL       (32'h0),
@@ -330,11 +333,25 @@ wire        aout_hresp;
 wire [31:0] aout_hwdata;
 wire [31:0] aout_hrdata;
 
+wire [15:0] timer_haddr;
+wire        timer_hwrite;
+wire [1:0]  timer_htrans;
+wire [2:0]  timer_hsize;
+wire [2:0]  timer_hburst;
+wire [3:0]  timer_hprot;
+wire        timer_hmastlock;
+wire [7:0]  timer_hmaster;
+wire        timer_hready;
+wire        timer_hready_resp;
+wire        timer_hresp;
+wire [31:0] timer_hwdata;
+wire [31:0] timer_hrdata;
+
 ahbl_splitter #(
     .N_PORTS   (3),
     .W_ADDR    (16),
-    .ADDR_MAP  ({16'h9000, 16'h8000, 16'h0000}),
-    .ADDR_MASK ({16'hf000, 16'hf000, 16'h8000})
+    .ADDR_MAP  ({16'ha000, 16'h9000, 16'h8000, 16'h0000}),
+    .ADDR_MASK ({16'hf000, 16'hf000, 16'hf000, 16'h8000})
 ) splitter_u (
     .clk             (clk_sys),
     .rst_n           (rst_n_sys),
@@ -358,19 +375,19 @@ ahbl_splitter #(
     .dst_hexokay     ('0),
     .dst_hexcl       (/* unused */),
 
-    .dst_hready      ({aout_hready      , ipc_hready      , ram_hready     }),
-    .dst_hready_resp ({aout_hready_resp , ipc_hready_resp , ram_hready_resp}),
-    .dst_hresp       ({aout_hresp       , ipc_hresp       , ram_hresp      }),
-    .dst_haddr       ({aout_haddr       , ipc_haddr       , ram_haddr      }),
-    .dst_hwrite      ({aout_hwrite      , ipc_hwrite      , ram_hwrite     }),
-    .dst_htrans      ({aout_htrans      , ipc_htrans      , ram_htrans     }),
-    .dst_hsize       ({aout_hsize       , ipc_hsize       , ram_hsize      }),
-    .dst_hburst      ({aout_hburst      , ipc_hburst      , ram_hburst     }),
-    .dst_hprot       ({aout_hprot       , ipc_hprot       , ram_hprot      }),
-    .dst_hmaster     ({aout_hmaster     , ipc_hmaster     , ram_hmaster    }),
-    .dst_hmastlock   ({aout_hmastlock   , ipc_hmastlock   , ram_hmastlock  }),
-    .dst_hwdata      ({aout_hwdata      , ipc_hwdata      , ram_hwdata     }),
-    .dst_hrdata      ({aout_hrdata      , ipc_hrdata      , ram_hrdata     })
+    .dst_hready      ({timer_hready      , aout_hready      , ipc_hready      , ram_hready     }),
+    .dst_hready_resp ({timer_hready_resp , aout_hready_resp , ipc_hready_resp , ram_hready_resp}),
+    .dst_hresp       ({timer_hresp       , aout_hresp       , ipc_hresp       , ram_hresp      }),
+    .dst_haddr       ({timer_haddr       , aout_haddr       , ipc_haddr       , ram_haddr      }),
+    .dst_hwrite      ({timer_hwrite      , aout_hwrite      , ipc_hwrite      , ram_hwrite     }),
+    .dst_htrans      ({timer_htrans      , aout_htrans      , ipc_htrans      , ram_htrans     }),
+    .dst_hsize       ({timer_hsize       , aout_hsize       , ipc_hsize       , ram_hsize      }),
+    .dst_hburst      ({timer_hburst      , aout_hburst      , ipc_hburst      , ram_hburst     }),
+    .dst_hprot       ({timer_hprot       , aout_hprot       , ipc_hprot       , ram_hprot      }),
+    .dst_hmaster     ({timer_hmaster     , aout_hmaster     , ipc_hmaster     , ram_hmaster    }),
+    .dst_hmastlock   ({timer_hmastlock   , aout_hmastlock   , ipc_hmastlock   , ram_hmastlock  }),
+    .dst_hwdata      ({timer_hwdata      , aout_hwdata      , ipc_hwdata      , ram_hwdata     }),
+    .dst_hrdata      ({timer_hrdata      , aout_hrdata      , ipc_hrdata      , ram_hrdata     })
 );
 
 // ------------------------------------------------------------------------
@@ -401,7 +418,7 @@ ahb_sync_sram #(
 );
 
 // ----------------------------------------------------------------------------
-// Inter-processor communication registers
+// Peripheral registers
 
 apu_ipc ipc_u (
     .clk               (clk_sys),
@@ -421,6 +438,24 @@ apu_ipc ipc_u (
 
     .riscv_softirq     ({soft_irq, irq_cpu_softirq})
 );
+
+apu_timer timer_u (
+    .clk               (clk_sys),
+    .rst_n             (rst_n_sys),
+
+    .ahbls_haddr       (timer_haddr),
+    .ahbls_htrans      (timer_htrans),
+    .ahbls_hwrite      (timer_hwrite),
+    .ahbls_hsize       (timer_hsize),
+    .ahbls_hready      (timer_hready),
+    .ahbls_hready_resp (timer_hready_resp),
+    .ahbls_hwdata      (timer_hwdata),
+    .ahbls_hrdata      (timer_hrdata),
+    .ahbls_hresp       (timer_hresp),
+
+    .irq               (timer_irq)
+);
+
 
 // ----------------------------------------------------------------------------
 // Sample FIFO and AOUT control interface

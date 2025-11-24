@@ -63,9 +63,10 @@ sim-view: ## View simulation waveforms in GTKWave
 	gtkwave cocotb/sim_build/chip_top.fst
 .PHONY: sim-view
 
-reg-regenerate: ## Regenerate all register blocks and their headers
+regblocks: ## Regenerate all register blocks and their headers
 	./scripts/regblock -a hdl/apu/ipc/apu_ipc_regs.yml
 	./scripts/regblock -a hdl/apu/aout/apu_aout_regs.yml
+	./scripts/regblock -a hdl/apu/timer/apu_timer_regs.yml
 	./scripts/regblock -a hdl/padctrl/padctrl_regs.yml
 	./scripts/regblock -a hdl/riscboy/hdl/graphics/ppu/dispctrl/regs/ppu_dispctrl_spi_regs.yml
 	./scripts/regblock -a hdl/riscboy/hdl/graphics/ppu/regs/ppu_regs.yml
