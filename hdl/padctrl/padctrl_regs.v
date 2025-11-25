@@ -55,8 +55,8 @@ module padctrl_regs (
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
 reg [31:0] rdata;
-wire wen = apbs_psel && apbs_penable && apbs_pwrite;
-wire ren = apbs_psel && apbs_penable && !apbs_pwrite;
+reg         wen;
+reg         ren;
 wire [19:0] addr = apbs_paddr & 20'h3c;
 assign apbs_prdata = rdata;
 assign apbs_pready = 1'b1;
@@ -222,6 +222,8 @@ end
 
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
+		wen <= 1'b0;
+		ren <= 1'b0;
 		gpio_pu_o <= 8'h32;
 		gpio_pd_o <= 8'hcd;
 		gpio_drive_o <= 2'h0;
@@ -249,6 +251,8 @@ always @ (posedge clk or negedge rst_n) begin
 		lcd_bl_drive_o <= 2'h0;
 		lcd_bl_slew_o <= 1'h1;
 	end else begin
+		wen <= apbs_psel &&  apbs_pwrite && !apbs_penable;
+		ren <= apbs_psel && !apbs_pwrite && !apbs_penable;
 		if (__gpio_pu_wen)
 			gpio_pu_o <= gpio_pu_wdata;
 		if (__gpio_pd_wen)

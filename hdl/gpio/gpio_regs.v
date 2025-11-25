@@ -55,8 +55,8 @@ module gpio_regs (
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
 reg [31:0] rdata;
-wire wen = apbs_psel && apbs_penable && apbs_pwrite;
-wire ren = apbs_psel && apbs_penable && !apbs_pwrite;
+reg         wen;
+reg         ren;
 wire [15:0] addr = apbs_paddr & 16'h3c;
 assign apbs_prdata = rdata;
 assign apbs_pready = 1'b1;
@@ -178,8 +178,12 @@ end
 
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
+		wen <= 1'b0;
+		ren <= 1'b0;
 		fsel_o <= 8'h0;
 	end else begin
+		wen <= apbs_psel &&  apbs_pwrite && !apbs_penable;
+		ren <= apbs_psel && !apbs_pwrite && !apbs_penable;
 		if (__fsel_wen)
 			fsel_o <= fsel_wdata;
 	end
