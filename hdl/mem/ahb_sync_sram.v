@@ -101,11 +101,10 @@ end
 // ----------------------------------------------------------------------------
 // SRAM and SRAM controls
 
-wire [W_BYTES-1:0] sram_wen = write_retire ? wmask_saved : {W_BYTES{1'b0}};
-// Note that following a read collision, the read address is supplied during the AHBL data phase
-wire [W_SRAM_ADDR-1:0] sram_addr = write_retire ? addr_saved : haddr_row;
-wire [W_DATA-1:0] sram_wdata = wbuf_vld ? wdata_saved : ahbls_hwdata;
-wire [W_DATA-1:0] sram_rdata;
+wire [W_BYTES-1:0]     sram_wen   = write_retire    ? wmask_saved : {W_BYTES{1'b0}};
+wire [W_SRAM_ADDR-1:0] sram_addr  = ahb_read_aphase ? haddr_row   : addr_saved;
+wire [W_DATA-1:0]      sram_wdata = wbuf_vld        ? wdata_saved : ahbls_hwdata;
+wire [W_DATA-1:0]      sram_rdata;
 
 sram_wrapper #(
 	.WIDTH (W_DATA),
