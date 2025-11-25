@@ -79,24 +79,16 @@ assign ahbls_hrdata      = sbus_rdata_q;
 assign ahbls_hready_resp = sbus_rdy_q;
 assign ahbls_hresp       = sbus_err_q;
 
+// Control-path signals have resets
 always @ (posedge clk_sys or negedge rst_n_sys) begin
 	if (!rst_n_sys) begin
-		sbus_addr <= 32'd0;
 		sbus_vld <= 1'b0;
-		sbus_size <= 2'd0;
-		sbus_write <= 1'b0;
-		sbus_rdata_q <= 32'd0;
 		sbus_err_q <= 1'b0;
 		sbus_rdy_q <= 1'b1;
 	end else if (ahbls_hready) begin
 		sbus_vld <= ahbls_htrans[1];
 		sbus_rdy_q <= !ahbls_htrans[1];
 		sbus_err_q  <= 1'b0;
-		// Not gating these updates on htrans[1] as currently that implies a
-		// mux2 on GF180MCU:
-		sbus_addr <= ahbls_haddr;
-		sbus_size <= ahbls_hsize[1:0];
-		sbus_write <= ahbls_hwrite;
 	end else if (sbus_vld && sbus_rdy && sbus_err) begin
 		// Generate phase 0 of AHB ERROR and deassert downstream
 		sbus_err_q <= 1'b1;
@@ -107,22 +99,26 @@ always @ (posedge clk_sys or negedge rst_n_sys) begin
 	end else if (sbus_vld && sbus_rdy) begin
 		// Generate AHB OKAY and deassert downstream
 		sbus_rdy_q <= 1'b1;
-		sbus_rdata_q <= sbus_rdata;
 		sbus_vld <= 1'b0;
 	end
+end
+
+// Data-path signals do not require reset (but do have CG terms)
+always @ (posedge clk_sys) if (ahbls_hready && ahbls_htrans[1]) begin
+	sbus_addr <= ahbls_haddr;
+	sbus_size <= ahbls_hsize[1:0];
+	sbus_write <= ahbls_hwrite;
+end
+
+always @ (posedge clk_sys) if (sbus_vld && sbus_rdy && !sbus_write) begin
+	sbus_rdata_q <= sbus_rdata;
 end
 
 // It might be surprising but if you put a 1-cycle delay on HWDATA then
 // everything just works out. SBUS doesn't actually need WDATA until after the
 // downstream address is issued. Not a public API detail but :)
-
-always @ (posedge clk_sys or negedge rst_n_sys) begin
-	if (!rst_n_sys) begin
-		sbus_wdata <= 32'd0;
-	end else begin
-		// TODO revisit if ICG inference is implemented
-		sbus_wdata <= ahbls_hwdata;
-	end
+always @ (posedge clk_sys) if (sbus_vld && sbus_write) begin
+	sbus_wdata <= ahbls_hwdata;
 end
 
 // ------------------------------------------------------------------------

@@ -2,6 +2,8 @@
 
 ## RTL
 
+* APU
+	* Reduce size of LPF shifter: 7/8 values are zero, only need to store the nonzero ones.
 * PPU
 	* Think harder about palette RAM read/write collisions
 	* Possible to reduce RAM bandwidth for ABLIT/ATILE? (possibly have timing budget for 1-entry tilenum cache)
