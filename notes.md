@@ -38,7 +38,7 @@
 ## Submission
 
 * Run wafer space pre-check
-* Check VDD and VSS pad locations are compatible 
+* Check VDD and VSS pad locations are compatible
 
 # Blog Material and Work Log
 
@@ -293,7 +293,7 @@ I also wrote some simple code to copy from IRAM to APU RAM, and start the APU co
 
 I spent the rest of the day building the APU audio output pipeline. This runs from a 24 MHz clock and has three stages:
 
-* Upsample from stereo 16-bit 48 kSa/s to stereo 16-bit 8 x 48 kSa/s (384 kSa/s) with a 33-tap FIR lowpass 
+* Upsample from stereo 16-bit 48 kSa/s to stereo 16-bit 8 x 48 kSa/s (384 kSa/s) with a 33-tap FIR lowpass
 	* Quantised to 7-bit coefficients, scaled to not overflow but use full integer range
 	* Filter cutoff set to 22 kHz
 	* 33 taps puts the filter window edges roughly on the second zero crossing on each side of the sinc pulse
@@ -325,7 +325,7 @@ Just to recap I have 18 SRAM address inputs now (up to 512 kB with a 16-bit bus)
 
 A common PISO register is the 74HC165. This lacks an output enable, so I'll connect it in a slightly sneaky way: clock will be the flash SCK, LOADn will be the flash chip select, and the data output QH will always be connected to the GPIO. So, after at least one flash read (or just pulsing the chip select low without issuing any other clocks) I just read in on QH for eight SCK cycles, or however many buttons are connected. Delightfully devilish, Seymour.
 
-I have one spare pin. I don't have any particular need for it (it could be a blinkylight) but I think it would be fun to have infrared on here, for multiplayer. I have a (kinda shitty) UART already, so if you have an external demodulator then all that's necessary is to modulate the output by mixing in a 38 or 40 kHz carrier. Having an actual hardware UART output might be handy for low-level debug, and 
+I have one spare pin. I don't have any particular need for it (it could be a blinkylight) but I think it would be fun to have infrared on here, for multiplayer. I have a (kinda shitty) UART already, so if you have an external demodulator then all that's necessary is to modulate the output by mixing in a 38 or 40 kHz carrier. Having an actual hardware UART output might be handy for low-level debug, and
 
 Ok enough navel gazing, let's get on with it. APU timers first, as they're very simple.
 
@@ -356,3 +356,41 @@ I also moved the behavioural clock generator into the Verilog testbench. Fun fac
 I don't like ragging on open-source projects but _damn_ this thing is a hot mess. I do not understand the hype. Python is a better language than Verilog for describing simulation models with complex _internal_ behaviour but every other part of the experience is slower and more frustrating.
 
 I reduced the size of the flash second stage from 4k to 1k, partly because I'm bored of watching the simulator load zeroes. That's still plenty to run a basic C program that finds and loads the next stage. The bootrom still searches at addresses 0 and 4k (alternating until it gives up) so you can double-buffer any modifications to the bootloader.
+
+Now the bootrom is brought up I can spend a bit of time looking at timing optimisation. First register the read/write strobes inside the APB register blocks (as PSEL && !PENABLE _always_ implies PENABLE on the next cycle): nice, looks better. Then remove the reset from the datapath flops on the SBUS bridge. Timing got a little worse, no clear reason why, may also just be because I added some clock enable terms to some signals like the write data. Then register the address bits in the APB blocks. This went less well:
+
+
+```
+ 0# handler(int) in /nix/store/g74fz644z0828i5dksxm95mzdb91aq2g-openroad-2025-10-28/bin/.openroad-wrapped
+ 1# _sigtramp in /usr/lib/system/libsystem_platform.dylib
+ 2# drt::FlexDRWorker::initMazeCost_ap() in /nix/store/g74fz644z0828i5dksxm95mzdb91aq2g-openroad-2025-10-28/bin/.openroad-wrapped
+ 3# drt::FlexDRWorker::init(drt::frDesign const*) in /nix/store/g74fz644z0828i5dksxm95mzdb91aq2g-openroad-2025-10-28/bin/.openroad-wrapped
+ 4# drt::FlexDRWorker::main(drt::frDesign*) in /nix/store/g74fz644z0828i5dksxm95mzdb91aq2g-openroad-2025-10-28/bin/.openroad-wrapped
+ 5# drt::FlexDR::processWorkersBatch(std::__1::vector<std::__1::unique_ptr<drt::FlexDRWorker, std::__1::default_delete<drt::FlexDRWorker>>, std::__1::allocator<std::__1::unique_ptr<drt::FlexDRWorker, std::__1::default_delete<drt::FlexDRWorker>>>>&, drt::FlexDR::IterationProgress&) (.omp_outlined) in /nix/store/g74fz644z0828i5dksxm95mzdb91aq2g-openroad-2025-10-28/bin/.openroad-wrapped
+```
+
+This isn't the first time I've had the router crash, though the previous backtrace was inside some boost library. I can file a ticket but it's not like it'll be fixed before tapeout. Let's just change the design some more and hope it doesn't come back...
+
+Ok, modified design still crashes. Just making a note. This one was the first crash:
+
+`947219ba8c3e`
+
+This one also crashes:
+
+`9be10ee4b8`
+
+```
+[INFO DRT-0076]   Complete 3000 pins.
+Signal 6 received
+Stack trace:
+ 0# handler(int) in /nix/store/g74fz644z0828i5dksxm95mzdb91aq2g-openroad-2025-10-28/bin/.openroad-wrapped
+ 1# _sigtramp in /usr/lib/system/libsystem_platform.dylib
+ 2# pthread_kill in /usr/lib/system/libsystem_pthread.dylib
+ 3# abort in /usr/lib/system/libsystem_c.dylib
+ 4# malloc_vreport in /usr/lib/system/libsystem_malloc.dylib
+ 5# malloc_report in /usr/lib/system/libsystem_malloc.dylib
+ 6# ___BUG_IN_CLIENT_OF_LIBMALLOC_POINTER_BEING_FREED_WAS_NOT_ALLOCATED in /usr/lib/system/libsystem_malloc.dylib
+
+```
+
+Yeah that does look like a heap corruption that got caught.

@@ -41,11 +41,10 @@ module vuart_host_regs (
 
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
-reg  [31:0] rdata;
+reg [31:0] rdata;
 reg         wen;
 reg         ren;
-reg  [9:0]  addr;
-
+wire [9:0]  addr = apbs_paddr & 10'hc;
 assign apbs_prdata = rdata;
 assign apbs_pready = 1'b1;
 assign apbs_pslverr = 1'b0;
@@ -113,12 +112,10 @@ always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
 		wen <= 1'b0;
 		ren <= 1'b0;
-		addr <= 10'd0;
 		stat_force_hostconn_o <= 1'h0;
 	end else begin
-		wen <= apbs_psel && !apbs_penable &&  apbs_pwrite;
-		ren <= apbs_psel && !apbs_penable && !apbs_pwrite;
-		if (apbs_psel && !apbs_penable) addr <= apbs_paddr & 10'hc;
+		wen <= apbs_psel &&  apbs_pwrite && !apbs_penable;
+		ren <= apbs_psel && !apbs_pwrite && !apbs_penable;
 		if (__stat_wen)
 			stat_force_hostconn_o <= stat_force_hostconn_wdata;
 	end

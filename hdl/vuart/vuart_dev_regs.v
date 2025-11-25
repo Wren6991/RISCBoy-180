@@ -44,11 +44,10 @@ module vuart_dev_regs (
 
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
-reg  [31:0] rdata;
+reg [31:0] rdata;
 reg         wen;
 reg         ren;
-reg  [15:0] addr;
-
+wire [15:0] addr = apbs_paddr & 16'hc;
 assign apbs_prdata = rdata;
 assign apbs_pready = 1'b1;
 assign apbs_pslverr = 1'b0;
@@ -131,14 +130,12 @@ always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
 		wen <= 1'b0;
 		ren <= 1'b0;
-		addr <= 16'd0;
 		irqctrl_rx_enable_o <= 1'h0;
 		irqctrl_tx_enable_o <= 1'h0;
 		irqctrl_tx_level_o <= 2'h0;
 	end else begin
-		wen <= apbs_psel && !apbs_penable &&  apbs_pwrite;
-		ren <= apbs_psel && !apbs_penable && !apbs_pwrite;
-		if (apbs_psel && !apbs_penable) addr <= apbs_paddr & 16'hc;
+		wen <= apbs_psel &&  apbs_pwrite && !apbs_penable;
+		ren <= apbs_psel && !apbs_pwrite && !apbs_penable;
 		if (__irqctrl_wen)
 			irqctrl_rx_enable_o <= irqctrl_rx_enable_wdata;
 		if (__irqctrl_wen)
