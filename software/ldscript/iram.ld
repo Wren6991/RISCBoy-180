@@ -23,19 +23,19 @@ SECTIONS {
 		. = ALIGN(4);
 	} > IRAM
 
-	.bss : {
-		PROVIDE(__sbss = .);
-		*(.bss .bss.*)
-		. = ALIGN(4);
-		PROVIDE(__ebss = .);
-	} > IRAM
-
 	.sdata : {
 		__global_pointer$ = . + 2K;
 		*(.srodata*)
 		*(.sdata*)
 		*(.sbss*)
 		. = ALIGN(4);
+	} > IRAM
+
+	.bss : {
+		PROVIDE(__sbss = .);
+		*(.bss .bss.*)
+		. = ALIGN(4);
+		PROVIDE(__ebss = .);
 	} > IRAM
 
 	PROVIDE(__stacktop = ORIGIN(IRAM) + LENGTH(IRAM));

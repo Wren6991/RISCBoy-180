@@ -334,3 +334,23 @@ I also stuck in some GPIO registers, and promoted the two AUDIO pins to honorary
 I've decided I'm not interested in flash XIP. For one thing, I do that at work. For another, there's a big focus on real-time here and it's a performance trap (even though you can avoid it fine if you know it's there). Also I just straight up have enough RAM already to run some interesting firmware like MicroPython, so it's not necessary to execute-in-place from flash. Finally I don't want the timing cost of decoding an extra address MSB (or more than one) on the processor address bus, so good, that's gone.
 
 I will add one flash peripheral which is a simple streaming read with a FIFO. This would be useful for paging in more game data, tile sets etc somewhat asynchronously with the CPU. This will be mapped on the same pins used by the bootrom for SPI, and will support (only) dual-SPI BBh reads.
+
+### Day 8: SEVEN DAYS REMAIN
+
+First task for the day is to bring up the flash bootloader I wrote yesterday. As I was lying in bed waiting to fall asleep I realised I missed a byte swap on the SPI read function so I added that.
+
+I wrote a very quick and dirty SPI flash model in Verilog to load and run code from. I'll just write one testcase for this because it should always execute in the same way; what matters is what the second stage code does after being loaded into RAM.
+
+I also moved the behavioural clock generator into the Verilog testbench. Fun fact: toggling the clock in Verilog and then just letting the simulator run using Timer(), simulates **twice as fast** as toggling the clock from cocotb. 100% overhead to toggle one signal. I don't think I will use cocotb in any future projects. Other complaints about coocotb to get it out of my system:
+
+* The way the test runner implicitly scrapes all of the tests from a python module and doesn't let you filter the test list is dumb. If one test fails then the next thing I want to do is re-run the failing test, **only**. The developers apparently put zero thought into how their tool would be used.
+
+* Having all of my tests in one big waveform dump is difficult to navigate.
+
+* Running all tests sequentially in one simulator instance is incredibly slow compared to parallelising them over multiple instances, and this behaviour seems to be hardcoded.
+
+* This may be a simulator issue, but refreshing the waveform viewer while the test is running misses all activity beyond about 300 us into the trace. I'm used to watching tests as they progress so I can spot mistakes early, kill and restart the test.
+
+I don't like ragging on open-source projects but _damn_ this thing is a hot mess. I do not understand the hype. Python is a better language than Verilog for describing simulation models with complex _internal_ behaviour but every other part of the experience is slower and more frustrating.
+
+I reduced the size of the flash second stage from 4k to 1k, partly because I'm bored of watching the simulator load zeroes. That's still plenty to run a basic C program that finds and loads the next stage. The bootrom still searches at addresses 0 and 4k (alternating until it gives up) so you can double-buffer any modifications to the bootloader.

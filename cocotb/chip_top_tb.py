@@ -22,8 +22,6 @@ pdk = os.getenv("PDK", "gf180mcuD")
 scl = os.getenv("SCL", "gf180mcu_fd_sc_mcu9t5v0")
 gl = os.getenv("GL", False)
 
-hdl_toplevel = "chip_top"
-
 ###############################################################################
 # System address map
 
@@ -378,25 +376,16 @@ async def rvdebug_read_mem32(dut, addr):
 ###############################################################################
 # Helpers
 
-async def enable_power(dut):
-    dut.VDD.value = 1
-    dut.VSS.value = 0
-
-async def start_clock(clock, freq=50):
-    c = Clock(clock, 1 / freq * 1000, "ns")
-    cocotb.start_soon(c.start())
-
-async def reset(reset, active_low=True, time_ns=1000):
-    reset.value = not active_low
-    await Timer(time_ns, "ns")
-    reset.value = active_low
-
 async def start_up(dut):
-    """Startup sequence"""
     if gl:
-        await enable_power(dut)
-    await start_clock(dut.CLK)
-    await reset(dut.RSTn)
+        dut.VDD.value = 1
+        dut.VSS.value = 0
+    dut.RSTn.value = 0
+    dut.clk_running.value = 0
+    await Timer(1, "us")
+    dut.clk_running.value = 1
+    await Timer(1, "us")
+    dut.RSTn.value = 1
 
 ###############################################################################
 # Testcases
@@ -549,8 +538,8 @@ async def test_execute_iram(dut, app="hellow"):
     cocotb.log.info(f"Program size = {len(prog_bytes)}")
     prog_words = list(w[0] for w in struct.iter_unpack("<l", prog_bytes))
     for i, word in enumerate(prog_words):
-        dut.i_chip_core.iram_u.sram.mem[i].value = word
-        dut.i_chip_core.iram_u.sram.mem[i].value = Release()
+        dut.chip_u.i_chip_core.iram_u.sram.mem[i].value = word
+        dut.chip_u.i_chip_core.iram_u.sram.mem[i].value = Release()
 
     await start_up(dut)
     await twd_connect(dut)
@@ -563,19 +552,83 @@ async def test_execute_iram(dut, app="hellow"):
     await rvdebug_resume(dut)
 
     vuart_stdout = []
-    while True:
-        c = await twd_vuart_getchar(dut)
+    def test_done():
+        if len(vuart_stdout) < 6:
+            return False
+        endstr = "".join(vuart_stdout[-6:])
+        if endstr == "!TPASS":
+            return True
+        if endstr == "!TFAIL":
+            return True
+        return False
+
+    while not test_done():
+        c = await twd_vuart_getchar(dut, max_poll=1000)
         if c is None: break
         sys.stdout.write(chr(c))
         vuart_stdout.append(chr(c))
 
+    sys.stdout.write("\n")
     vuart_stdout = "".join(vuart_stdout)
+
+    assert vuart_stdout.endswith("!TPASS")
+    vuart_stdout = vuart_stdout[:-6]
 
     cocotb.log.info(f"Processor standard output:\n\n{vuart_stdout}\n")
     if app == "hellow":
         assert vuart_stdout == "Hello, world!\r\n"
     elif app == "start_apu":
         assert vuart_stdout == "Starting APU\r\n" + "Received IRQ\r\n"
+
+@cocotb.test()
+@cocotb.parametrize(app=[
+    "hellow"
+])
+async def test_execute_flash(dut, app="hellow"):
+    """Run bootrom, with code loaded into flash. ROM should load code into IRAM then run it."""
+    swtest_dir = Path(__file__).resolve().parent.parent / "software/tests/flash"
+    rc = subprocess.run(["make", "-C", swtest_dir, f"APP={app}"])
+    assert rc.returncode == 0
+    with open(swtest_dir / f"build/{app}.padded.bin", "rb") as f:
+        prog_bytes = f.read()
+    cocotb.log.info(f"Program size = {len(prog_bytes)}")
+    for i, b in enumerate(prog_bytes):
+        dut.flash_u.mem[i].value = b
+        dut.flash_u.mem[i].value = Release()
+
+    await start_up(dut)
+    await twd_connect(dut)
+
+    vuart_stdout = []
+    def test_done():
+        if len(vuart_stdout) < 6:
+            return False
+        endstr = "".join(vuart_stdout[-6:])
+        if endstr == "!TPASS":
+            return True
+        if endstr == "!TFAIL":
+            return True
+        return False
+
+    for i in range(20):
+        cocotb.log.info(f"Waiting {i} ms")
+        await Timer(1, "ms")
+
+    while not test_done():
+        c = await twd_vuart_getchar(dut, max_poll=100)
+        if c is None: break
+        sys.stdout.write(chr(c))
+        vuart_stdout.append(chr(c))
+
+    sys.stdout.write("\n")
+    vuart_stdout = "".join(vuart_stdout)
+
+    assert vuart_stdout.endswith("!TPASS")
+    vuart_stdout = vuart_stdout[:-6]
+
+    cocotb.log.info(f"Processor standard output:\n\n{vuart_stdout}\n")
+    if app == "hellow":
+        assert vuart_stdout == "Hello, world!\r\n"
 
 ###############################################################################
 # Test infrastructure
@@ -587,13 +640,15 @@ def get_sources_defines_includes():
     defines = {}
     includes = []
 
+    sources.extend(["tb/tb.v", "tb/spi_flash_model.v"])
+
     # SCL models: included even for RTL sims, as RTL may instantiate cells in some rare cases
     sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v")
     sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / "primitives.v")
 
     if gl:
         # We use the powered netlist
-        sources.append(proj_path / f"../final/pnl/{hdl_toplevel}.pnl.v")
+        sources.append(proj_path / f"../final/pnl/{"tb"}.pnl.v")
 
         defines = {"FUNCTIONAL": True, "USE_POWER_PINS": True}
     else:
@@ -608,6 +663,7 @@ def get_sources_defines_includes():
         
         # SRAM macros
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
+        Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram256x8m8wm1.v",
         
         # Custom IP
         proj_path / "../ip/gf180mcu_ws_ip__id/vh/gf180mcu_ws_ip__id.v",
@@ -632,7 +688,7 @@ def chip_top_runner():
     runner = get_runner(sim)
     runner.build(
         sources=sources,
-        hdl_toplevel=hdl_toplevel,
+        hdl_toplevel="tb",
         defines=defines,
         always=True,
         includes=includes,
@@ -643,7 +699,7 @@ def chip_top_runner():
     plusargs = []
 
     runner.test(
-        hdl_toplevel=hdl_toplevel,
+        hdl_toplevel="tb",
         test_module="chip_top_tb,",
         plusargs=plusargs,
         waves=True,

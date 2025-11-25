@@ -16,4 +16,5 @@ int main() {
 	while (!softirq_status())
 		;
 	vuart_puts("Received IRQ\n");
+	vuart_puts("!TPASS");
 }

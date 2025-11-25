@@ -15,93 +15,101 @@ module ahb_rom_boot (
 	input  wire        ahbls_hready,
 	output wire        ahbls_hready_resp,
 	input  wire [31:0] ahbls_hwdata,
-	output reg  [31:0] ahbls_hrdata,
+	output wire [31:0] ahbls_hrdata,
 	output wire        ahbls_hresp
 );
 
-localparam [19:0] ADDR_MASK = 20'h1fc;
+localparam [19:0] ADDR_MASK = 20'hfc;
 
-reg [19:0] addr;
+reg [19:0] addr_q;
+wire [19:0] addr = addr_q & ADDR_MASK;
 
+always @ (posedge clk) if (ahbls_htrans[1] && ahbls_hready) begin
+	addr_q <= ahbls_haddr & ADDR_MASK;
+end
+
+reg [31:0] rom_rdata;
+always @ (*) case (addr)
+	20'h0: rom_rdata = 32'h44fd447d;
+	20'h4: rom_rdata = 32'hfcfd14fd;
+	20'h8: rom_rdata = 32'hfc65147d;
+	20'hc: rom_rdata = 32'h00082137;
+	20'h10: rom_rdata = 32'hc0010593;
+	20'h14: rom_rdata = 32'hc1884501;
+	20'h18: rom_rdata = 32'heee30591;
+	20'h1c: rom_rdata = 32'h6437fe25;
+	20'h20: rom_rdata = 32'h2023000e;
+	20'h24: rom_rdata = 32'h479d0004;
+	20'h28: rom_rdata = 32'h00080bb7;
+	20'h2c: rom_rdata = 32'h4501c81c;
+	20'h30: rom_rdata = 32'h69414c09;
+	20'h34: rom_rdata = 32'h28ad79c1;
+	20'h38: rom_rdata = 32'h24234481;
+	20'h3c: rom_rdata = 32'h8a930184;
+	20'h40: rom_rdata = 32'h1941400b;
+	20'h44: rom_rdata = 32'h8b1309bd;
+	20'h48: rom_rdata = 32'hf5133fcb;
+	20'h4c: rom_rdata = 32'h05320014;
+	20'h50: rom_rdata = 32'h29851513;
+	20'h54: rom_rdata = 32'h01842623;
+	20'h58: rom_rdata = 32'h29951513;
+	20'h5c: rom_rdata = 32'h0a372891;
+	20'h60: rom_rdata = 32'h45010008;
+	20'h64: rom_rdata = 32'h202320b1;
+	20'h68: rom_rdata = 32'h0a1100aa;
+	20'h6c: rom_rdata = 32'hff5a1be3;
+	20'h70: rom_rdata = 32'h01842423;
+	20'h74: rom_rdata = 32'h3fcba603;
+	20'h78: rom_rdata = 32'h000806b7;
+	20'h7c: rom_rdata = 32'h47054781;
+	20'h80: rom_rdata = 32'h972e828c;
+	20'h84: rom_rdata = 32'h00e97363;
+	20'h88: rom_rdata = 32'h97ba974e;
+	20'h8c: rom_rdata = 32'h00f97363;
+	20'h90: rom_rdata = 32'h068597ce;
+	20'h94: rom_rdata = 32'hff6696e3;
+	20'h98: rom_rdata = 32'h08f747b3;
+	20'h9c: rom_rdata = 32'h00f61363;
+	20'ha0: rom_rdata = 32'h04859b82;
+	20'ha4: rom_rdata = 32'h92e347a9;
+	20'ha8: rom_rdata = 32'h0073faf4;
+	20'hac: rom_rdata = 32'hbff51050;
+	20'hb0: rom_rdata = 32'h02000693;
+	20'hb4: rom_rdata = 32'h67374781;
+	20'hb8: rom_rdata = 32'h4811000e;
+	20'hbc: rom_rdata = 32'h51634585;
+	20'hc0: rom_rdata = 32'h24230205;
+	20'hc4: rom_rdata = 32'hc34c0107;
+	20'hc8: rom_rdata = 32'h07865310;
+	20'hcc: rom_rdata = 32'h5613c34c;
+	20'hd0: rom_rdata = 32'h16fd4836;
+	20'hd4: rom_rdata = 32'h8fd10506;
+	20'hd8: rom_rdata = 32'hd513f2fd;
+	20'hdc: rom_rdata = 32'h80826987;
+	20'he0: rom_rdata = 32'h01072623;
+	20'he4: rom_rdata = 32'h0000b7cd;
+	default: rom_rdata = 32'h00000000;
+endcase
+
+reg ready;
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
-		addr <= {20{1'b0}};
-	end else if (ahbls_hready) begin
-		addr <= ahbls_haddr & ADDR_MASK;
+		ready <= 1'b1;
+	end else if (ahbls_hready && ahbls_htrans[1]) begin
+		ready <= 1'b0;
+	end else begin
+		ready <= 1'b1;
 	end
 end
 
-assign ahbls_hready_resp = 1'b1;
-assign ahbls_hresp = 1'b0;
+reg [31:0] q;
+always @ (posedge clk) begin
+	q <= rom_rdata;
+end
 
-always @ (*) case (addr)
-	20'h0: ahbls_hrdata = 32'h44fd447d;
-	20'h4: ahbls_hrdata = 32'hfcfd14fd;
-	20'h8: ahbls_hrdata = 32'hfc65147d;
-	20'hc: ahbls_hrdata = 32'h00082137;
-	20'h10: ahbls_hrdata = 32'hc0010593;
-	20'h14: ahbls_hrdata = 32'hc1884501;
-	20'h18: ahbls_hrdata = 32'heee30591;
-	20'h1c: ahbls_hrdata = 32'h7179fe25;
-	20'h20: ahbls_hrdata = 32'hd226d422;
-	20'h24: ahbls_hrdata = 32'hce4ed04a;
-	20'h28: ahbls_hrdata = 32'hc85aca56;
-	20'h2c: ahbls_hrdata = 32'hc462c65e;
-	20'h30: ahbls_hrdata = 32'hcc52d606;
-	20'h34: ahbls_hrdata = 32'h000e6437;
-	20'h38: ahbls_hrdata = 32'h00042023;
-	20'h3c: ahbls_hrdata = 32'hc81c479d;
-	20'h40: ahbls_hrdata = 32'h4c094501;
-	20'h44: ahbls_hrdata = 32'h00081b37;
-	20'h48: ahbls_hrdata = 32'h79c16941;
-	20'h4c: ahbls_hrdata = 32'h448128ad;
-	20'h50: ahbls_hrdata = 32'h01842423;
-	20'h54: ahbls_hrdata = 32'h09bd1941;
-	20'h58: ahbls_hrdata = 32'hffcb0a93;
-	20'h5c: ahbls_hrdata = 32'hf5134ba9;
-	20'h60: ahbls_hrdata = 32'h05320014;
-	20'h64: ahbls_hrdata = 32'h29851513;
-	20'h68: ahbls_hrdata = 32'h01842623;
-	20'h6c: ahbls_hrdata = 32'h29951513;
-	20'h70: ahbls_hrdata = 32'h0a372899;
-	20'h74: ahbls_hrdata = 32'h45010008;
-	20'h78: ahbls_hrdata = 32'h202320b9;
-	20'h7c: ahbls_hrdata = 32'h0a1100aa;
-	20'h80: ahbls_hrdata = 32'hff6a1be3;
-	20'h84: ahbls_hrdata = 32'h01842423;
-	20'h88: ahbls_hrdata = 32'hffcb2603;
-	20'h8c: ahbls_hrdata = 32'h000806b7;
-	20'h90: ahbls_hrdata = 32'h47054781;
-	20'h94: ahbls_hrdata = 32'h972e828c;
-	20'h98: ahbls_hrdata = 32'h00e97363;
-	20'h9c: ahbls_hrdata = 32'h97ba974e;
-	20'ha0: ahbls_hrdata = 32'h00f97363;
-	20'ha4: ahbls_hrdata = 32'h068597ce;
-	20'ha8: ahbls_hrdata = 32'hff5696e3;
-	20'hac: ahbls_hrdata = 32'h08f747b3;
-	20'hb0: ahbls_hrdata = 32'h00f61563;
-	20'hb4: ahbls_hrdata = 32'h000807b7;
-	20'hb8: ahbls_hrdata = 32'h04859782;
-	20'hbc: ahbls_hrdata = 32'hfb7491e3;
-	20'hc0: ahbls_hrdata = 32'h10500073;
-	20'hc4: ahbls_hrdata = 32'h86aabff5;
-	20'hc8: ahbls_hrdata = 32'h02000613;
-	20'hcc: ahbls_hrdata = 32'h67b74501;
-	20'hd0: ahbls_hrdata = 32'h4891000e;
-	20'hd4: ahbls_hrdata = 32'hd4634805;
-	20'hd8: ahbls_hrdata = 32'ha4230206;
-	20'hdc: ahbls_hrdata = 32'h43d80117;
-	20'he0: ahbls_hrdata = 32'h0107a223;
-	20'he4: ahbls_hrdata = 32'h1713538c;
-	20'he8: ahbls_hrdata = 32'ha2230015;
-	20'hec: ahbls_hrdata = 32'hd5930107;
-	20'hf0: ahbls_hrdata = 32'h167d4835;
-	20'hf4: ahbls_hrdata = 32'he5330686;
-	20'hf8: ahbls_hrdata = 32'hfe7100e5;
-	20'hfc: ahbls_hrdata = 32'ha6238082;
-	20'h100: ahbls_hrdata = 32'hbff10117;
-	default: ahbls_hrdata = 32'h00000000;
-endcase
+assign ahbls_hresp = 1'b0;
+assign ahbls_hready_resp = ready;
+assign ahbls_hrdata = q;
 
 endmodule
 

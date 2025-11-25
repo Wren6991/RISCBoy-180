@@ -6,6 +6,13 @@
 
 #define vuart_dev_hw ((vuart_dev_hw_t *)VUART_DEV_BASE)
 
+// Call at the start of your program if you don't want debug prints to fall
+// through before the host connects
+static inline void vuart_wait_for_connection(void) {
+	while (!(vuart_dev_hw->stat & VUART_DEV_STAT_HOSTCONN_MASK))
+		;
+}
+
 // If host is connected, put character. Otherwise bail out. linefeed is
 // converted to carriage return + linefeed.
 static inline void vuart_putc(char c) {
@@ -26,6 +33,9 @@ static inline void vuart_putc(char c) {
 	vuart_dev_hw->fifo = (uint32_t)c;
 }
 
+// If host is connected, write string. Otherwise bail out. linefeed is
+// converted to carriage return + linefeed. Does not add an implicit linefeed
+// at the end of the string.
 static inline void vuart_puts(const char *s) {
 	if (!(vuart_dev_hw->stat & VUART_DEV_STAT_HOSTCONN_MASK)) {
 		return;

@@ -4,20 +4,20 @@
 #include "addressmap.h"
 #include "gpio.h"
 
-#define SECTOR_SIZE 4096
+#define SECTOR_SIZE_BYTES 4096
+#define BINARY_SIZE_BYTES 1024
 
 static uint32_t spi_put_get(uint32_t outdata) {
 	uint32_t indata = 0;
 	for (int i = 0; i < 32; ++i) {
 		gpio_put(GPIO_SPI_IO0, outdata >> 31);
 		outdata <<= 1;
-		(void)gpio_hw->out_xor; // delay
 		gpio_toggle(GPIO_SPI_SCK);
 		indata <<= 1;
 		indata |= (uint32_t)gpio_get(GPIO_SPI_IO1);
 		gpio_toggle(GPIO_SPI_SCK);
 	}
-	return indata;
+	return __builtin_bswap32(indata);
 }
 
 static void spi_start_read(uint32_t addr) {
@@ -58,20 +58,23 @@ static uint32_t checksum_adler32(const uint8_t *buf, size_t len) {
     return (s2 << 16) | (s1 & 0xffff);
 }
 
-int __attribute__((used, noreturn)) main() {
+// Use of naked means prolog is omitted (GCC stacks registers even for
+// noreturn). Not supposed to do this if there are C statements in the body,
+// so need to review the disassembly after changes.
+int __attribute__((used, noreturn, naked)) main() {
 	uint8_t *iram = (uint8_t *)IRAM_BASE;
 	uint32_t *iram32 = (uint32_t *)IRAM_BASE;
 	// Look for a 4k image with a valid checksum in either of the first two
 	// flash sectors. After 10 attempts, give up. 10 is chosen arbitrarily.
 	spi_init();
 	for (int i = 0; i < 10; ++i) {
-		spi_start_read((i & 1) * SECTOR_SIZE);
-		for (int j = 0; j < SECTOR_SIZE / 4; ++j) {
+		spi_start_read((i & 1) * SECTOR_SIZE_BYTES);
+		for (int j = 0; j < BINARY_SIZE_BYTES / 4; ++j) {
 			iram32[j] = spi_put_get(0);
 		}
 		spi_finish_read();
-		uint32_t checksum_expect = *(uint32_t*)&iram[SECTOR_SIZE - 4];
-		uint32_t checksum_actual = checksum_adler32(iram, SECTOR_SIZE - 4);
+		uint32_t checksum_expect = *(uint32_t*)&iram[BINARY_SIZE_BYTES - 4];
+		uint32_t checksum_actual = checksum_adler32(iram, BINARY_SIZE_BYTES - 4);
 		if (checksum_expect == checksum_actual) {
 			// Here we go gamers
 			((void(*)())iram)();

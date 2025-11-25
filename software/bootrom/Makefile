@@ -21,4 +21,4 @@ build/$(APP).elf: $(APP).c $(EXTRA_SRC) $(LDSCRIPT) $(INCDIR) $(lastword $(MAKEF
 	$(CROSS)objcopy -O binary $@ $(patsubst %.elf,%.bin,$@)
 
 ../../hdl/mem/ahb_rom_boot.v: build/$(APP).elf ../../scripts/bin2rom
-	../../scripts/bin2rom -a 20 $(patsubst %.elf,%.bin,$<) ../../hdl/mem/ahb_rom_boot.v
+	../../scripts/bin2rom -a 20 --outreg $(patsubst %.elf,%.bin,$<) ../../hdl/mem/ahb_rom_boot.v
