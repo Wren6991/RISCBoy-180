@@ -45,8 +45,8 @@ module chip_core #(
     output wire                 padout_audio_r,
     output wire                 padoe_audio_l,
     output wire                 padoe_audio_r,
-    output wire                 padin_audio_l,
-    output wire                 padin_audio_r,
+    input  wire                 padin_audio_l,
+    input  wire                 padin_audio_r,
 
     // LCD signals (output only)
     output wire                 padout_lcd_clk,

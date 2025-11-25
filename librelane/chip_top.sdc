@@ -86,8 +86,9 @@ set_input_delay [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_po
 }]
 
 # GPIO: half period I guess? Keeping the round trip to a whole period seems good.
-set_output_delay -min 0 -max [expr 0.50 * CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
-set_input_delay  -min 0 -max [expr 0.50 * CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
+set_output_delay      [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
+set_input_delay  -max [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
+set_input_delay  -min 0                             -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
 
 # Backlight PWM: low-frequency, timing unimportant
 set_false_path -setup -hold -through [get_ports LCD_BL]

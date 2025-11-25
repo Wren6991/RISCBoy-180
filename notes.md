@@ -10,16 +10,12 @@
 	* Remove x0 (surviving synthesis)
 * GPIOs
 	* Finalise list of peripherals
-	* IO muxing scheme
-	* Software GPIO registers (currently just have PU/PD in padctrl)
-* Flash XIP
-	* Drop?
+* SPI flash read
 * Clocking
 	* Create DCO
 		* Hard macro?
 	* Create clock muxes and dividers
 	* Create control registers and hook everything up
-* Sea-of-gates ROM
 * Review resettable flops and see if they can be made non-reset for better density/routing
 
 ## "Verification"
@@ -331,4 +327,10 @@ I have one spare pin. I don't have any particular need for it (it could be a bli
 
 Ok enough navel gazing, let's get on with it. APU timers first, as they're very simple.
 
+...and that went fairly quickly. We have some simple timers (3x one-shot or repeating timers with a shared TICK timebase) and the APU interrupts are now also exposed to the main CPU, both because it might want to use the peripheral and because you might want to test your APU code running on the main CPU so you have access to VUART and more RAM.
 
+I also stuck in some GPIO registers, and promoted the two AUDIO pins to honorary GPIO status (there are 6 GPIOs, 0 through 5, but AUDIO pins are bits 6 and 7 in the GPIO registers). I also wrote a bin-to-ROM generator to make AHB sea-of-gates ROMs from binary files, and wrote a very quick and dirty bootloader which searches for an image with a valid adler32 checksum in either of the first two flash sectors, and jumps into the first one it finds. It annoyingly comes out at just over 256 bytes (with bitbanged SPI).
+
+I've decided I'm not interested in flash XIP. For one thing, I do that at work. For another, there's a big focus on real-time here and it's a performance trap (even though you can avoid it fine if you know it's there). Also I just straight up have enough RAM already to run some interesting firmware like MicroPython, so it's not necessary to execute-in-place from flash. Finally I don't want the timing cost of decoding an extra address MSB (or more than one) on the processor address bus, so good, that's gone.
+
+I will add one flash peripheral which is a simple streaming read with a FIFO. This would be useful for paging in more game data, tile sets etc somewhat asynchronously with the CPU. This will be mapped on the same pins used by the bootrom for SPI, and will support (only) dual-SPI BBh reads.
