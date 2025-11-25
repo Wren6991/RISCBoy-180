@@ -456,8 +456,8 @@ cell_clkgate_low clkgate_cpu_u (
 );
 
 hazard3_cpu_1port #(
-    .RESET_VECTOR        (32'h00000000),
-    .MTVEC_INIT          (32'h00000000),
+    .RESET_VECTOR        (32'h000a0000),
+    .MTVEC_INIT          (32'h000a0000),
 
     .EXTENSION_A         (0),
     .EXTENSION_C         (1),
@@ -573,7 +573,8 @@ hazard3_cpu_1port #(
 // 1 MB system address space:
 //
 // 00000 to 7ffff: external SRAM     (up to 512 kB)
-// 80000 to cffff: internal SRAM     (mirrored across 256 kB)
+// 80000 to 9ffff: internal SRAM     (mirrored across 128 kB)
+// a0000 to bffff: boot ROM          (mirrored across 128 kB)
 // c0000 to dffff: APU address space (128 kB aperture)
 // e0000 to fffff: APB peripherals   (128 kB address space, ~4 kB each)
 
@@ -609,6 +610,22 @@ wire                iram_hexokay;
 wire [31:0]         iram_hwdata;
 wire [31:0]         iram_hrdata;
 
+wire [19:0]         rom_haddr;
+wire                rom_hwrite;
+wire [1:0]          rom_htrans;
+wire [2:0]          rom_hsize;
+wire [2:0]          rom_hburst;
+wire [3:0]          rom_hprot;
+wire                rom_hmastlock;
+wire [7:0]          rom_hmaster;
+wire                rom_hexcl;
+wire                rom_hready;
+wire                rom_hready_resp;
+wire                rom_hresp;
+wire                rom_hexokay;
+wire [31:0]         rom_hwdata;
+wire [31:0]         rom_hrdata;
+
 wire [19:0]         apu_haddr;
 wire                apu_hwrite;
 wire [1:0]          apu_htrans;
@@ -643,17 +660,18 @@ wire [31:0]         apb_hrdata;
 
 // Tie off exclusive responses (harmless if A extension is deselected).
 // Exclusives always fail on APU memory and always pass elsewhere.
-assign iram_hexokay = 1'b1;
 assign eram_hexokay = 1'b1;
+assign iram_hexokay = 1'b1;
+assign rom_hexokay  = 1'b0;
 assign apu_hexokay  = 1'b0;
 assign apb_hexokay  = 1'b1;
 
 ahbl_splitter #(
-    .N_PORTS   (4),
+    .N_PORTS   (5),
     .W_ADDR    (20),
     .W_DATA    (32),
-    .ADDR_MAP  (80'he0000_c0000_80000_00000),
-    .ADDR_MASK (80'he0000_e0000_c0000_80000)
+    .ADDR_MAP  (100'he0000_c0000_a0000_80000_00000),
+    .ADDR_MASK (100'he0000_e0000_e0000_e0000_80000)
 ) splitter_u (
     .clk             (clk_sys),
     .rst_n           (rst_n_sys),
@@ -674,21 +692,21 @@ ahbl_splitter #(
     .src_hwdata      (cpu_hwdata),
     .src_hrdata      (cpu_hrdata),
 
-    .dst_hready      ({apb_hready      , apu_hready      , iram_hready      , eram_hready     }),
-    .dst_hready_resp ({apb_hready_resp , apu_hready_resp , iram_hready_resp , eram_hready_resp}),
-    .dst_hresp       ({apb_hresp       , apu_hresp       , iram_hresp       , eram_hresp      }),
-    .dst_hexokay     ({apb_hexokay     , apu_hexokay     , iram_hexokay     , eram_hexokay    }),
-    .dst_haddr       ({apb_haddr       , apu_haddr       , iram_haddr       , eram_haddr      }),
-    .dst_hwrite      ({apb_hwrite      , apu_hwrite      , iram_hwrite      , eram_hwrite     }),
-    .dst_htrans      ({apb_htrans      , apu_htrans      , iram_htrans      , eram_htrans     }),
-    .dst_hsize       ({apb_hsize       , apu_hsize       , iram_hsize       , eram_hsize      }),
-    .dst_hburst      ({apb_hburst      , apu_hburst      , iram_hburst      , eram_hburst     }),
-    .dst_hprot       ({apb_hprot       , apu_hprot       , iram_hprot       , eram_hprot      }),
-    .dst_hmaster     ({apb_hmaster     , apu_hmaster     , iram_hmaster     , eram_hmaster    }),
-    .dst_hmastlock   ({apb_hmastlock   , apu_hmastlock   , iram_hmastlock   , eram_hmastlock  }),
-    .dst_hexcl       ({apb_hexcl       , apu_hexcl       , iram_hexcl       , eram_hexcl      }),
-    .dst_hwdata      ({apb_hwdata      , apu_hwdata      , iram_hwdata      , eram_hwdata     }),
-    .dst_hrdata      ({apb_hrdata      , apu_hrdata      , iram_hrdata      , eram_hrdata     })
+    .dst_hready      ({apb_hready      , apu_hready      , rom_hready      , iram_hready      , eram_hready     }),
+    .dst_hready_resp ({apb_hready_resp , apu_hready_resp , rom_hready_resp , iram_hready_resp , eram_hready_resp}),
+    .dst_hresp       ({apb_hresp       , apu_hresp       , rom_hresp       , iram_hresp       , eram_hresp      }),
+    .dst_hexokay     ({apb_hexokay     , apu_hexokay     , rom_hexokay     , iram_hexokay     , eram_hexokay    }),
+    .dst_haddr       ({apb_haddr       , apu_haddr       , rom_haddr       , iram_haddr       , eram_haddr      }),
+    .dst_hwrite      ({apb_hwrite      , apu_hwrite      , rom_hwrite      , iram_hwrite      , eram_hwrite     }),
+    .dst_htrans      ({apb_htrans      , apu_htrans      , rom_htrans      , iram_htrans      , eram_htrans     }),
+    .dst_hsize       ({apb_hsize       , apu_hsize       , rom_hsize       , iram_hsize       , eram_hsize      }),
+    .dst_hburst      ({apb_hburst      , apu_hburst      , rom_hburst      , iram_hburst      , eram_hburst     }),
+    .dst_hprot       ({apb_hprot       , apu_hprot       , rom_hprot       , iram_hprot       , eram_hprot      }),
+    .dst_hmaster     ({apb_hmaster     , apu_hmaster     , rom_hmaster     , iram_hmaster     , eram_hmaster    }),
+    .dst_hmastlock   ({apb_hmastlock   , apu_hmastlock   , rom_hmastlock   , iram_hmastlock   , eram_hmastlock  }),
+    .dst_hexcl       ({apb_hexcl       , apu_hexcl       , rom_hexcl       , iram_hexcl       , eram_hexcl      }),
+    .dst_hwdata      ({apb_hwdata      , apu_hwdata      , rom_hwdata      , iram_hwdata      , eram_hwdata     }),
+    .dst_hrdata      ({apb_hrdata      , apu_hrdata      , rom_hrdata      , iram_hrdata      , eram_hrdata     })
 );
 
 wire [19:0] peri_paddr;
@@ -791,7 +809,7 @@ apb_splitter #(
     .N_SLAVES  (6),
     .ADDR_MAP  ({20'h05000, 20'h04000, 20'h03000, 20'h02000, 20'h01000, 20'h00000}),
     .ADDR_MASK ({20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000})
-) inst_apb_splitter (
+) apb_splitter_u (
     .apbs_paddr   (peri_paddr),
     .apbs_psel    (peri_psel),
     .apbs_penable (peri_penable),
@@ -838,6 +856,22 @@ ahb_sync_sram #(
     .ahbls_hwdata      (iram_hwdata),
     .ahbls_hrdata      (iram_hrdata)
 );
+
+ahb_rom_boot rom_u (
+    .clk               (clk_sys),
+    .rst_n             (rst_n_sys),
+
+    .ahbls_haddr       (rom_haddr),
+    .ahbls_htrans      (rom_htrans),
+    .ahbls_hwrite      (rom_hwrite),
+    .ahbls_hsize       (rom_hsize),
+    .ahbls_hready      (rom_hready),
+    .ahbls_hready_resp (rom_hready_resp),
+    .ahbls_hwdata      (rom_hwdata),
+    .ahbls_hrdata      (rom_hrdata),
+    .ahbls_hresp       (rom_hresp)
+);
+
 
 // ------------------------------------------------------------------------
 // Audio processing unit

@@ -2,8 +2,6 @@
 
 ## RTL
 
-* APU
-	* Timers
 * PPU
 	* Think harder about palette RAM read/write collisions
 	* Possible to reduce RAM bandwidth for ABLIT/ATILE? (possibly have timing budget for 1-entry tilenum cache)

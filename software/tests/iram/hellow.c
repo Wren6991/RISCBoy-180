@@ -1,5 +1,5 @@
 #include "vuart.h"
 
-void main() {
+int main() {
 	vuart_puts("Hello, world!\n");
 }

@@ -9,7 +9,7 @@ void __attribute__((noreturn, used)) apu_main(void) {
 	}
 }
 
-void main() {
+int main() {
 	load_apu_ram((const uint8_t*)&apu_main, 64);
 	vuart_puts("Starting APU\n");
 	start_apu();

@@ -70,6 +70,7 @@ VERILOG_FILES:
 
 - dir::../hdl/mem/ahb_sync_sram.v
 - dir::../hdl/mem/sram_wrapper.v
+- dir::../hdl/mem/ahb_rom_boot.v
 
 - dir::../hdl/padctrl/padctrl.v
 - dir::../hdl/padctrl/padctrl_regs.v

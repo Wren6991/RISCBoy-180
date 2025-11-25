@@ -15,7 +15,7 @@ clean:
 
 build/$(APP).elf: $(APP).c $(EXTRA_SRC) $(LDSCRIPT) $(INCDIR)
 	mkdir -p build
-	$(CROSS)gcc -o $@ $(addprefix -I,$(INCDIR)) $(APP).c $(EXTRA_SRC) \
+	$(CROSS)gcc -Wall -o $@ $(addprefix -I,$(INCDIR)) $(APP).c $(EXTRA_SRC) \
 		-T $(LDSCRIPT) -Wl,--no-warn-rwx -nostartfiles -march=$(MARCH) -Os
 	$(CROSS)objdump -hd $@ > $(patsubst %.elf,%.dis,$@)
 	$(CROSS)objcopy -O binary $@ $(patsubst %.elf,%.bin,$@)
