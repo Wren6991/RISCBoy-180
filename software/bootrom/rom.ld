@@ -1,7 +1,7 @@
 /* We load into the lower half of IRAM, but the upper half is available for the ROM to use. */
 
 MEMORY {
-	ROM  (rx)   : ORIGIN = 0xa0000, LENGTH = 256
+	ROM  (rx)   : ORIGIN = 0xa0000, LENGTH = 512
 	IRAM (rwx)  : ORIGIN = 0x80000 + 7K, LENGTH = 1K
 }
 

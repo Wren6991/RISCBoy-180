@@ -24,14 +24,17 @@ module padctrl_regs (
 	output wire        apbs_pslverr,
 	
 	// Register interfaces
-	output reg  [1:0]  dio_drive_o,
-	output reg         dio_slew_o,
-	output reg         dio_schmitt_o,
+	output reg  [7:0]  gpio_pu_o,
+	output reg  [7:0]  gpio_pd_o,
 	output reg  [1:0]  gpio_drive_o,
 	output reg         gpio_slew_o,
 	output reg         gpio_schmitt_o,
-	output reg  [5:0]  gpio_pu_o,
-	output reg  [5:0]  gpio_pd_o,
+	output reg  [1:0]  dio_drive_o,
+	output reg         dio_slew_o,
+	output reg         dio_schmitt_o,
+	output reg  [1:0]  audio_drive_o,
+	output reg         audio_slew_o,
+	output reg         audio_schmitt_o,
 	output reg  [1:0]  sram_dq_drive_o,
 	output reg         sram_dq_slew_o,
 	output reg         sram_dq_schmitt_o,
@@ -39,8 +42,6 @@ module padctrl_regs (
 	output reg         sram_a_slew_o,
 	output reg  [1:0]  sram_strobe_drive_o,
 	output reg         sram_strobe_slew_o,
-	output reg  [1:0]  audio_drive_o,
-	output reg         audio_slew_o,
 	output reg  [1:0]  lcd_clk_drive_o,
 	output reg         lcd_clk_slew_o,
 	output reg  [1:0]  lcd_dat_drive_o,
@@ -61,35 +62,35 @@ assign apbs_prdata = rdata;
 assign apbs_pready = 1'b1;
 assign apbs_pslverr = 1'b0;
 
-localparam ADDR_DIO = 0;
-localparam ADDR_GPIO = 4;
-localparam ADDR_GPIO_PU = 8;
-localparam ADDR_GPIO_PD = 12;
-localparam ADDR_SRAM_DQ = 16;
-localparam ADDR_SRAM_A = 20;
-localparam ADDR_SRAM_STROBE = 24;
-localparam ADDR_AUDIO = 28;
+localparam ADDR_GPIO_PU = 0;
+localparam ADDR_GPIO_PD = 4;
+localparam ADDR_GPIO = 8;
+localparam ADDR_DIO = 12;
+localparam ADDR_AUDIO = 16;
+localparam ADDR_SRAM_DQ = 20;
+localparam ADDR_SRAM_A = 24;
+localparam ADDR_SRAM_STROBE = 28;
 localparam ADDR_LCD_CLK = 32;
 localparam ADDR_LCD_DAT = 36;
 localparam ADDR_LCD_DCCS = 40;
 localparam ADDR_LCD_BL = 44;
 
-wire __dio_wen = wen && addr == ADDR_DIO;
-wire __dio_ren = ren && addr == ADDR_DIO;
-wire __gpio_wen = wen && addr == ADDR_GPIO;
-wire __gpio_ren = ren && addr == ADDR_GPIO;
 wire __gpio_pu_wen = wen && addr == ADDR_GPIO_PU;
 wire __gpio_pu_ren = ren && addr == ADDR_GPIO_PU;
 wire __gpio_pd_wen = wen && addr == ADDR_GPIO_PD;
 wire __gpio_pd_ren = ren && addr == ADDR_GPIO_PD;
+wire __gpio_wen = wen && addr == ADDR_GPIO;
+wire __gpio_ren = ren && addr == ADDR_GPIO;
+wire __dio_wen = wen && addr == ADDR_DIO;
+wire __dio_ren = ren && addr == ADDR_DIO;
+wire __audio_wen = wen && addr == ADDR_AUDIO;
+wire __audio_ren = ren && addr == ADDR_AUDIO;
 wire __sram_dq_wen = wen && addr == ADDR_SRAM_DQ;
 wire __sram_dq_ren = ren && addr == ADDR_SRAM_DQ;
 wire __sram_a_wen = wen && addr == ADDR_SRAM_A;
 wire __sram_a_ren = ren && addr == ADDR_SRAM_A;
 wire __sram_strobe_wen = wen && addr == ADDR_SRAM_STROBE;
 wire __sram_strobe_ren = ren && addr == ADDR_SRAM_STROBE;
-wire __audio_wen = wen && addr == ADDR_AUDIO;
-wire __audio_ren = ren && addr == ADDR_AUDIO;
 wire __lcd_clk_wen = wen && addr == ADDR_LCD_CLK;
 wire __lcd_clk_ren = ren && addr == ADDR_LCD_CLK;
 wire __lcd_dat_wen = wen && addr == ADDR_LCD_DAT;
@@ -99,16 +100,15 @@ wire __lcd_dccs_ren = ren && addr == ADDR_LCD_DCCS;
 wire __lcd_bl_wen = wen && addr == ADDR_LCD_BL;
 wire __lcd_bl_ren = ren && addr == ADDR_LCD_BL;
 
-wire [1:0]  dio_drive_wdata = wdata[1:0];
-wire [1:0]  dio_drive_rdata;
-wire        dio_slew_wdata = wdata[2];
-wire        dio_slew_rdata;
-wire        dio_schmitt_wdata = wdata[3];
-wire        dio_schmitt_rdata;
-wire [31:0] __dio_rdata = {28'h0, dio_schmitt_rdata, dio_slew_rdata, dio_drive_rdata};
-assign dio_drive_rdata = dio_drive_o;
-assign dio_slew_rdata = dio_slew_o;
-assign dio_schmitt_rdata = dio_schmitt_o;
+wire [7:0]  gpio_pu_wdata = wdata[7:0];
+wire [7:0]  gpio_pu_rdata;
+wire [31:0] __gpio_pu_rdata = {24'h0, gpio_pu_rdata};
+assign gpio_pu_rdata = gpio_pu_o;
+
+wire [7:0]  gpio_pd_wdata = wdata[7:0];
+wire [7:0]  gpio_pd_rdata;
+wire [31:0] __gpio_pd_rdata = {24'h0, gpio_pd_rdata};
+assign gpio_pd_rdata = gpio_pd_o;
 
 wire [1:0]  gpio_drive_wdata = wdata[1:0];
 wire [1:0]  gpio_drive_rdata;
@@ -121,15 +121,27 @@ assign gpio_drive_rdata = gpio_drive_o;
 assign gpio_slew_rdata = gpio_slew_o;
 assign gpio_schmitt_rdata = gpio_schmitt_o;
 
-wire [5:0]  gpio_pu_wdata = wdata[5:0];
-wire [5:0]  gpio_pu_rdata;
-wire [31:0] __gpio_pu_rdata = {26'h0, gpio_pu_rdata};
-assign gpio_pu_rdata = gpio_pu_o;
+wire [1:0]  dio_drive_wdata = wdata[1:0];
+wire [1:0]  dio_drive_rdata;
+wire        dio_slew_wdata = wdata[2];
+wire        dio_slew_rdata;
+wire        dio_schmitt_wdata = wdata[3];
+wire        dio_schmitt_rdata;
+wire [31:0] __dio_rdata = {28'h0, dio_schmitt_rdata, dio_slew_rdata, dio_drive_rdata};
+assign dio_drive_rdata = dio_drive_o;
+assign dio_slew_rdata = dio_slew_o;
+assign dio_schmitt_rdata = dio_schmitt_o;
 
-wire [5:0]  gpio_pd_wdata = wdata[5:0];
-wire [5:0]  gpio_pd_rdata;
-wire [31:0] __gpio_pd_rdata = {26'h0, gpio_pd_rdata};
-assign gpio_pd_rdata = gpio_pd_o;
+wire [1:0]  audio_drive_wdata = wdata[1:0];
+wire [1:0]  audio_drive_rdata;
+wire        audio_slew_wdata = wdata[2];
+wire        audio_slew_rdata;
+wire        audio_schmitt_wdata = wdata[3];
+wire        audio_schmitt_rdata;
+wire [31:0] __audio_rdata = {28'h0, audio_schmitt_rdata, audio_slew_rdata, audio_drive_rdata};
+assign audio_drive_rdata = audio_drive_o;
+assign audio_slew_rdata = audio_slew_o;
+assign audio_schmitt_rdata = audio_schmitt_o;
 
 wire [1:0]  sram_dq_drive_wdata = wdata[1:0];
 wire [1:0]  sram_dq_drive_rdata;
@@ -157,14 +169,6 @@ wire        sram_strobe_slew_rdata;
 wire [31:0] __sram_strobe_rdata = {29'h0, sram_strobe_slew_rdata, sram_strobe_drive_rdata};
 assign sram_strobe_drive_rdata = sram_strobe_drive_o;
 assign sram_strobe_slew_rdata = sram_strobe_slew_o;
-
-wire [1:0]  audio_drive_wdata = wdata[1:0];
-wire [1:0]  audio_drive_rdata;
-wire        audio_slew_wdata = wdata[2];
-wire        audio_slew_rdata;
-wire [31:0] __audio_rdata = {29'h0, audio_slew_rdata, audio_drive_rdata};
-assign audio_drive_rdata = audio_drive_o;
-assign audio_slew_rdata = audio_slew_o;
 
 wire [1:0]  lcd_clk_drive_wdata = wdata[1:0];
 wire [1:0]  lcd_clk_drive_rdata;
@@ -200,14 +204,14 @@ assign lcd_bl_slew_rdata = lcd_bl_slew_o;
 
 always @ (*) begin
 	case (addr)
-		ADDR_DIO: rdata = __dio_rdata;
-		ADDR_GPIO: rdata = __gpio_rdata;
 		ADDR_GPIO_PU: rdata = __gpio_pu_rdata;
 		ADDR_GPIO_PD: rdata = __gpio_pd_rdata;
+		ADDR_GPIO: rdata = __gpio_rdata;
+		ADDR_DIO: rdata = __dio_rdata;
+		ADDR_AUDIO: rdata = __audio_rdata;
 		ADDR_SRAM_DQ: rdata = __sram_dq_rdata;
 		ADDR_SRAM_A: rdata = __sram_a_rdata;
 		ADDR_SRAM_STROBE: rdata = __sram_strobe_rdata;
-		ADDR_AUDIO: rdata = __audio_rdata;
 		ADDR_LCD_CLK: rdata = __lcd_clk_rdata;
 		ADDR_LCD_DAT: rdata = __lcd_dat_rdata;
 		ADDR_LCD_DCCS: rdata = __lcd_dccs_rdata;
@@ -218,14 +222,17 @@ end
 
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
-		dio_drive_o <= 2'h0;
-		dio_slew_o <= 1'h1;
-		dio_schmitt_o <= 1'h1;
+		gpio_pu_o <= 8'h32;
+		gpio_pd_o <= 8'hcd;
 		gpio_drive_o <= 2'h0;
 		gpio_slew_o <= 1'h1;
 		gpio_schmitt_o <= 1'h1;
-		gpio_pu_o <= 6'h3f;
-		gpio_pd_o <= 6'h0;
+		dio_drive_o <= 2'h0;
+		dio_slew_o <= 1'h1;
+		dio_schmitt_o <= 1'h1;
+		audio_drive_o <= 2'h0;
+		audio_slew_o <= 1'h1;
+		audio_schmitt_o <= 1'h1;
 		sram_dq_drive_o <= 2'h0;
 		sram_dq_slew_o <= 1'h1;
 		sram_dq_schmitt_o <= 1'h1;
@@ -233,8 +240,6 @@ always @ (posedge clk or negedge rst_n) begin
 		sram_a_slew_o <= 1'h1;
 		sram_strobe_drive_o <= 2'h0;
 		sram_strobe_slew_o <= 1'h1;
-		audio_drive_o <= 2'h0;
-		audio_slew_o <= 1'h1;
 		lcd_clk_drive_o <= 2'h0;
 		lcd_clk_slew_o <= 1'h1;
 		lcd_dat_drive_o <= 2'h0;
@@ -244,22 +249,28 @@ always @ (posedge clk or negedge rst_n) begin
 		lcd_bl_drive_o <= 2'h0;
 		lcd_bl_slew_o <= 1'h1;
 	end else begin
-		if (__dio_wen)
-			dio_drive_o <= dio_drive_wdata;
-		if (__dio_wen)
-			dio_slew_o <= dio_slew_wdata;
-		if (__dio_wen)
-			dio_schmitt_o <= dio_schmitt_wdata;
+		if (__gpio_pu_wen)
+			gpio_pu_o <= gpio_pu_wdata;
+		if (__gpio_pd_wen)
+			gpio_pd_o <= gpio_pd_wdata;
 		if (__gpio_wen)
 			gpio_drive_o <= gpio_drive_wdata;
 		if (__gpio_wen)
 			gpio_slew_o <= gpio_slew_wdata;
 		if (__gpio_wen)
 			gpio_schmitt_o <= gpio_schmitt_wdata;
-		if (__gpio_pu_wen)
-			gpio_pu_o <= gpio_pu_wdata;
-		if (__gpio_pd_wen)
-			gpio_pd_o <= gpio_pd_wdata;
+		if (__dio_wen)
+			dio_drive_o <= dio_drive_wdata;
+		if (__dio_wen)
+			dio_slew_o <= dio_slew_wdata;
+		if (__dio_wen)
+			dio_schmitt_o <= dio_schmitt_wdata;
+		if (__audio_wen)
+			audio_drive_o <= audio_drive_wdata;
+		if (__audio_wen)
+			audio_slew_o <= audio_slew_wdata;
+		if (__audio_wen)
+			audio_schmitt_o <= audio_schmitt_wdata;
 		if (__sram_dq_wen)
 			sram_dq_drive_o <= sram_dq_drive_wdata;
 		if (__sram_dq_wen)
@@ -274,10 +285,6 @@ always @ (posedge clk or negedge rst_n) begin
 			sram_strobe_drive_o <= sram_strobe_drive_wdata;
 		if (__sram_strobe_wen)
 			sram_strobe_slew_o <= sram_strobe_slew_wdata;
-		if (__audio_wen)
-			audio_drive_o <= audio_drive_wdata;
-		if (__audio_wen)
-			audio_slew_o <= audio_slew_wdata;
 		if (__lcd_clk_wen)
 			lcd_clk_drive_o <= lcd_clk_drive_wdata;
 		if (__lcd_clk_wen)

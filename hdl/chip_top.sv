@@ -80,9 +80,13 @@ wire                 padout_sram_we_n;
 wire                 padout_sram_ub_n;
 wire                 padout_sram_lb_n;
 
-// Audio PWM signals (output only)
+// Audio PWM signals (bidirectional as they have GPIO alternates):
 wire                 padout_audio_l;
 wire                 padout_audio_r;
+wire                 padoe_audio_l;
+wire                 padoe_audio_r;
+wire                 padin_audio_l;
+wire                 padin_audio_r;
 
 // LCD signals (output only)
 wire                 padout_lcd_clk;
@@ -112,6 +116,7 @@ wire [1:0]           sram_a_drive;
 wire                 sram_strobe_slew;
 wire [1:0]           sram_strobe_drive;
 
+wire                 audio_schmitt;
 wire                 audio_slew;
 wire [1:0]           audio_drive;
 
@@ -133,6 +138,10 @@ wire [1:0]           gpio_drive;
 
 wire [N_GPIO-1:0]    gpio_pu;
 wire [N_GPIO-1:0]    gpio_pd;
+wire                 audio_l_pu;
+wire                 audio_l_pd;
+wire                 audio_r_pu;
+wire                 audio_r_pd;
 
 // ----------------------------------------------------------------------------
 // IO pad instances: clock, reset, debug
@@ -367,7 +376,7 @@ gf180mcu_fd_io__bi_t pad_SRAM_LBn (
 );
 
 // ----------------------------------------------------------------------------
-// IO pad instances: Audio
+// IO pad instances: Audio (also available for GPIO use)
 
 gf180mcu_fd_io__bi_t pad_AUDIO_L (
     .DVDD   (VDD),
@@ -376,18 +385,18 @@ gf180mcu_fd_io__bi_t pad_AUDIO_L (
     .VSS    (VSS),
 
     .A      (padout_audio_l),
-    .OE     (enable_fixed_outputs),
-    .Y      (/* unused */),
+    .OE     (padoe_audio_l),
+    .Y      (padin_audio_l),
     .PAD    (AUDIO_L),
 
-    .CS     (1'b0),
+    .CS     (audio_schmitt),
     .SL     (audio_slew),
     .PDRV1  (audio_drive[1]),
     .PDRV0  (audio_drive[0]),
-    .IE     (1'b0),
+    .IE     (!padoe_audio_l),
 
-    .PU     (1'b0),
-    .PD     (!enable_fixed_outputs)
+    .PU     (audio_l_pu),
+    .PD     (audio_l_pd)
 );
 
 gf180mcu_fd_io__bi_t pad_AUDIO_R (
@@ -397,18 +406,18 @@ gf180mcu_fd_io__bi_t pad_AUDIO_R (
     .VSS    (VSS),
 
     .A      (padout_audio_r),
-    .OE     (enable_fixed_outputs),
-    .Y      (/* unused */),
+    .OE     (padoe_audio_r),
+    .Y      (padin_audio_r),
     .PAD    (AUDIO_R),
 
-    .CS     (1'b0),
+    .CS     (audio_schmitt),
     .SL     (audio_slew),
     .PDRV1  (audio_drive[1]),
     .PDRV0  (audio_drive[0]),
-    .IE     (1'b0),
+    .IE     (!padoe_audio_r),
 
-    .PU     (1'b0),
-    .PD     (!enable_fixed_outputs)
+    .PU     (audio_r_pu),
+    .PD     (audio_r_pd)
 );
 
 // ----------------------------------------------------------------------------
@@ -608,6 +617,10 @@ chip_core #(
     .padout_sram_lb_n      (padout_sram_lb_n),
     .padout_audio_l        (padout_audio_l),
     .padout_audio_r        (padout_audio_r),
+    .padoe_audio_l         (padoe_audio_l),
+    .padoe_audio_r         (padoe_audio_r),
+    .padin_audio_l         (padin_audio_l),
+    .padin_audio_r         (padin_audio_r),
     .padout_lcd_clk        (padout_lcd_clk),
     .padout_lcd_dat        (padout_lcd_dat),
     .padout_lcd_cs_n       (padout_lcd_cs_n),
@@ -626,6 +639,7 @@ chip_core #(
     .sram_a_drive          (sram_a_drive),
     .sram_strobe_slew      (sram_strobe_slew),
     .sram_strobe_drive     (sram_strobe_drive),
+    .audio_schmitt         (audio_schmitt),
     .audio_slew            (audio_slew),
     .audio_drive           (audio_drive),
     .lcd_clk_slew          (lcd_clk_slew),
@@ -640,7 +654,11 @@ chip_core #(
     .gpio_slew             (gpio_slew),
     .gpio_drive            (gpio_drive),
     .gpio_pu               (gpio_pu),
-    .gpio_pd               (gpio_pd)
+    .gpio_pd               (gpio_pd),
+    .audio_l_pu            (audio_l_pu),
+    .audio_l_pd            (audio_l_pd),
+    .audio_r_pu            (audio_r_pu),
+    .audio_r_pd            (audio_r_pd)
 );
 
 // ----------------------------------------------------------------------------

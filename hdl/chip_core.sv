@@ -43,6 +43,10 @@ module chip_core #(
     // Audio PWM signals (output only)
     output wire                 padout_audio_l,
     output wire                 padout_audio_r,
+    output wire                 padoe_audio_l,
+    output wire                 padoe_audio_r,
+    output wire                 padin_audio_l,
+    output wire                 padin_audio_r,
 
     // LCD signals (output only)
     output wire                 padout_lcd_clk,
@@ -72,6 +76,7 @@ module chip_core #(
     output wire                 sram_strobe_slew,
     output wire [1:0]           sram_strobe_drive,
 
+    output wire                 audio_schmitt,
     output wire                 audio_slew,
     output wire [1:0]           audio_drive,
 
@@ -92,7 +97,11 @@ module chip_core #(
     output wire [1:0]           gpio_drive,
 
     output wire [N_GPIO-1:0]    gpio_pu,
-    output wire [N_GPIO-1:0]    gpio_pd
+    output wire [N_GPIO-1:0]    gpio_pd,
+    output wire                 audio_l_pu,
+    output wire                 audio_l_pd,
+    output wire                 audio_r_pu,
+    output wire                 audio_r_pd
 );
 
 // ------------------------------------------------------------------------
@@ -803,12 +812,21 @@ wire        vuart_dev_pready;
 wire [31:0] vuart_dev_prdata;
 wire        vuart_dev_pslverr;
 
+wire [19:0] gpio_paddr;
+wire        gpio_psel;
+wire        gpio_penable;
+wire        gpio_pwrite;
+wire [31:0] gpio_pwdata;
+wire        gpio_pready;
+wire [31:0] gpio_prdata;
+wire        gpio_pslverr;
+
 apb_splitter #(
     .W_ADDR    (20),
     .W_DATA    (32),
-    .N_SLAVES  (6),
-    .ADDR_MAP  ({20'h05000, 20'h04000, 20'h03000, 20'h02000, 20'h01000, 20'h00000}),
-    .ADDR_MASK ({20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000})
+    .N_SLAVES  (7),
+    .ADDR_MAP  ({20'h06000, 20'h05000, 20'h04000, 20'h03000, 20'h02000, 20'h01000, 20'h00000}),
+    .ADDR_MASK ({20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000})
 ) apb_splitter_u (
     .apbs_paddr   (peri_paddr),
     .apbs_psel    (peri_psel),
@@ -819,14 +837,14 @@ apb_splitter #(
     .apbs_prdata  (peri_prdata),
     .apbs_pslverr (peri_pslverr),
 
-    .apbm_paddr   ({vuart_dev_paddr   , lcd_pwm_paddr   , dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
-    .apbm_psel    ({vuart_dev_psel    , lcd_pwm_psel    , dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
-    .apbm_penable ({vuart_dev_penable , lcd_pwm_penable , dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
-    .apbm_pwrite  ({vuart_dev_pwrite  , lcd_pwm_pwrite  , dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
-    .apbm_pwdata  ({vuart_dev_pwdata  , lcd_pwm_pwdata  , dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
-    .apbm_pready  ({vuart_dev_pready  , lcd_pwm_pready  , dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
-    .apbm_prdata  ({vuart_dev_prdata  , lcd_pwm_prdata  , dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
-    .apbm_pslverr ({vuart_dev_pslverr , lcd_pwm_pslverr , dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
+    .apbm_paddr   ({gpio_paddr   , vuart_dev_paddr   , lcd_pwm_paddr   , dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
+    .apbm_psel    ({gpio_psel    , vuart_dev_psel    , lcd_pwm_psel    , dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
+    .apbm_penable ({gpio_penable , vuart_dev_penable , lcd_pwm_penable , dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
+    .apbm_pwrite  ({gpio_pwrite  , vuart_dev_pwrite  , lcd_pwm_pwrite  , dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
+    .apbm_pwdata  ({gpio_pwdata  , vuart_dev_pwdata  , lcd_pwm_pwdata  , dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
+    .apbm_pready  ({gpio_pready  , vuart_dev_pready  , lcd_pwm_pready  , dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
+    .apbm_prdata  ({gpio_prdata  , vuart_dev_prdata  , lcd_pwm_prdata  , dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
+    .apbm_pslverr ({gpio_pslverr , vuart_dev_pslverr , lcd_pwm_pslverr , dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
 );
 
 // ------------------------------------------------------------------------
@@ -872,9 +890,11 @@ ahb_rom_boot rom_u (
     .ahbls_hresp       (rom_hresp)
 );
 
-
 // ------------------------------------------------------------------------
 // Audio processing unit
+
+wire audio_l;
+wire audio_r;
 
 audio_processor #(
     .RAM_DEPTH (512)
@@ -917,8 +937,8 @@ audio_processor #(
     .irq_apu_aout_to_cpu        (irq[IRQ_APU_AOUT]),
     .irq_apu_timer_to_cpu       (irq[IRQ_APU_TIMER]),
 
-    .audio_l                    (padout_audio_l),
-    .audio_r                    (padout_audio_r)
+    .audio_l                    (audio_l),
+    .audio_r                    (audio_r)
 );
 
 // ------------------------------------------------------------------------
@@ -999,6 +1019,9 @@ riscboy_ppu_dispctrl_spi #(
     .lcd_mosi            (padout_lcd_dat)
 );
 
+// ------------------------------------------------------------------------
+// APB peripherals and control registers
+
 pwm_tiny lcd_bl_pwm_u (
     .clk          (clk_sys),
     .rst_n        (rst_n_sys),
@@ -1013,51 +1036,6 @@ pwm_tiny lcd_bl_pwm_u (
     .apbs_pslverr (lcd_pwm_pslverr),
 
     .padout       (padout_lcd_bl)
-);
-
-// ------------------------------------------------------------------------
-// APB peripherals and control registers
-
-padctrl #(
-    .N_GPIO(N_GPIO)
-) padctrl_u (
-    .clk               (clk_sys),
-    .rst_n             (rst_n_sys),
-
-    .apbs_psel         (padctrl_psel),
-    .apbs_penable      (padctrl_penable),
-    .apbs_pwrite       (padctrl_pwrite),
-    .apbs_paddr        (padctrl_paddr),
-    .apbs_pwdata       (padctrl_pwdata),
-    .apbs_prdata       (padctrl_prdata),
-    .apbs_pready       (padctrl_pready),
-    .apbs_pslverr      (padctrl_pslverr),
-
-    .dio_schmitt       (dio_schmitt),
-    .dio_slew          (dio_slew),
-    .dio_drive         (dio_drive),
-    .sram_dq_schmitt   (sram_dq_schmitt),
-    .sram_dq_slew      (sram_dq_slew),
-    .sram_dq_drive     (sram_dq_drive),
-    .sram_a_slew       (sram_a_slew),
-    .sram_a_drive      (sram_a_drive),
-    .sram_strobe_slew  (sram_strobe_slew),
-    .sram_strobe_drive (sram_strobe_drive),
-    .audio_slew        (audio_slew),
-    .audio_drive       (audio_drive),
-    .lcd_clk_slew      (lcd_clk_slew),
-    .lcd_clk_drive     (lcd_clk_drive),
-    .lcd_dat_slew      (lcd_dat_slew),
-    .lcd_dat_drive     (lcd_dat_drive),
-    .lcd_dccs_slew     (lcd_dccs_slew),
-    .lcd_dccs_drive    (lcd_dccs_drive),
-    .lcd_bl_slew       (lcd_bl_slew),
-    .lcd_bl_drive      (lcd_bl_drive),
-    .gpio_schmitt      (gpio_schmitt),
-    .gpio_slew         (gpio_slew),
-    .gpio_drive        (gpio_drive),
-    .gpio_pu           (gpio_pu),
-    .gpio_pd           (gpio_pd)
 );
 
 hazard3_riscv_timer #(
@@ -1110,6 +1088,76 @@ vuart #(
     .dev_pready   (vuart_dev_pready),
     .dev_pslverr  (vuart_dev_pslverr)
 );
+
+
+padctrl #(
+    .N_GPIO (N_GPIO + 2)
+) padctrl_u (
+    .clk               (clk_sys),
+    .rst_n             (rst_n_sys),
+
+    .apbs_psel         (padctrl_psel),
+    .apbs_penable      (padctrl_penable),
+    .apbs_pwrite       (padctrl_pwrite),
+    .apbs_paddr        (padctrl_paddr),
+    .apbs_pwdata       (padctrl_pwdata),
+    .apbs_prdata       (padctrl_prdata),
+    .apbs_pready       (padctrl_pready),
+    .apbs_pslverr      (padctrl_pslverr),
+
+    .dio_schmitt       (dio_schmitt),
+    .dio_slew          (dio_slew),
+    .dio_drive         (dio_drive),
+    .sram_dq_schmitt   (sram_dq_schmitt),
+    .sram_dq_slew      (sram_dq_slew),
+    .sram_dq_drive     (sram_dq_drive),
+    .sram_a_slew       (sram_a_slew),
+    .sram_a_drive      (sram_a_drive),
+    .sram_strobe_slew  (sram_strobe_slew),
+    .sram_strobe_drive (sram_strobe_drive),
+    .audio_schmitt     (audio_schmitt),
+    .audio_slew        (audio_slew),
+    .audio_drive       (audio_drive),
+    .lcd_clk_slew      (lcd_clk_slew),
+    .lcd_clk_drive     (lcd_clk_drive),
+    .lcd_dat_slew      (lcd_dat_slew),
+    .lcd_dat_drive     (lcd_dat_drive),
+    .lcd_dccs_slew     (lcd_dccs_slew),
+    .lcd_dccs_drive    (lcd_dccs_drive),
+    .lcd_bl_slew       (lcd_bl_slew),
+    .lcd_bl_drive      (lcd_bl_drive),
+    .gpio_schmitt      (gpio_schmitt),
+    .gpio_slew         (gpio_slew),
+    .gpio_drive        (gpio_drive),
+    .gpio_pu           ({audio_l_pu, audio_r_pu, gpio_pu}),
+    .gpio_pd           ({audio_l_pd, audio_r_pd, gpio_pd})
+);
+
+
+gpio #(
+    .N_GPIO (N_GPIO + 2)
+) gpio_u (
+    .clk          (clk_sys),
+    .rst_n        (rst_n_sys),
+
+    .apbs_psel    (gpio_psel),
+    .apbs_penable (gpio_penable),
+    .apbs_pwrite  (gpio_pwrite),
+    .apbs_paddr   (gpio_paddr),
+    .apbs_pwdata  (gpio_pwdata),
+    .apbs_prdata  (gpio_prdata),
+    .apbs_pready  (gpio_pready),
+    .apbs_pslverr (gpio_pslverr),
+
+    .audio_l      (audio_l),
+    .audio_r      (audio_r),
+
+    .padout_gpio  ({padout_audio_l, padout_audio_r, padout_gpio}),
+    .padoe_gpio   ({padoe_audio_l,  padoe_audio_r,  padoe_gpio }),
+    .padin_gpio   ({1'b0         ,  1'b0,           padin_gpio })
+);
+
+
 
 // ------------------------------------------------------------------------
 // External SRAM controller and std cell "PHY"
@@ -1188,13 +1236,6 @@ async_sram_phy_gf180mcu #(
     .padout_sram_ub_n (padout_sram_ub_n),
     .padout_sram_lb_n (padout_sram_lb_n)
 );
-
-
-// ------------------------------------------------------------------------
-// Tie off unused outputs
-
-assign padoe_gpio        = {N_GPIO{1'b0}};
-assign padout_gpio       = {N_GPIO{1'b0}};
 
 endmodule
 

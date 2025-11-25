@@ -2,16 +2,17 @@ name: padctrl
 bus: apb
 addr: 20
 data: 32
+params:
+  N_GPIOS: 8
 regs:
-  - name: dio
-    info: Pad controls for DIO (debug in/out)
+  - name: gpio_pu
+    info: Pull-up enable for GPIOs
     bits:
-      - {b: [1, 0], name: drive, access: rw, rst: 0x0,
-        info: "Drive selection, values 0-3 are 4/8/12/16 mA."}
-      - {b: 2, name: slew, access: rw, rst: 0x1,
-        info: "Slew selection: 0 = fast, 1 = slow"}
-      - {b: 3, name: schmitt, access: rw, rst: 0x1,
-        info: "Schmitt trigger: 1 = enabled"}
+      - {b: [N_GPIOS - 1, 0], access: rw, rst: 0x32}
+  - name: gpio_pd
+    info: Pull-down enable for GPIOs
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rw, rst: 0xcd}
   - name: gpio
     info: Pad controls for GPIOs
     bits:
@@ -21,14 +22,24 @@ regs:
         info: "Slew selection: 0 = fast, 1 = slow"}
       - {b: 3, name: schmitt, access: rw, rst: 0x1,
         info: "Schmitt trigger: 1 = enabled"}
-  - name: gpio_pu
-    info: Pull-up enable for GPIOs
+  - name: dio
+    info: Pad controls for DIO (debug in/out)
     bits:
-      - {b: [5, 0], access: rw, rst: 0x3f}
-  - name: gpio_pd
-    info: Pull-down enable for GPIOs
+      - {b: [1, 0], name: drive, access: rw, rst: 0x0,
+        info: "Drive selection, values 0-3 are 4/8/12/16 mA."}
+      - {b: 2, name: slew, access: rw, rst: 0x1,
+        info: "Slew selection: 0 = fast, 1 = slow"}
+      - {b: 3, name: schmitt, access: rw, rst: 0x1,
+        info: "Schmitt trigger: 1 = enabled"}
+  - name: audio
+    info: Pad controls for AUDIO_L and AUDIO_R
     bits:
-      - {b: [5, 0], access: rw}
+      - {b: [1, 0], name: drive, access: rw, rst: 0x0,
+        info: "Drive selection, values 0-3 are 4/8/12/16 mA."}
+      - {b: 2, name: slew, access: rw, rst: 0x1,
+        info: "Slew selection: 0 = fast, 1 = slow"}
+      - {b: 3, name: schmitt, access: rw, rst: 0x1,
+        info: "Schmitt trigger: 1 = enabled"}
   - name: sram_dq
     info: Pad controls for SRAM_DQx (data in/out)
     bits:
@@ -47,13 +58,6 @@ regs:
         info: "Slew selection: 0 = fast, 1 = slow"}
   - name: sram_strobe
     info: Pad controls for SRAM strobes (CSn WEn OEn UBn LBn)
-    bits:
-      - {b: [1, 0], name: drive, access: rw, rst: 0x0,
-        info: "Drive selection, values 0-3 are 4/8/12/16 mA."}
-      - {b: 2, name: slew, access: rw, rst: 0x1,
-        info: "Slew selection: 0 = fast, 1 = slow"}
-  - name: audio
-    info: Pad controls for AUDIO_L and AUDIO_R
     bits:
       - {b: [1, 0], name: drive, access: rw, rst: 0x0,
         info: "Drive selection, values 0-3 are 4/8/12/16 mA."}

@@ -12,14 +12,14 @@
 // Bus data width       : 32
 // Bus address width    : 20
 
-#define PADCTRL_DIO_OFFS 0
-#define PADCTRL_GPIO_OFFS 4
-#define PADCTRL_GPIO_PU_OFFS 8
-#define PADCTRL_GPIO_PD_OFFS 12
-#define PADCTRL_SRAM_DQ_OFFS 16
-#define PADCTRL_SRAM_A_OFFS 20
-#define PADCTRL_SRAM_STROBE_OFFS 24
-#define PADCTRL_AUDIO_OFFS 28
+#define PADCTRL_GPIO_PU_OFFS 0
+#define PADCTRL_GPIO_PD_OFFS 4
+#define PADCTRL_GPIO_OFFS 8
+#define PADCTRL_DIO_OFFS 12
+#define PADCTRL_AUDIO_OFFS 16
+#define PADCTRL_SRAM_DQ_OFFS 20
+#define PADCTRL_SRAM_A_OFFS 24
+#define PADCTRL_SRAM_STROBE_OFFS 28
 #define PADCTRL_LCD_CLK_OFFS 32
 #define PADCTRL_LCD_DAT_OFFS 36
 #define PADCTRL_LCD_DCCS_OFFS 40
@@ -29,14 +29,14 @@
 #include <stdint.h>
 
 typedef struct {
-	volatile uint32_t dio;
-	volatile uint32_t gpio;
 	volatile uint32_t gpio_pu;
 	volatile uint32_t gpio_pd;
+	volatile uint32_t gpio;
+	volatile uint32_t dio;
+	volatile uint32_t audio;
 	volatile uint32_t sram_dq;
 	volatile uint32_t sram_a;
 	volatile uint32_t sram_strobe;
-	volatile uint32_t audio;
 	volatile uint32_t lcd_clk;
 	volatile uint32_t lcd_dat;
 	volatile uint32_t lcd_dccs;
@@ -47,29 +47,28 @@ typedef struct {
 
 
 /*******************************************************************************
-*                                     DIO                                      *
+*                                   GPIO_PU                                    *
 *******************************************************************************/
 
-// Pad controls for DIO (debug in/out)
+// Pull-up enable for GPIOs
 
-// Field: DIO_DRIVE  Access: RW
-// Reset: 0x0
-// Drive selection, values 0-3 are 4/8/12/16 mA.
-#define PADCTRL_DIO_DRIVE_LSB  0
-#define PADCTRL_DIO_DRIVE_BITS 2
-#define PADCTRL_DIO_DRIVE_MASK 0x3
-// Field: DIO_SLEW  Access: RW
-// Reset: 0x1
-// Slew selection: 0 = fast, 1 = slow
-#define PADCTRL_DIO_SLEW_LSB  2
-#define PADCTRL_DIO_SLEW_BITS 1
-#define PADCTRL_DIO_SLEW_MASK 0x4
-// Field: DIO_SCHMITT  Access: RW
-// Reset: 0x1
-// Schmitt trigger: 1 = enabled
-#define PADCTRL_DIO_SCHMITT_LSB  3
-#define PADCTRL_DIO_SCHMITT_BITS 1
-#define PADCTRL_DIO_SCHMITT_MASK 0x8
+// Field: GPIO_PU  Access: RW
+// Reset: 0x32
+#define PADCTRL_GPIO_PU_LSB  0
+#define PADCTRL_GPIO_PU_BITS 8
+#define PADCTRL_GPIO_PU_MASK 0xff
+
+/*******************************************************************************
+*                                   GPIO_PD                                    *
+*******************************************************************************/
+
+// Pull-down enable for GPIOs
+
+// Field: GPIO_PD  Access: RW
+// Reset: 0xcd
+#define PADCTRL_GPIO_PD_LSB  0
+#define PADCTRL_GPIO_PD_BITS 8
+#define PADCTRL_GPIO_PD_MASK 0xff
 
 /*******************************************************************************
 *                                     GPIO                                     *
@@ -97,28 +96,54 @@ typedef struct {
 #define PADCTRL_GPIO_SCHMITT_MASK 0x8
 
 /*******************************************************************************
-*                                   GPIO_PU                                    *
+*                                     DIO                                      *
 *******************************************************************************/
 
-// Pull-up enable for GPIOs
+// Pad controls for DIO (debug in/out)
 
-// Field: GPIO_PU  Access: RW
-// Reset: 0x3f
-#define PADCTRL_GPIO_PU_LSB  0
-#define PADCTRL_GPIO_PU_BITS 6
-#define PADCTRL_GPIO_PU_MASK 0x3f
+// Field: DIO_DRIVE  Access: RW
+// Reset: 0x0
+// Drive selection, values 0-3 are 4/8/12/16 mA.
+#define PADCTRL_DIO_DRIVE_LSB  0
+#define PADCTRL_DIO_DRIVE_BITS 2
+#define PADCTRL_DIO_DRIVE_MASK 0x3
+// Field: DIO_SLEW  Access: RW
+// Reset: 0x1
+// Slew selection: 0 = fast, 1 = slow
+#define PADCTRL_DIO_SLEW_LSB  2
+#define PADCTRL_DIO_SLEW_BITS 1
+#define PADCTRL_DIO_SLEW_MASK 0x4
+// Field: DIO_SCHMITT  Access: RW
+// Reset: 0x1
+// Schmitt trigger: 1 = enabled
+#define PADCTRL_DIO_SCHMITT_LSB  3
+#define PADCTRL_DIO_SCHMITT_BITS 1
+#define PADCTRL_DIO_SCHMITT_MASK 0x8
 
 /*******************************************************************************
-*                                   GPIO_PD                                    *
+*                                    AUDIO                                     *
 *******************************************************************************/
 
-// Pull-down enable for GPIOs
+// Pad controls for AUDIO_L and AUDIO_R
 
-// Field: GPIO_PD  Access: RW
+// Field: AUDIO_DRIVE  Access: RW
 // Reset: 0x0
-#define PADCTRL_GPIO_PD_LSB  0
-#define PADCTRL_GPIO_PD_BITS 6
-#define PADCTRL_GPIO_PD_MASK 0x3f
+// Drive selection, values 0-3 are 4/8/12/16 mA.
+#define PADCTRL_AUDIO_DRIVE_LSB  0
+#define PADCTRL_AUDIO_DRIVE_BITS 2
+#define PADCTRL_AUDIO_DRIVE_MASK 0x3
+// Field: AUDIO_SLEW  Access: RW
+// Reset: 0x1
+// Slew selection: 0 = fast, 1 = slow
+#define PADCTRL_AUDIO_SLEW_LSB  2
+#define PADCTRL_AUDIO_SLEW_BITS 1
+#define PADCTRL_AUDIO_SLEW_MASK 0x4
+// Field: AUDIO_SCHMITT  Access: RW
+// Reset: 0x1
+// Schmitt trigger: 1 = enabled
+#define PADCTRL_AUDIO_SCHMITT_LSB  3
+#define PADCTRL_AUDIO_SCHMITT_BITS 1
+#define PADCTRL_AUDIO_SCHMITT_MASK 0x8
 
 /*******************************************************************************
 *                                   SRAM_DQ                                    *
@@ -182,25 +207,6 @@ typedef struct {
 #define PADCTRL_SRAM_STROBE_SLEW_LSB  2
 #define PADCTRL_SRAM_STROBE_SLEW_BITS 1
 #define PADCTRL_SRAM_STROBE_SLEW_MASK 0x4
-
-/*******************************************************************************
-*                                    AUDIO                                     *
-*******************************************************************************/
-
-// Pad controls for AUDIO_L and AUDIO_R
-
-// Field: AUDIO_DRIVE  Access: RW
-// Reset: 0x0
-// Drive selection, values 0-3 are 4/8/12/16 mA.
-#define PADCTRL_AUDIO_DRIVE_LSB  0
-#define PADCTRL_AUDIO_DRIVE_BITS 2
-#define PADCTRL_AUDIO_DRIVE_MASK 0x3
-// Field: AUDIO_SLEW  Access: RW
-// Reset: 0x1
-// Slew selection: 0 = fast, 1 = slow
-#define PADCTRL_AUDIO_SLEW_LSB  2
-#define PADCTRL_AUDIO_SLEW_BITS 1
-#define PADCTRL_AUDIO_SLEW_MASK 0x4
 
 /*******************************************************************************
 *                                   LCD_CLK                                    *

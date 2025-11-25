@@ -34,6 +34,7 @@ module padctrl #(
     output wire                 sram_strobe_slew,
     output wire [1:0]           sram_strobe_drive,
 
+    output wire                 audio_schmitt,
     output wire                 audio_slew,
     output wire [1:0]           audio_drive,
 
@@ -67,6 +68,7 @@ wire              sram_a_slew_nofp;
 wire [1:0]        sram_a_drive_nofp;
 wire              sram_strobe_slew_nofp;
 wire [1:0]        sram_strobe_drive_nofp;
+wire              audio_schmitt_nofp;
 wire              audio_slew_nofp;
 wire [1:0]        audio_drive_nofp;
 wire              lcd_clk_slew_nofp;
@@ -111,6 +113,7 @@ padctrl_regs regs_u	(
 	.sram_a_slew_o       (sram_a_slew_nofp),
 	.sram_strobe_drive_o (sram_strobe_drive_nofp),
 	.sram_strobe_slew_o  (sram_strobe_slew_nofp),
+	.audio_schmitt_o     (audio_schmitt_nofp),
 	.audio_drive_o       (audio_drive_nofp),
 	.audio_slew_o        (audio_slew_nofp),
 	.lcd_clk_drive_o     (lcd_clk_drive_nofp),
@@ -133,6 +136,7 @@ falsepath_anchor fp_sram_a_slew_u                     (.i (sram_a_slew_nofp     
 falsepath_anchor fp_sram_a_drive_u       [1:0]        (.i (sram_a_drive_nofp     ), .z (sram_a_drive     ));
 falsepath_anchor fp_sram_strobe_slew_u                (.i (sram_strobe_slew_nofp ), .z (sram_strobe_slew ));
 falsepath_anchor fp_sram_strobe_drive_u  [1:0]        (.i (sram_strobe_drive_nofp), .z (sram_strobe_drive));
+falsepath_anchor fp_audio_schmitt_u                   (.i (audio_schmitt_nofp    ), .z (audio_schmitt    ));
 falsepath_anchor fp_audio_slew_u                      (.i (audio_slew_nofp       ), .z (audio_slew       ));
 falsepath_anchor fp_audio_drive_u        [1:0]        (.i (audio_drive_nofp      ), .z (audio_drive      ));
 falsepath_anchor fp_lcd_clk_slew_u                    (.i (lcd_clk_slew_nofp     ), .z (lcd_clk_slew     ));

@@ -75,6 +75,9 @@ VERILOG_FILES:
 - dir::../hdl/padctrl/padctrl.v
 - dir::../hdl/padctrl/padctrl_regs.v
 
+- dir::../hdl/gpio/gpio.v
+- dir::../hdl/gpio/gpio_regs.v
+
 - dir::../hdl/hazard3/hdl/hazard3_cpu_1port.v
 - dir::../hdl/hazard3/hdl/arith/hazard3_alu.v
 - dir::../hdl/hazard3/hdl/arith/hazard3_branchcmp.v

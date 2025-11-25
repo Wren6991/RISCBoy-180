@@ -1,0 +1,45 @@
+name: gpio
+bus: apb
+addr: 16
+data: 32
+params:
+  N_GPIOS: 8
+regs:
+  - name: out
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv,
+        info: "Write output levels for GPIOS, or read to get current output levels"}
+  - name: out_xor
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv,
+        info: "XOR bits in output levels for GPIOS, or read to get current output levels"}
+  - name: out_set
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv,
+        info: "OR bits in output levels for GPIOS, or read to get current output levels"}
+  - name: out_clr
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv,
+        info: "Mask bits (AND with complement) in output levels for GPIOS, or read to get current output levels"}
+  - name: oen
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv,
+        info: "Write output enables (active high) for GPIOS, or read to get current output enables"}
+  - name: oen_xor
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv,
+        info: "XOR bits in output enables for GPIOS, or read to get current output enables"}
+  - name: oen_set
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv,
+        info: "OR bits in output enables for GPIOS, or read to get current output enables"}
+  - name: oen_clr
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv,
+        info: "Mask bits (AND with complement) in output enables for GPIOS, or read to get current output enables"}
+  - name: in
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rov, info: "Read pad inputs (always synchronised)"}
+  - name: fsel
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rw, info: "Enable GPIO alternate functions. 0 = software-controlled, 1 = alternate."}
