@@ -650,7 +650,7 @@ def get_sources_defines_includes():
         # We use the powered netlist
         sources.append(proj_path / f"../final/pnl/{"tb"}.pnl.v")
 
-        defines = {"FUNCTIONAL": True, "USE_POWER_PINS": True}
+        defines = {"FUNCTIONAL": True, "USE_POWER_PINS": True, "GF180MCU": True}
     else:
         config = yaml.safe_load(open("../librelane/config.yaml"))
         sources.extend([x.replace("dir::", "") for x in config["VERILOG_FILES"]])

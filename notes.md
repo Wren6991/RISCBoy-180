@@ -7,9 +7,6 @@
 * PPU
 	* Think harder about palette RAM read/write collisions
 	* Possible to reduce RAM bandwidth for ABLIT/ATILE? (possibly have timing budget for 1-entry tilenum cache)
-* CPU
-	* Investigate long reg2reg paths
-	* Remove x0 (surviving synthesis)
 * GPIOs
 	* Finalise list of peripherals
 * SPI flash read
@@ -394,3 +391,13 @@ Stack trace:
 ```
 
 Yeah that does look like a heap corruption that got caught.
+
+Ok I reverted that last APB change. Next on the list of optimisations is to implement a latch-based register file for Hazard3. Besides being smaller (and therefore hopefully more routable) it's easy to make this transparent for writes without additional muxing, so I can remove one of the inputs to the register bypass at the start of stage 2 and improve... basically all of my critical paths.
+
+I'm using ICGTNs (negedge clock gates, i.e. positive latch + OR) to generate a latch enable in the second half of the clock cycle. This creates a half-cycle path into the register file write enable, but I'm not overly worried about that since that write enable is essentially just `mw_rd` gated with HREADY, and HREADY is available early in the cycle on this system.
+
+A slight wrinkle is that there are no negative-enable latches in the GF180 library. First time round I put a clock inverter between the ICGTNs and the latch enables, and this went catastrophically wrong when CTS replicated the buffers: somehow I ended up with exactly one of the buffers for one bit of one register on one of the two processors with _only its output connected._ This problem was in the post-CTS netlist and not in the pre-CTS netlist, so the culprit is our old friend CTS again. The second time round I just put a behavioural invert on the latch enables and this went better.
+
+With the latch register file in place, and the bypass logic slightly simplified to remove the MW->X path (unnecessary due to transparent writes on the latches), my setup WNS is from -7.2 ns to 4.7 ns. That's a pretty decent improvement, at the cost of high risk due to changing a core part of Hazard3 and additional risk of not properly constraining the latches for STA.
+
+While I'm changing Hazard3 I went through and ripped out the resets from most of the datapath flops and some CSRs like mscratch and mepc.
