@@ -400,4 +400,5 @@ A slight wrinkle is that there are no negative-enable latches in the GF180 libra
 
 With the latch register file in place, and the bypass logic slightly simplified to remove the MW->X path (unnecessary due to transparent writes on the latches), my setup WNS is from -7.2 ns to 4.7 ns. That's a pretty decent improvement, at the cost of high risk due to changing a core part of Hazard3 and additional risk of not properly constraining the latches for STA.
 
-While I'm changing Hazard3 I went through and ripped out the resets from most of the datapath flops and some CSRs like mscratch and mepc.
+While I'm changing Hazard3 I went through and ripped out the resets from most of the datapath flops and some CSRs like mscratch and mepc. And... it's up at 6.9 ns. Wow, not sure why that is... don't think I did anything to make it worse!
+

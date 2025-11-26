@@ -68,18 +68,11 @@ assign padout_sram_dq = ctrl_dq_out;
 	})
 );
 
-// We could use a clock gate here (the DDR is very FPGA) but want to keep it
-// as similar as possible to the other output paths.
-
-cell_ddr_out #(
-	.USE_RESET   (0),
-	.RESET_VALUE (1)
-) reg_u_sram_we (
-	.clk (clk),
-	.rst_n (rst_n),
-	.dp    (1'b1),
-	.dn    (ctrl_we_n),
-	.q     (padout_sram_we_n)
+gf180mcu_fd_sc_mcu9t5v0__icgtn_4 clkgate_we_u (
+	.TE   (1'b0),
+	.E    (!ctrl_we_n),
+	.CLKN (clk),
+	.Q    (padout_sram_we_n)
 );
 
 `undef SRAM_PHY_FLOP_P
