@@ -41,19 +41,31 @@ module async_sram_phy_gf180mcu #(
 
 // No need for reset on flops for output-only pins, because we already
 // separately ensure the pads are disabled and pulled to a default state until
-// after the system comes out of reset.
+// after the system comes out of reset. DQs do need a reset on their output
+// enables though.
 
-`define SRAM_PHY_FLOP_P (* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_1
+(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_1 reg_u_sram_addr [N_SRAM_A-1:0]  (
+	.CLK (clk),
+	.D   (ctrl_addr),
+	.Q   (padout_sram_a)
+);
 
-`SRAM_PHY_FLOP_P reg_u_sram_addr        [N_SRAM_A-1:0]  (.CLK  (clk), .D (ctrl_addr),      .Q (padout_sram_a));
+(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffrnq_1 reg_out_u_sram_dq_oe [N_SRAM_DQ-1:0] (
+	.CLK (clk),
+	.RN  (rst_n),
+	.D   (ctrl_dq_oe),
+	.Q   (padoe_sram_dq)
+);
 
-// FIXME at least OE should be reset (technically ok as OEn is pulled high, but...)
-`SRAM_PHY_FLOP_P reg_out_u_sram_dq_oe   [N_SRAM_DQ-1:0] (.CLK  (clk), .D (ctrl_dq_oe),     .Q (padoe_sram_dq));
-`SRAM_PHY_FLOP_P reg_in_u_sram_dq_in    [N_SRAM_DQ-1:0] (.CLK  (clk), .D (padin_sram_dq),  .Q (ctrl_dq_in));
+(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_1 reg_in_u_sram_dq_in [N_SRAM_DQ-1:0] (
+	.CLK (clk),
+	.D   (padin_sram_dq),
+	.Q   (ctrl_dq_in)
+);
 
 assign padout_sram_dq = ctrl_dq_out;
 
-`SRAM_PHY_FLOP_P reg_out_u_sram_strobe [3:0] (
+(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_1 reg_out_u_sram_strobe [3:0] (
 	.CLK  (clk),
 	.D    ({
 		ctrl_ce_n,
@@ -74,9 +86,6 @@ gf180mcu_fd_sc_mcu9t5v0__icgtn_4 clkgate_we_u (
 	.CLKN (clk),
 	.Q    (padout_sram_we_n)
 );
-
-`undef SRAM_PHY_FLOP_P
-`undef SRAM_PHY_FLOP_N
 
 endmodule
 
