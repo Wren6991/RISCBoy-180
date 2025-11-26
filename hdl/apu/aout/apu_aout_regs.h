@@ -57,9 +57,9 @@ typedef struct {
 #define APU_AOUT_CSR_ENABLE_BITS 1
 #define APU_AOUT_CSR_ENABLE_MASK 0x10000
 // Field: CSR_INTERVAL  Access: RW
-// Reset: 0x7b
-// Sample period in audio clock cycles is 4 x (INTERVAL + 2). Nominal value of
-// 123 yields 48 kSa/s with a 22 kHz cutoff on the upsampling filter, from a 24
+// Reset: 0x79
+// Sample period in audio clock cycles is 4 x (INTERVAL + 4). Nominal value of
+// 121 yields 48 kSa/s with a 22 kHz cutoff on the upsampling filter, from a 24
 // MHz audio clock.
 #define APU_AOUT_CSR_INTERVAL_LSB  8
 #define APU_AOUT_CSR_INTERVAL_BITS 8

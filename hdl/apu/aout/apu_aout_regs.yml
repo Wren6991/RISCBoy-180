@@ -14,9 +14,9 @@ regs:
         info: "Whether the audio output is currently running. Poll after changing ENABLE before changing INTERVAL."}
       - {b: 16, name: enable, access: rw,
         info: "Enable the audio output"}
-      - {b: [15, 8], name: interval, access: rw, rst: 123,
-        info: "Sample period in audio clock cycles is 4 x (INTERVAL + 2).
-          Nominal value of 123 yields 48 kSa/s with a 22 kHz cutoff on the upsampling filter,
+      - {b: [15, 8], name: interval, access: rw, rst: 121,
+        info: "Sample period in audio clock cycles is 4 x (INTERVAL + 4).
+          Nominal value of 121 yields 48 kSa/s with a 22 kHz cutoff on the upsampling filter,
           from a 24 MHz audio clock."}
       - {b: [6, 4], name: irqlevel, access: rw, rst: 2,
         info: "IRQ is asserted when FIFO level is less than or equal to IRQLEVEL."}

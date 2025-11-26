@@ -3,25 +3,45 @@
 |                     SPDX-License-Identifier: Apache-2.0                     |
 \*****************************************************************************/
 
-// 33-tap FIR filter with a cutoff of 22 kHz, assuming an 8 * 48 kHz sample rate
-// rate. Doesn't overflow if fed with seven stuffed zeroes between each input
-// sample. Intended to be used in upsampling 48 kSa/s up to 8 * 48 kSa/s.
+// 63-tap FIR filter with a cutoff of 22 kHz, assuming a 16 * 48 kHz sample rate
+// rate (768 kHz).
 //
 // This filter was "designed" (and I use the term very loosely) using filter.py
+//
+// It is equivalent to stuffing each sample with 15 zeroes and then running
+// through a 63-element delay line. However because most of the samples are
+// zero, we only need to store 64/16 = 4 of them, and rotate 16 coefficients
+// past the nonzero samples while they remain in position.
 
 `default_nettype wire
 
 module apu_lowpass_filter (
 	input  wire        clk,
 	input  wire        rst_n,
-	input  wire        en,   // very high fanout, try to drive from flop
+	input  wire        en_shift,
+	input  wire        en,
 	input  wire [15:0] d,
 	output wire [15:0] q
 );
 
-reg [15:0] s [0:32];
+localparam W_SAMPLE = 16;
+localparam W_COEFF = 9;
+localparam TAPS = 64; // last one is zero
+localparam [W_COEFF * TAPS -1:0] COEFF = {
+	9'h000, 9'h1fe, 9'h1fe, 9'h1fd, 9'h1fc, 9'h1fb, 9'h1fa, 9'h1f9,
+	9'h1f8, 9'h1f7, 9'h1f6, 9'h1f6, 9'h1f8, 9'h1fa, 9'h1fd, 9'h003,
+	9'h009, 9'h012, 9'h01d, 9'h029, 9'h037, 9'h046, 9'h056, 9'h067,
+	9'h078, 9'h089, 9'h099, 9'h0a7, 9'h0b4, 9'h0be, 9'h0c6, 9'h0ca,
+	9'h0cc, 9'h0ca, 9'h0c6, 9'h0be, 9'h0b4, 9'h0a7, 9'h099, 9'h089,
+	9'h078, 9'h067, 9'h056, 9'h046, 9'h037, 9'h029, 9'h01d, 9'h012,
+	9'h009, 9'h003, 9'h1fd, 9'h1fa, 9'h1f8, 9'h1f6, 9'h1f6, 9'h1f7,
+	9'h1f8, 9'h1f9, 9'h1fa, 9'h1fb, 9'h1fc, 9'h1fd, 9'h1fe, 9'h1fe
+};
 
-always @ (posedge clk) if (en) begin: shift
+reg [3:0] offset;
+reg [15:0] s [0:3];
+
+always @ (posedge clk) if (en_shift) begin: shift
 	integer i;
 	s[0] <= d;
 	for (i = 1; i < 33; i = i + 1) begin
@@ -29,151 +49,39 @@ always @ (posedge clk) if (en) begin: shift
 	end
 end
 
-reg [22:0] t [0:32];
-always @ (*) begin: zero_extend
-	integer i;
-	for (i = 0; i < 33; i = i + 1) begin
-		t[i] = {7'd0, s[i]};
+always @ (posedge clk) begin
+	if (en_shift) begin
+		offset <= 4'd0;
+	end else if (en) begin
+		offset <= offset + 4'd1;
 	end
 end
 
-wire [22:0] u0_nxt = 23'd0
-// 0  : -7'b0000001
-	- (t[0]  << 0)
-// 1  : -7'b0000001
-	- (t[1]  << 0)
-// 2  : -7'b0000010
-	- (t[2]  << 1)
-// 3  : -7'b0000011
-	- (t[3]  << 1)
-	- (t[3]  << 0)
-// 4  : -7'b0000101
-	- (t[4]  << 2)
-	- (t[4]  << 0)
-// 5  : -7'b0000101
-	- (t[5]  << 2)
-	- (t[5]  << 0)
-// 6  : -7'b0000100
-	- (t[6]  << 2)
-// 7  : -7'b0000001
-	- (t[7]  << 0)
-;
-wire [22:0] u1_nxt = 23'd0
-// 8  : +7'b0000101
-	+ (t[8]  << 2)
-	+ (t[8]  << 0)
-// 9  : +7'b0001110
-	+ (t[9]  << 4)
-	- (t[9]  << 1)
-// 10 : +7'b0011011
-	+ (t[10] << 5)
-	- (t[10] << 2)
-	- (t[10] << 0)
-// 11 : +7'b0101010
-	+ (t[11] << 5)
-	+ (t[11] << 3)
-	+ (t[11] << 1)
-// 12 : +7'b0111011
-	+ (t[12] << 6)
-	- (t[12] << 2)
-	- (t[12] << 0)
-// 13 : +7'b1001010
-	+ (t[13] << 6)
-	+ (t[13] << 3)
-	+ (t[13] << 1)
-// 14 : +7'b1010111
-	+ (t[14] << 6)
-	+ (t[14] << 4)
-	+ (t[14] << 3)
-	- (t[14] << 0)
-// 15 : +7'b1011111
-	+ (t[15] << 6)
-	+ (t[15] << 5)
-	- (t[15] << 0)
-// 16 : +7'b1100010
-	+ (t[16] << 6)
-	+ (t[16] << 5)
-	+ (t[16] << 1)
-;
-wire [22:0] u2_nxt = 23'd0
-// 17 : +7'b1011111
-	+ (t[17] << 6)
-	+ (t[17] << 5)
-	- (t[17] << 0)
-// 18 : +7'b1010111
-	+ (t[18] << 6)
-	+ (t[18] << 4)
-	+ (t[18] << 3)
-	- (t[18] << 0)
-// 19 : +7'b1001010
-	+ (t[19] << 6)
-	+ (t[19] << 3)
-	+ (t[19] << 1)
-// 20 : +7'b0111011
-	+ (t[20] << 6)
-	- (t[20] << 2)
-	- (t[20] << 0)
-// 21 : +7'b0101010
-	+ (t[21] << 5)
-	+ (t[21] << 3)
-	+ (t[21] << 1)
-// 22 : +7'b0011011
-	+ (t[22] << 5)
-	- (t[22] << 2)
-	- (t[22] << 0)
-// 23 : +7'b0001110
-	+ (t[23] << 4)
-	- (t[23] << 1)
-// 24 : +7'b0000101
-	+ (t[24] << 2)
-	+ (t[24] << 0)
-;
-wire [22:0] u3_nxt = 23'd0
-// 25 : -7'b0000001
-	- (t[25] << 0)
-// 26 : -7'b0000100
-	- (t[26] << 2)
-// 27 : -7'b0000101
-	- (t[27] << 2)
-	- (t[27] << 0)
-// 28 : -7'b0000101
-	- (t[28] << 2)
-	- (t[28] << 0)
-// 29 : -7'b0000011
-	- (t[29] << 1)
-	- (t[29] << 0)
-// 30 : -7'b0000010
-	- (t[30] << 1)
-// 31 : -7'b0000001
-	- (t[31] << 0)
-// 32 : -7'b0000001
-	- (t[32] << 0)
-;
+wire [W_COEFF-1:0] c0 = COEFF[{2'd0, offset} * W_COEFF +: W_COEFF];
+wire [W_COEFF-1:0] c1 = COEFF[{2'd1, offset} * W_COEFF +: W_COEFF];
+wire [W_COEFF-1:0] c2 = COEFF[{2'd2, offset} * W_COEFF +: W_COEFF];
+wire [W_COEFF-1:0] c3 = COEFF[{2'd3, offset} * W_COEFF +: W_COEFF];
 
-reg[22:0] u0;
-reg[22:0] u1;
-reg[22:0] u2;
-reg[22:0] u3;
+wire [W_COEFF+W_SAMPLE-1:0] mul0 = {{W_COEFF{s[0][W_SAMPLE-1]}}, s[0]} * c0;
+wire [W_COEFF+W_SAMPLE-1:0] mul1 = {{W_COEFF{s[1][W_SAMPLE-1]}}, s[1]} * c1;
+wire [W_COEFF+W_SAMPLE-1:0] mul2 = {{W_COEFF{s[2][W_SAMPLE-1]}}, s[2]} * c2;
+wire [W_COEFF+W_SAMPLE-1:0] mul3 = {{W_COEFF{s[3][W_SAMPLE-1]}}, s[3]} * c3;
 
-always @ (posedge clk) if (en) begin
-	u0 <= u0_nxt;
-	u1 <= u1_nxt;
-	u2 <= u2_nxt;
-	u3 <= u3_nxt;
-end
+wire [W_COEFF-1:0] sum = mul0 + mul1 + mul2 + mul3;
 
-wire [22:0] u_sum = u0 + u1 + u2 + u3;
 reg  [15:0] q_r;
-reg  [5:0] blank_ctr;
+reg  [2:0] blank_ctr;
 
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
-		blank_ctr <= 6'd35;
+		blank_ctr <= 3'd4;
 		q_r <= 16'd0;
 	end else if (en) begin
-		blank_ctr <= blank_ctr - |blank_ctr;
+		if (en_shift) begin
+			blank_ctr <= blank_ctr - |blank_ctr;
+		end
 		if (~|blank_ctr) begin
-			q_r <= u_sum[7 +: 16];
+			q_r <= sum[W_COEFF - 1 +: W_SAMPLE];
 		end
 	end
 end

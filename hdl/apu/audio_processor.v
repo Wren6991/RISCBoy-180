@@ -475,8 +475,8 @@ wire        aout_fifo_r_wen;
 
 assign aout_fifo_wpush = aout_fifo_l_wen || aout_fifo_r_wen;
 assign aout_fifo_wdata =
-    {aout_csr_signed, 15'd0, aout_csr_signed, 15'd0} ^
-    {     aout_fifo_l_wdata,      aout_fifo_r_wdata};
+    {!aout_csr_signed, 15'd0, !aout_csr_signed, 15'd0} ^
+    {      aout_fifo_l_wdata,       aout_fifo_r_wdata};
 
 assign irq = aout_fifo_wlevel <= aout_csr_irqlevel;
 

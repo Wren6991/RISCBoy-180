@@ -115,7 +115,7 @@ always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
 		csr_signed_o <= 1'h0;
 		csr_enable_o <= 1'h0;
-		csr_interval_o <= 8'h7b;
+		csr_interval_o <= 8'h79;
 		csr_irqlevel_o <= 3'h2;
 	end else begin
 		if (__csr_wen)
