@@ -34,7 +34,7 @@ create_clock [get_pins pad_DCK/PAD] \
     -name dck \
     -period $DCK_PERIOD
 
-set SRAM_A_TO_Q 12
+set SRAM_A_TO_Q 25
 
 ###############################################################################
 # CDC constraints
@@ -42,7 +42,7 @@ set SRAM_A_TO_Q 12
 proc cdc_maxdelay {clk_from clk_to period_to} {
     # Allow two cycles of propagation; really this is putting an upper bound on the skew
     set_max_delay [expr 2.0 * $period_to] -from [get_clocks $clk_from] -to [get_clocks $clk_to]
-    # LibreLane doesn't support set_max_delay -datapath_only!
+    # OpenROAD doesn't support set_max_delay -datapath_only!
     # Instead, manually disable hold checks between unrelated clocks:
     set_false_path -hold -from [get_clocks $clk_from] -to [get_clocks $clk_to]
 }
@@ -71,17 +71,26 @@ set_output_delay 5                            [get_ports DIO] -clock [get_clock 
 set_input_delay -min 0                        [get_ports DIO] -clock [get_clock dck]
 set_input_delay -max [expr 0.5 * $DCK_PERIOD] [get_ports DIO] -clock [get_clock dck]
 
-set_output_delay [expr 0.50 * $CLK_SYS_PERIOD - $SRAM_A_TO_Q] -clock [get_clock clk_sys] [get_ports {
+# Put A-to-Q delay in middle of cycle:
+set SRAM_IO_DELAY [expr 0.50 * ($CLK_SYS_PERIOD + $SRAM_A_TO_Q)]
+
+set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
     SRAM_A[*]
     SRAM_DQ[*]
     SRAM_OEn
     SRAM_CSn
-    SRAM_WEn
     SRAM_UBn
     SRAM_LBn
 }]
 
-set_input_delay [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {
+# Delay on WEn is measured to negedge because it's from an ICGTN. The virtual
+# start of its write cycle is still at the posedge (where the A is asserted),
+# there's just no transition there.
+set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
+    SRAM_WEn
+}]
+
+set_input_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
     SRAM_DQ[*]
 }]
 
@@ -92,6 +101,11 @@ set_input_delay  -min 0                             -clock [get_clock clk_sys] [
 
 # Backlight PWM: low-frequency, timing unimportant
 set_false_path -setup -hold -through [get_ports LCD_BL]
+
+# Reasonably tight on audio paths so we get the final flop and buffers fairly close to the quiet supply pins
+set_output_delay      [expr 0.80 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {AUDIO_L AUDIO_R}]
+
+# TODO: LCD SPI
 
 ###############################################################################
 # Cargo-culted from project template :)
