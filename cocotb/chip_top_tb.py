@@ -528,6 +528,63 @@ async def test_riscv_soft_irq(dut):
     "hellow",
     "start_apu"
 ])
+async def test_execute_eram(dut, app="hellow"):
+    """Execute code from IRAM"""
+    swtest_dir = Path(__file__).resolve().parent.parent / "software/tests/eram"
+    rc = subprocess.run(["make", "-C", swtest_dir, f"APP={app}"])
+    assert rc.returncode == 0
+    with open(swtest_dir / f"build/{app}.bin", "rb") as f:
+        prog_bytes = f.read()
+    cocotb.log.info(f"Program size = {len(prog_bytes)}")
+    prog_hwords = list(w[0] for w in struct.iter_unpack("<h", prog_bytes))
+    for i, hword in enumerate(prog_hwords):
+        dut.eram_u.mem[i].value = hword
+        dut.eram_u.mem[i].value = Release()
+
+    await start_up(dut)
+    await twd_connect(dut)
+
+    await rvdebug_init(dut)
+    await rvdebug_halt(dut)
+    await rvdebug_put_gpr(dut, 8, 0)
+    await rvdebug_put_csr(dut, CSR_DPC, ERAM_BASE)
+    cocotb.log.info(f"Resuming at {ERAM_BASE:x}")
+    await rvdebug_resume(dut)
+
+    vuart_stdout = []
+    def test_done():
+        if len(vuart_stdout) < 6:
+            return False
+        endstr = "".join(vuart_stdout[-6:])
+        if endstr == "!TPASS":
+            return True
+        if endstr == "!TFAIL":
+            return True
+        return False
+
+    while not test_done():
+        c = await twd_vuart_getchar(dut, max_poll=100)
+        if c is None: break
+        sys.stdout.write(chr(c))
+        vuart_stdout.append(chr(c))
+
+    sys.stdout.write("\n")
+    vuart_stdout = "".join(vuart_stdout)
+
+    assert vuart_stdout.endswith("!TPASS")
+    vuart_stdout = vuart_stdout[:-6]
+
+    cocotb.log.info(f"Processor standard output:\n\n{vuart_stdout}\n")
+    if app == "hellow":
+        assert vuart_stdout == "Hello, world!\r\n"
+    elif app == "start_apu":
+        assert vuart_stdout == "Starting APU\r\n" + "Received IRQ\r\n"
+
+@cocotb.test()
+@cocotb.parametrize(app=[
+    "hellow",
+    "start_apu"
+])
 async def test_execute_iram(dut, app="hellow"):
     """Execute code from IRAM"""
     swtest_dir = Path(__file__).resolve().parent.parent / "software/tests/iram"
@@ -563,7 +620,7 @@ async def test_execute_iram(dut, app="hellow"):
         return False
 
     while not test_done():
-        c = await twd_vuart_getchar(dut, max_poll=1000)
+        c = await twd_vuart_getchar(dut, max_poll=10)
         if c is None: break
         sys.stdout.write(chr(c))
         vuart_stdout.append(chr(c))
@@ -640,7 +697,12 @@ def get_sources_defines_includes():
     defines = {}
     includes = []
 
-    sources.extend(["tb/tb.v", "tb/spi_flash_model.v"])
+    # Only used in simulation:
+    sources.extend([
+        "tb/tb.v",
+        "tb/spi_flash_model.v",
+        "tb/sram_async.v"
+    ])
 
     # SCL models: included even for RTL sims, as RTL may instantiate cells in some rare cases
     sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v")

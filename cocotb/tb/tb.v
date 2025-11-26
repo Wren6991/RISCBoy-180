@@ -1,5 +1,7 @@
 `timescale 1ns/1ps
 
+`default_nettype none
+
 module tb;
 
 // Deliberately do not set these in the module instantiation to avoid testing
@@ -74,6 +76,18 @@ spi_flash_model flash_u (
 	.CSn (GPIO[1]),
 	.IO0 (GPIO[2]),
 	.IO1 (GPIO[3])
+);
+
+sram_async #(
+	.W_DATA (16),
+	.DEPTH (1 << 18)
+) eram_u (
+	.addr  (SRAM_A),
+	.dq    (SRAM_DQ),
+	.ce_n  (SRAM_CSn),
+	.oe_n  (SRAM_OEn),
+	.we_n  (SRAM_WEn),
+	.ben_n ({SRAM_UBn, SRAM_LBn})
 );
 
 endmodule
