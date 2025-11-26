@@ -120,7 +120,7 @@ if (DEPTH > 512) begin: g_dg512
 		integer i;
 		rdata_q = {WIDTH{1'b0}};
 		for (i = 0; i < DEPTH / 512; i = i + 1) begin
-			rdata_q = rdata_q | (rdata_per_ram[i] & {WIDTH{ramsel_dph}});
+			rdata_q = rdata_q | (rdata_per_ram[i] & {WIDTH{ramsel_dph[i]}});
 		end
 	end
 
