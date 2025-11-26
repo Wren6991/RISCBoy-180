@@ -229,7 +229,7 @@ proc sram_pdn_ns {pdnname macrolist} {
     add_pdn_stripe \
         -grid $pdnname \
         -layer Metal4 \
-        -width 2.36 \
+        -width 4 \
         -offset 65.93 \
         -spacing 0.28 \
         -pitch 50 \
