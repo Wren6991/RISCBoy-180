@@ -85,8 +85,10 @@ set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
 
 # Delay on WEn is measured to negedge because it's from an ICGTN. The virtual
 # start of its write cycle is still at the posedge (where the A is asserted),
-# there's just no transition there.
-set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
+# there's just no transition there. Can't figure out how to explain this to
+# OpenSTA so just add a half-period of slack (which is a subtraction of
+# delay).
+set_output_delay [expr $SRAM_IO_DELAY - 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {
     SRAM_WEn
 }]
 
@@ -99,13 +101,26 @@ set_output_delay      [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [
 set_input_delay  -max [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
 set_input_delay  -min 0                             -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
 
-# Backlight PWM: low-frequency, timing unimportant
-set_false_path -setup -hold -through [get_ports LCD_BL]
-
 # Reasonably tight on audio paths so we get the final flop and buffers fairly close to the quiet supply pins
 set_output_delay      [expr 0.80 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {AUDIO_L AUDIO_R}]
 
-# TODO: LCD SPI
+# LCD_SCK has the same consideration as SRAM_WEn as it's generated using an
+# ICGTN. Other than that just keep the SPI output paths rather tight as a way
+# of controlling skew.
+set LCD_SPI_OUTDELAY [expr 0.80 * $CLK_LCD_PERIOD]
+set_output_delay $LCD_SPI_OUTDELAY -clock [get_clock clk_lcd] [get_ports {
+    LCD_DAT
+    LCD_CSn
+    LCD_DC
+}]
+
+set_output_delay [expr $LCD_SPI_OUTDELAY - 0.50 * $CLK_LCD_PERIOD] -clock [get_clock clk_lcd] [get_ports {
+    LCD_SCK
+}]
+
+# Backlight PWM: low-frequency, timing unimportant
+set_false_path -setup -hold -through [get_ports LCD_BL]
+
 
 ###############################################################################
 # Cargo-culted from project template :)
