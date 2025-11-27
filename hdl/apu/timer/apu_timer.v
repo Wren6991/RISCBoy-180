@@ -96,6 +96,7 @@ always @ (posedge clk or negedge rst_n) begin
 		tick <= 1'b1;
 	end else begin
 		tick_ctr <= tick_ctr - {{W_TICK-1{1'b0}}, 1'b1};
+		tick <= 1'b0;
 	end
 end
 
