@@ -344,7 +344,7 @@ wire [31:0] timer_hwdata;
 wire [31:0] timer_hrdata;
 
 ahbl_splitter #(
-    .N_PORTS   (3),
+    .N_PORTS   (4),
     .W_ADDR    (16),
     .ADDR_MAP  ({16'ha000, 16'h9000, 16'h8000, 16'h0000}),
     .ADDR_MASK ({16'hf000, 16'hf000, 16'hf000, 16'h8000})
