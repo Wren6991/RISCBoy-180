@@ -215,6 +215,13 @@ gf180mcu_fd_io__bi_t pad_DIO (
 // ----------------------------------------------------------------------------
 // IO pad instances: SRAM
 
+// False-path on loopback, timing isn't important as pulls have low edge rates
+wire [N_SRAM_DQ-1:0] padin_sram_dq_fp;
+falsepath_anchor fp_padin_u (
+    .i (padin_sram_dq),
+    .z (padin_sram_dq_fp)
+);
+
 generate
 for (genvar i = 0; i < N_SRAM_DQ; i++) begin: pad_SRAM_DQ
     (* keep *)
@@ -235,9 +242,9 @@ for (genvar i = 0; i < N_SRAM_DQ; i++) begin: pad_SRAM_DQ
         .PDRV0  (sram_dq_drive[0]),
         .IE     (!padoe_sram_dq[i]),
 
-        // Loop back input for bus keeper function:
-        .PU     (padin_sram_dq[i]),
-        .PD     (!padin_sram_dq[i])
+        // Loop back input for bus keeper function (pull down at reset):
+        .PU     (padin_sram_dq_fp[i] && enable_fixed_outputs),
+        .PD     (!padin_sram_dq_fp[i] || enable_fixed_outputs)
     );
 end
 endgenerate
