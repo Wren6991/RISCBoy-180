@@ -72,7 +72,7 @@ apu_lowpass_filter lpf_u [1:0] (
 apu_sdm sdm_u [1:0] (
 	.clk   (clk),
 	.rst_n (rst_n),
-	.d     (sample_filtered),
+	.d     (sample_filtered ^ 32'h80008000), // FIXME: sdm is currently unsigned, but EFF version would be signed
 	.q     ({pwm_l, pwm_r})
 );
 

@@ -67,7 +67,7 @@ wire [W_COEFF+W_SAMPLE-1:0] mul1 = {{W_COEFF{s[1][W_SAMPLE-1]}}, s[1]} * c1;
 wire [W_COEFF+W_SAMPLE-1:0] mul2 = {{W_COEFF{s[2][W_SAMPLE-1]}}, s[2]} * c2;
 wire [W_COEFF+W_SAMPLE-1:0] mul3 = {{W_COEFF{s[3][W_SAMPLE-1]}}, s[3]} * c3;
 
-wire [W_COEFF-1:0] sum = mul0 + mul1 + mul2 + mul3;
+wire [W_COEFF+W_SAMPLE-1:0] sum = mul0 + mul1 + mul2 + mul3;
 
 reg  [15:0] q_r;
 reg  [2:0] blank_ctr;
