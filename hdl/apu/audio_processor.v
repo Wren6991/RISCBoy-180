@@ -48,9 +48,15 @@ module audio_processor #(
     output wire        irq_cpu_softirq,
     output wire        irq_apu_timer_to_cpu,
     output wire        irq_apu_aout_to_cpu,
+    output wire        irq_spi_stream_to_cpu,
 
 	output wire        audio_l,
-	output wire        audio_r
+	output wire        audio_r,
+
+    output wire        spi_cs_n,
+    output wire        spi_sck,
+    output wire        spi_mosi,
+    input  wire        spi_miso
 );
 
 // ------------------------------------------------------------------------
@@ -124,12 +130,18 @@ end
 // ------------------------------------------------------------------------
 // Processor instantiation
 
-wire                irq;        // mip.meip: from AOUT
+localparam IRQ_AOUT = 0;
+localparam IRQ_SPI  = 1;
+localparam NUM_IRQS = 2;
+
+wire [NUM_IRQS-1:0] irq;        // mip.meip: from {SPI, AOUT}
 wire                soft_irq;   // mip.msip: from IPC
 wire                timer_irq;  // mip.mtip: from APU timer
 
 // Also make these IRQs available to main CPU
-assign irq_apu_aout_to_cpu = irq;
+assign irq_apu_aout_to_cpu = irq[IRQ_AOUT];
+assign irq_spi_stream_to_cpu = irq[IRQ_SPI];
+
 assign irq_apu_timer_to_cpu = timer_irq;
 
 wire                start_apu;
@@ -190,7 +202,7 @@ hazard3_cpu_1port #(
     .EXTENSION_ZILSD     (0),
 
     .EXTENSION_XH3BEXTM  (0),
-    .EXTENSION_XH3IRQ    (0),
+    .EXTENSION_XH3IRQ    (1),
     .EXTENSION_XH3PMPM   (0),
     .EXTENSION_XH3POWER  (1),
 
@@ -203,7 +215,7 @@ hazard3_cpu_1port #(
 
     .DEBUG_SUPPORT       (1),
     .BREAKPOINT_TRIGGERS (0),
-    .NUM_IRQS            (1),
+    .NUM_IRQS            (NUM_IRQS),
     .IRQ_PRIORITY_BITS   (0),
 
     .MVENDORID_VAL       (32'h0),
@@ -343,11 +355,25 @@ wire        timer_hresp;
 wire [31:0] timer_hwdata;
 wire [31:0] timer_hrdata;
 
+wire [15:0] spi_stream_haddr;
+wire        spi_stream_hwrite;
+wire [1:0]  spi_stream_htrans;
+wire [2:0]  spi_stream_hsize;
+wire [2:0]  spi_stream_hburst;
+wire [3:0]  spi_stream_hprot;
+wire        spi_stream_hmastlock;
+wire [7:0]  spi_stream_hmaster;
+wire        spi_stream_hready;
+wire        spi_stream_hready_resp;
+wire        spi_stream_hresp;
+wire [31:0] spi_stream_hwdata;
+wire [31:0] spi_stream_hrdata;
+
 ahbl_splitter #(
-    .N_PORTS   (4),
+    .N_PORTS   (5),
     .W_ADDR    (16),
-    .ADDR_MAP  ({16'ha000, 16'h9000, 16'h8000, 16'h0000}),
-    .ADDR_MASK ({16'hf000, 16'hf000, 16'hf000, 16'h8000})
+    .ADDR_MAP  ({16'hb000, 16'ha000, 16'h9000, 16'h8000, 16'h0000}),
+    .ADDR_MASK ({16'hf000, 16'hf000, 16'hf000, 16'hf000, 16'h8000})
 ) splitter_u (
     .clk             (clk_sys),
     .rst_n           (rst_n_sys),
@@ -371,19 +397,19 @@ ahbl_splitter #(
     .dst_hexokay     ('0),
     .dst_hexcl       (/* unused */),
 
-    .dst_hready      ({timer_hready      , aout_hready      , ipc_hready      , ram_hready     }),
-    .dst_hready_resp ({timer_hready_resp , aout_hready_resp , ipc_hready_resp , ram_hready_resp}),
-    .dst_hresp       ({timer_hresp       , aout_hresp       , ipc_hresp       , ram_hresp      }),
-    .dst_haddr       ({timer_haddr       , aout_haddr       , ipc_haddr       , ram_haddr      }),
-    .dst_hwrite      ({timer_hwrite      , aout_hwrite      , ipc_hwrite      , ram_hwrite     }),
-    .dst_htrans      ({timer_htrans      , aout_htrans      , ipc_htrans      , ram_htrans     }),
-    .dst_hsize       ({timer_hsize       , aout_hsize       , ipc_hsize       , ram_hsize      }),
-    .dst_hburst      ({timer_hburst      , aout_hburst      , ipc_hburst      , ram_hburst     }),
-    .dst_hprot       ({timer_hprot       , aout_hprot       , ipc_hprot       , ram_hprot      }),
-    .dst_hmaster     ({timer_hmaster     , aout_hmaster     , ipc_hmaster     , ram_hmaster    }),
-    .dst_hmastlock   ({timer_hmastlock   , aout_hmastlock   , ipc_hmastlock   , ram_hmastlock  }),
-    .dst_hwdata      ({timer_hwdata      , aout_hwdata      , ipc_hwdata      , ram_hwdata     }),
-    .dst_hrdata      ({timer_hrdata      , aout_hrdata      , ipc_hrdata      , ram_hrdata     })
+    .dst_hready      ({spi_stream_hready      , timer_hready      , aout_hready      , ipc_hready      , ram_hready     }),
+    .dst_hready_resp ({spi_stream_hready_resp , timer_hready_resp , aout_hready_resp , ipc_hready_resp , ram_hready_resp}),
+    .dst_hresp       ({spi_stream_hresp       , timer_hresp       , aout_hresp       , ipc_hresp       , ram_hresp      }),
+    .dst_haddr       ({spi_stream_haddr       , timer_haddr       , aout_haddr       , ipc_haddr       , ram_haddr      }),
+    .dst_hwrite      ({spi_stream_hwrite      , timer_hwrite      , aout_hwrite      , ipc_hwrite      , ram_hwrite     }),
+    .dst_htrans      ({spi_stream_htrans      , timer_htrans      , aout_htrans      , ipc_htrans      , ram_htrans     }),
+    .dst_hsize       ({spi_stream_hsize       , timer_hsize       , aout_hsize       , ipc_hsize       , ram_hsize      }),
+    .dst_hburst      ({spi_stream_hburst      , timer_hburst      , aout_hburst      , ipc_hburst      , ram_hburst     }),
+    .dst_hprot       ({spi_stream_hprot       , timer_hprot       , aout_hprot       , ipc_hprot       , ram_hprot      }),
+    .dst_hmaster     ({spi_stream_hmaster     , timer_hmaster     , aout_hmaster     , ipc_hmaster     , ram_hmaster    }),
+    .dst_hmastlock   ({spi_stream_hmastlock   , timer_hmastlock   , aout_hmastlock   , ipc_hmastlock   , ram_hmastlock  }),
+    .dst_hwdata      ({spi_stream_hwdata      , timer_hwdata      , aout_hwdata      , ipc_hwdata      , ram_hwdata     }),
+    .dst_hrdata      ({spi_stream_hrdata      , timer_hrdata      , aout_hrdata      , ipc_hrdata      , ram_hrdata     })
 );
 
 // ------------------------------------------------------------------------
@@ -452,6 +478,28 @@ apu_timer timer_u (
     .irq               (timer_irq)
 );
 
+spi_stream spi_stream_u (
+    .clk               (clk_sys),
+    .rst_n             (rst_n_sys),
+
+    .irq               (irq[IRQ_SPI]),
+
+    .ahbls_haddr       (spi_stream_haddr),
+    .ahbls_htrans      (spi_stream_htrans),
+    .ahbls_hwrite      (spi_stream_hwrite),
+    .ahbls_hsize       (spi_stream_hsize),
+    .ahbls_hready      (spi_stream_hready),
+    .ahbls_hready_resp (spi_stream_hready_resp),
+    .ahbls_hwdata      (spi_stream_hwdata),
+    .ahbls_hrdata      (spi_stream_hrdata),
+    .ahbls_hresp       (spi_stream_hresp),
+
+    .spi_cs_n          (spi_cs_n),
+    .spi_sck           (spi_sck),
+    .spi_mosi          (spi_mosi),
+    .spi_miso          (spi_miso)
+);
+
 
 // ----------------------------------------------------------------------------
 // Sample FIFO and AOUT control interface
@@ -478,7 +526,7 @@ assign aout_fifo_wdata =
     {!aout_csr_signed, 15'd0, !aout_csr_signed, 15'd0} ^
     {      aout_fifo_l_wdata,       aout_fifo_r_wdata};
 
-assign irq = aout_fifo_wlevel <= aout_csr_irqlevel;
+assign irq[IRQ_AOUT] = aout_fifo_wlevel <= aout_csr_irqlevel;
 
 apu_aout_regs aout_regs_u (
     .clk               (clk_sys),

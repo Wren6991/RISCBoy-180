@@ -420,12 +420,15 @@ hazard3_dm #(
 // ------------------------------------------------------------------------
 // Processor instantiation
 
-localparam IRQ_PPU       = 0;
-localparam IRQ_VUART     = 1;
-localparam IRQ_APU_AOUT  = 2;
-localparam IRQ_APU_TIMER = 3;
-localparam IRQ_UART      = 4;
-localparam NUM_IRQS      = 5;
+// APU IRQs have same IRQ num on CPU:
+localparam IRQ_APU_AOUT   = 0;
+localparam IRQ_SPI_STREAM = 1;
+// CPU-only (or not mip.mie on APU):
+localparam IRQ_PPU        = 2;
+localparam IRQ_VUART      = 3;
+localparam IRQ_APU_TIMER  = 4;
+localparam IRQ_UART       = 5;
+localparam NUM_IRQS       = 6;
 
 wire                cpu_pwrup_req;
 wire                cpu_pwrup_ack = cpu_pwrup_req;
@@ -906,6 +909,11 @@ ahb_rom_boot rom_u (
 wire audio_l;
 wire audio_r;
 
+wire spi_cs_n;
+wire spi_sck;
+wire spi_mosi;
+wire spi_miso;
+
 audio_processor #(
     .RAM_DEPTH (512)
 ) apu_u (
@@ -946,9 +954,15 @@ audio_processor #(
     .irq_cpu_softirq            (soft_irq),
     .irq_apu_aout_to_cpu        (irq[IRQ_APU_AOUT]),
     .irq_apu_timer_to_cpu       (irq[IRQ_APU_TIMER]),
+    .irq_spi_stream_to_cpu      (irq[IRQ_SPI_STREAM]),
 
     .audio_l                    (audio_l),
-    .audio_r                    (audio_r)
+    .audio_r                    (audio_r),
+
+    .spi_cs_n                   (spi_cs_n),
+    .spi_sck                    (spi_sck),
+    .spi_mosi                   (spi_mosi),
+    .spi_miso                   (spi_miso)
 );
 
 // ------------------------------------------------------------------------

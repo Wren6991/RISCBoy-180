@@ -1,0 +1,42 @@
+name: spi_stream
+bus: ahbl
+addr: 16
+data: 32
+regs:
+  - name: csr
+    info: Control and status register
+    bits:
+      - {b: 0, name: start, access: sc,
+        info: "Write 1 to start a sequence of COUNT transfers from the current value of
+        ADDR. Do not use when BUSY is true."}
+      - {b: 1, name: busy, access: rov, info: "More data is coming. Don't touch the configuration."}
+      - {b: [5, 4], name: flevel, access: rov, info: "Number of words currently stored in RX FIFO (0 to 2)."}
+      - {b: [9, 8], name: irqlevel, access: rw, info: "IRQ asserts when FLEVEL > IRQLEVEL."}
+      - {b: 14, name: finished, access: w1c, info: "Set when COUNT reaches 0 and the last data has been pushed to the FIFO. This also raises the IRQ. Write 1 to clear."}
+      - {b: 15, name: flush, access: sc, info: "Force the RX FIFO level to 0."}
+      - {b: [23, 16], name: opcode, access: rw, rst: 0x0b, info: "Command to issue to SPI flash"}
+      - {b: 31, name: fvalid, access: rov, info: "True if the FIFO contains valid data (FLEVEL is not zero)"}
+  - name: clkdiv
+    info: "SPI SCK divisor. Only even values are supported (bit 0 is hardwired to 0)."
+    bits:
+      - {b: [3, 1], access: rw, rst: 0x1}
+  - name: addr
+    info: "SPI address register (32-bit aligned)"
+    bits:
+      - {b: [23, 2], access: rwv}
+  - name: count
+    info: "Number of words to read, starting from ADDR."
+    bits:
+      - {b: [15, 0], access: rwv}
+  - name: fifo
+    info: "Pop data from RX FIFO"
+    bits:
+      - {b: [31, 0], access: rf}
+  - name: pause  
+    info: "Pause the current stream and quiesce the SPI bus. This is intended
+    to be used by the CPU to take control of the SPI GPIOs from the APU."
+    bits:
+      - {b: 0, name: req, access: rw, info: "Request pause of current stream."}
+      - {b: 1, name: ack, access: rov, info: "True if the bus is quiescent.
+        The peripheral will not start any more transfers until PAUSE_REQ is
+        released."}

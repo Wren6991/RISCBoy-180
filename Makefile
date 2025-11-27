@@ -67,6 +67,7 @@ regblocks: ## Regenerate all register blocks and their headers
 	./scripts/regblock -a hdl/apu/ipc/apu_ipc_regs.yml
 	./scripts/regblock -a hdl/apu/aout/apu_aout_regs.yml
 	./scripts/regblock -a hdl/apu/timer/apu_timer_regs.yml
+	./scripts/regblock -a hdl/spi_stream/spi_stream_regs.yml
 	./scripts/regblock -a hdl/gpio/gpio_regs.yml
 	./scripts/regblock -a hdl/padctrl/padctrl_regs.yml
 	./scripts/regblock -a hdl/riscboy/hdl/graphics/ppu/dispctrl/regs/ppu_dispctrl_spi_regs.yml

@@ -68,6 +68,9 @@ VERILOG_FILES:
 - dir::../hdl/vuart/vuart_host_regs.v
 - dir::../hdl/vuart/vuart_dev_regs.v
 
+- dir::../hdl/spi_stream/spi_stream.v
+- dir::../hdl/spi_stream/spi_stream_regs.v
+
 - dir::../hdl/uart/uart_mini.v
 - dir::../hdl/uart/uart_regs.v
 

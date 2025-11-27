@@ -27,9 +27,14 @@ module gpio #(
 	input  wire               uart_tx,
 	output wire               uart_rx,
 
-	output wire [N_GPIO-1:0] padout_gpio,
-	output wire [N_GPIO-1:0] padoe_gpio,
-	input  wire [N_GPIO-1:0] padin_gpio
+	input  wire               spi_cs_n,
+	input  wire               spi_sck,
+	input  wire               spi_mosi,
+	output wire               spi_miso,
+
+	output wire [N_GPIO-1:0]  padout_gpio,
+	output wire [N_GPIO-1:0]  padoe_gpio,
+	input  wire [N_GPIO-1:0]  padin_gpio
 );
 
 // Set bits here for low-priority clk_sys paths that merge with higher
@@ -44,7 +49,10 @@ wire [N_GPIO-1:0] alt_out = {
 	audio_r,
 	uart_tx,
 	1'b0,
-	4'd0
+	spi_cs_n,
+	spi_sck,
+	spi_mosi,
+	1'b0
 };
 
 wire [N_GPIO-1:0] alt_oen  = {
@@ -52,10 +60,11 @@ wire [N_GPIO-1:0] alt_oen  = {
 	1'b1,
 	1'b1,
 	1'b0,
-	4'd0
+	4'he
 };
 
-assign uart_rx = padin_gpio[3];
+assign uart_rx = padin_gpio[4];
+assign spi_miso = padin_gpio[0];
 
 // ----------------------------------------------------------------------------
 // Register block
