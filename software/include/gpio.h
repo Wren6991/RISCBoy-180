@@ -8,10 +8,12 @@
 #define padctrl_hw ((padctrl_hw_t*)PADCTRL_BASE)
 #define gpio_hw ((gpio_hw_t*)GPIO_BASE)
 
-#define GPIO_SPI_SCK 0
-#define GPIO_SPI_CSN 1
-#define GPIO_SPI_IO0 2
+#define GPIO_SPI_IO0 0
+#define GPIO_SPI_SCK 1
+#define GPIO_SPI_CSN 2
 #define GPIO_SPI_IO1 3
+#define GPIO_UART_RX 4
+#define GPIO_UART_TX 5
 #define GPIO_AUDIO_R 6
 #define GPIO_AUDIO_L 7
 

@@ -14,6 +14,7 @@
 	* Create clock muxes and dividers
 	* Create control registers and hook everything up
 * Review resettable flops and see if they can be made non-reset for better density/routing
+* Hazard3: can use predecoded, registered versions of d_rs1/d_rs2 for stalled regfile read
 
 ## "Verification"
 

@@ -49,9 +49,9 @@ wire [N_GPIO-1:0] alt_out = {
 	audio_r,
 	uart_tx,
 	1'b0,
-	spi_cs_n,
-	spi_sck,
 	spi_mosi,
+	spi_sck,
+	spi_cs_n,
 	1'b0
 };
 

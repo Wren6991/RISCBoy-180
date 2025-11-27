@@ -72,9 +72,9 @@ chip_top chip_u (
 );
 
 spi_flash_model flash_u (
-	.SCK (GPIO[0]),
-	.CSn (GPIO[1]),
-	.IO0 (GPIO[2]),
+	.SCK (GPIO[1]),
+	.CSn (GPIO[2]),
+	.IO0 (GPIO[0]),
 	.IO1 (GPIO[3])
 );
 
