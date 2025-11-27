@@ -76,21 +76,42 @@ set SRAM_IO_DELAY [expr 0.50 * ($CLK_SYS_PERIOD + $SRAM_A_TO_Q)]
 
 set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
     SRAM_A[*]
-    SRAM_DQ[*]
     SRAM_OEn
     SRAM_CSn
     SRAM_UBn
     SRAM_LBn
 }]
 
+# The SRAM D paths are longer than others as they go through (a small amount
+# of) logic in the processor instead of coming straight from flops. It's also
+# desirable for them to remain valid a little longer for hold time against the
+# release (rise) of WEn; quite common for async RAMs to have a hold
+# requirement of 0 on this edge.
+#
+# Cannot relax the OE paths of the same pads in this way because it would
+# create drive contention with the next read cycle.
+#
+# OpenSTA does not support -through on set_output_delay (!) so can't specify
+# different output delays through the OE (out enable) and A (out value) pins
+# to the pad. Instead constrain both paths with relaxed timing and then apply
+# additional delay to OEn.
+set SRAM_D_DERATE 10
+set_output_delay [expr $SRAM_IO_DELAY - $SRAM_D_DERATE] \
+    -clock [get_clock clk_sys] [get_ports {SRAM_DQ[*]}]
+
+# The check point is actually ahead of the clock by the output delay, so this
+# *adds* delay, doesn't set it:
+set_max_delay [expr $CLK_SYS_PERIOD - $SRAM_D_DERATE] -ignore_clock_latency \
+    -through [get_pins {pad_SRAM_DQ*/OE} ] -to [get_ports {SRAM_DQ*} ]
+
 # Delay on WEn is measured to negedge because it's from an ICGTN. The virtual
 # start of its write cycle is still at the posedge (where the A is asserted),
 # there's just no transition there. Can't figure out how to explain this to
-# OpenSTA so just add a half-period of slack (which is a subtraction of
-# delay).
-set_output_delay [expr $SRAM_IO_DELAY - 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {
-    SRAM_WEn
-}]
+# OpenSTA (it says the default source edge is posedge but 1. no specified way
+# to change it 2. it's clearly timing from negedge) so just add a half-period
+# of slack (which is a subtraction of delay).
+set_output_delay [expr $SRAM_IO_DELAY - 0.50 * $CLK_SYS_PERIOD] \
+    -clock [get_clock clk_sys] [get_ports {SRAM_WEn}]
 
 set_input_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
     SRAM_DQ[*]
@@ -101,8 +122,10 @@ set_output_delay      [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [
 set_input_delay  -max [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
 set_input_delay  -min 0                             -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
 
-# Reasonably tight on audio paths so we get the final flop and buffers fairly close to the quiet supply pins
-set_output_delay      [expr 0.80 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {AUDIO_L AUDIO_R}]
+# Reasonably tight on audio paths so we get the final flop and buffers fairly
+# close to the quiet supply pins. Note this is just the audio path; the GPIO
+# controls from clk_sys are false-pathed as they're not really important.
+set_output_delay      [expr 0.80 * $CLK_SYS_PERIOD] -clock [get_clock clk_audio] [get_ports {AUDIO_L AUDIO_R}]
 
 # LCD_SCK has the same consideration as SRAM_WEn as it's generated using an
 # ICGTN. Other than that just keep the SPI output paths rather tight as a way
@@ -115,7 +138,7 @@ set_output_delay $LCD_SPI_OUTDELAY -clock [get_clock clk_lcd] [get_ports {
 }]
 
 set_output_delay [expr $LCD_SPI_OUTDELAY - 0.50 * $CLK_LCD_PERIOD] -clock [get_clock clk_lcd] [get_ports {
-    LCD_SCK
+    LCD_CLK
 }]
 
 # Backlight PWM: low-frequency, timing unimportant

@@ -2,8 +2,6 @@
 
 ## RTL
 
-* APU
-	* Reduce size of LPF shifter: 7/8 values are zero, only need to store the nonzero ones.
 * PPU
 	* Think harder about palette RAM read/write collisions
 	* Possible to reduce RAM bandwidth for ABLIT/ATILE? (possibly have timing budget for 1-entry tilenum cache)
@@ -402,3 +400,235 @@ With the latch register file in place, and the bypass logic slightly simplified 
 
 While I'm changing Hazard3 I went through and ripped out the resets from most of the datapath flops and some CSRs like mscratch and mepc. And... it's up at 6.9 ns. Wow, not sure why that is... don't think I did anything to make it worse!
 
+### Day 9: SIX DAYS REMAIN
+
+I want to work on timing and also start freezing the RTL.
+
+I keep bumping into weird omissions from OpenSTA that make it difficult to describe my IO constraints in a sane way. I couldn't make it _not_ time the paths from the ICGTNs I use for SRAM_WEn and LCD_CLK from the negedge, so I worked around it by subtracting 50% of a clock period from the output delay.
+
+That seemed to work, but now detailed routing crashes on my Mac, again. I'll move to my slower Linux box.
+
+I couldn't figure out how to set different output delays for the A and OE paths through the SRAM_DQ pads (normally you would use `-through` on `set_output_delay` but OpenSTA doesn't support that). I ended up with this abomination:
+
+```
+set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
+    SRAM_A[*]
+    SRAM_DQ[*]
+    SRAM_OEn
+    SRAM_CSn
+    SRAM_UBn
+    SRAM_LBn
+}]
+
+# The SRAM D paths are longer than others as they go through (a small amount
+# of) logic in the processor instead of coming straight from flops. It's also
+# desirable for them to remain valid a little longer for hold time against the
+# release (rise) of WEn; quite common for async RAMs to have a hold
+# requirement of 0 on this edge.
+#
+# OpenSTA does not support -through on set_output_delay (!) so can't specify
+# different output delays through the OE (out enable) and A (out value) pins
+# to the pad. Instead reset the A path and apply a normal set_max_delay
+# constraint.
+#
+# Cannot relax the OE paths of the same pads in this way because it would
+# create drive contention with the next read cycle.
+set SRAM_D_DERATE 10
+set_max_delay -through [get_pins {pad_SRAM_DQ*/A} ] -to [get_ports {SRAM_DQ*} ] \
+    -reset_path [expr $CLK_SYS_PERIOD + $SRAM_D_DERATE - $SRAM_IO_DELAY]
+```
+
+...and that gives me 30 ns max delay violations where I used to have 10 ns ones. Stay calm... I realised I'm being dumb and sitting and waiting for synthesis/PnR results when I could be doing something productive in the meantime. An important task I've been putting off is bringing up code execution from the external SRAM, so let's go do that.
+
+I tried my first sim with the behavioural async SRAM model I used on the original RISCBoy project, and... nothing. The Icarus simulator build hangs forever. None of these tools really work very well do they? By hacking out parts of the model I found that these lines were making it unhappy:
+
+```verilog
+always @ (*) begin: readport
+	integer i;
+	for (i = 0; i < W_BYTES; i = i + 1) begin
+		dq_r[i * 8 +: 8] = !ce_n && !oe_n && we_n && !ben_n[i] ?
+			mem[addr][i * 8 +: 8] : 8'hz;
+	end 	
+end
+```
+
+I _guess_ that this is unrolling into a huge set of parallel decoded statements instead of an index on `addr` followed by some byte-by-byte tristating. Let's test that theory by writing the steps out separately.
+
+
+```verilog
+wire [W_DATA-1:0] mem_rdata = mem[addr];
+genvar g;
+generate
+for (g = 0; g < W_DATA; g = g + 1) begin: obuf
+	assign dq = !ce_n && !oe_n && we_n && !ben_n[g] ?
+		mem_rdata[g * 8 +: 8] : 8'hzz;
+end
+endgenerate
+```
+
+Ladies, gentlemen and furries we have solved the halting problem.
+
+My previous synth run with 30ns failures has finished and I can look at the reports.
+
+```
+===========================================================================
+report_checks -path_delay max (Setup)
+============================================================================
+======================= nom_tt_025C_5v00 Corner ===================================
+
+Startpoint: _097153_ (rising edge-triggered flip-flop clocked by clk_sys)
+Endpoint: SRAM_DQ[3] (output port clocked by clk_sys)
+Path Group: clk_sys
+Path Type: max
+
+Fanout         Cap        Slew       Delay        Time   Description
+---------------------------------------------------------------------------------------------
+                                  0.000000    0.000000   clock clk_sys (rise edge)
+                                  0.000000    0.000000   clock source latency
+     2    0.395815    0.286553    0.000000    0.000000 ^ i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk (net)
+                      0.293074    0.024544    0.024544 ^ clkbuf_0_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_20)
+     2    0.208106    0.149035    0.259340    0.283884 ^ clkbuf_0_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_20)
+                                                         clknet_0_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk (net)
+                      0.150983    0.014117    0.298001 ^ clkbuf_1_0_0_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk/I (gf180mcu_fd_sc_mcu9t5v0__buf_20)
+     2    0.096313    0.093352    0.171571    0.469572 ^ clkbuf_1_0_0_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk/Z (gf180mcu_fd_sc_mcu9t5v0__buf_20)
+                                                         clknet_1_0_0_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk (net)
+                      0.093494    0.005428    0.474999 ^ delaybuf_397_clk_sys/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+     1    0.050961    0.080402    0.177239    0.652238 ^ delaybuf_397_clk_sys/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         delaynet_397_clk_sys (net)
+                      0.080449    0.003196    0.655434 ^ delaybuf_398_clk_sys/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+     3    0.326053    0.243139    0.274376    0.929810 ^ delaybuf_398_clk_sys/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         delaynet_398_clk_sys (net)
+                      0.247114    0.017529    0.947339 ^ clkbuf_3_3_0_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+     2    0.173324    0.152113    0.254513    1.201852 ^ clkbuf_3_3_0_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         clknet_3_3_0_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk (net)
+                      0.152418    0.007275    1.209127 ^ delaybuf_259_clk_sys/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+     1    0.053513    0.082060    0.190453    1.399580 ^ delaybuf_259_clk_sys/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         delaynet_259_clk_sys (net)
+                      0.082110    0.003277    1.402858 ^ clkbuf_4_7__f_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+     5    0.322911    0.241437    0.276085    1.678943 ^ clkbuf_4_7__f_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         clknet_4_7__leaf_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk (net)
+                      0.243535    0.012387    1.691330 ^ clkbuf_leaf_124_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+     4    0.115882    0.120642    0.233376    1.924706 ^ clkbuf_leaf_124_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         clknet_leaf_124_i_chip_core.apu_u.aout_fifo_u.gray_counter_w.clk (net)
+                      0.120717    0.004626    1.929332 ^ delaybuf_221_clk_sys/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+     1    0.024572    0.064592    0.171166    2.100498 ^ delaybuf_221_clk_sys/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         delaynet_221_clk_sys (net)
+                      0.064598    0.001306    2.101804 ^ _101385_/CLK (gf180mcu_fd_sc_mcu9t5v0__icgtp_2)
+     1    0.051260    0.309442    0.363059    2.464863 ^ _101385_/Q (gf180mcu_fd_sc_mcu9t5v0__icgtp_2)
+                                                         _047632_ (net)
+                      0.309555    0.003255    2.468118 ^ clkbuf_0__047632_/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+     2    0.095405    0.110696    0.238976    2.707094 ^ clkbuf_0__047632_/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         clknet_0__047632_ (net)
+                      0.110715    0.002346    2.709440 ^ clkbuf_1_1__f__047632_/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+     3    0.026045    0.065488    0.169824    2.879265 ^ clkbuf_1_1__f__047632_/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         clknet_1_1__leaf__047632_ (net)
+                      0.065491    0.001056    2.880321 ^ _097153_/CLK (gf180mcu_fd_sc_mcu9t5v0__dffq_2)
+     2    0.052230    0.308247    0.671910    3.552231 ^ _097153_/Q (gf180mcu_fd_sc_mcu9t5v0__dffq_2)
+                                                         i_chip_core.cpu_u.core.mw_rd[0] (net)
+                      0.308279    0.002024    3.554255 ^ _061992_/I (gf180mcu_fd_sc_mcu9t5v0__clkinv_4)
+     2    0.030896    0.149886    0.131795    3.686050 v _061992_/ZN (gf180mcu_fd_sc_mcu9t5v0__clkinv_4)
+                                                         _014941_ (net)
+                      0.149894    0.001703    3.687753 v _061993_/A1 (gf180mcu_fd_sc_mcu9t5v0__and2_4)
+     1    0.027301    0.100535    0.224044    3.911797 v _061993_/Z (gf180mcu_fd_sc_mcu9t5v0__and2_4)
+                                                         _014942_ (net)
+                      0.100546    0.001712    3.913509 v _061995_/B (gf180mcu_fd_sc_mcu9t5v0__aoi211_4)
+     1    0.031798    0.535560    0.377450    4.290959 ^ _061995_/ZN (gf180mcu_fd_sc_mcu9t5v0__aoi211_4)
+                                                         _014944_ (net)
+                      0.535564    0.002952    4.293911 ^ _061996_/A2 (gf180mcu_fd_sc_mcu9t5v0__nand3_4)
+     1    0.046756    0.281555    0.200218    4.494129 v _061996_/ZN (gf180mcu_fd_sc_mcu9t5v0__nand3_4)
+                                                         _014945_ (net)
+                      0.281567    0.002990    4.497119 v rebuffer3402/I (gf180mcu_fd_sc_mcu9t5v0__buf_12)
+     8    0.225602    0.154900    0.296852    4.793971 v rebuffer3402/Z (gf180mcu_fd_sc_mcu9t5v0__buf_12)
+                                                         net3401 (net)
+                      0.158253    0.013858    4.807829 v _062007_/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+    10    0.128956    0.119690    0.224198    5.032028 v _062007_/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_16)
+                                                         _014954_ (net)
+                      0.119844    0.004754    5.036781 v _066328_/I (gf180mcu_fd_sc_mcu9t5v0__buf_4)
+    10    0.119569    0.210891    0.289962    5.326743 v _066328_/Z (gf180mcu_fd_sc_mcu9t5v0__buf_4)
+                                                         _018952_ (net)
+                      0.212054    0.008895    5.335639 v _066379_/A1 (gf180mcu_fd_sc_mcu9t5v0__nand2_1)
+     1    0.014198    0.330655    0.201942    5.537580 ^ _066379_/ZN (gf180mcu_fd_sc_mcu9t5v0__nand2_1)
+                                                         _018985_ (net)
+                      0.330655    0.000458    5.538038 ^ _066380_/B (gf180mcu_fd_sc_mcu9t5v0__oai211_2)
+     1    0.037834    0.531008    0.301178    5.839216 v _066380_/ZN (gf180mcu_fd_sc_mcu9t5v0__oai211_2)
+                                                         _018986_ (net)
+                      0.531010    0.001994    5.841210 v _066381_/B (gf180mcu_fd_sc_mcu9t5v0__oai21_4)
+     3    0.061273    0.460562    0.366992    6.208202 ^ _066381_/ZN (gf180mcu_fd_sc_mcu9t5v0__oai21_4)
+                                                         i_chip_core.apb_hwdata[19] (net)
+                      0.460564    0.001496    6.209698 ^ max_cap475/I (gf180mcu_fd_sc_mcu9t5v0__buf_8)
+     1    0.170435    0.258621    0.297572    6.507269 ^ max_cap475/Z (gf180mcu_fd_sc_mcu9t5v0__buf_8)
+                                                         net475 (net)
+                      0.259320    0.010016    6.517285 ^ wire474/I (gf180mcu_fd_sc_mcu9t5v0__buf_8)
+     1    0.162954    0.247453    0.275630    6.792915 ^ wire474/Z (gf180mcu_fd_sc_mcu9t5v0__buf_8)
+                                                         net474 (net)
+                      0.248279    0.009867    6.802783 ^ wire473/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_12)
+     3    0.151452    0.170127    0.267399    7.070181 ^ wire473/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_12)
+                                                         net473 (net)
+                      0.170231    0.005666    7.075847 ^ _073574_/I0 (gf180mcu_fd_sc_mcu9t5v0__mux2_1)
+     1    0.024898    0.336391    0.405414    7.481261 ^ _073574_/Z (gf180mcu_fd_sc_mcu9t5v0__mux2_1)
+                                                         i_chip_core.eram_ctrl_u.sram_dq_out[3] (net)
+                      0.336392    0.000798    7.482059 ^ wire383/I (gf180mcu_fd_sc_mcu9t5v0__clkbuf_8)
+     1    0.224607    0.325392    0.375604    7.857663 ^ wire383/Z (gf180mcu_fd_sc_mcu9t5v0__clkbuf_8)
+                                                         net383 (net)
+                      0.326310    0.009897    7.867560 ^ pad_SRAM_DQ[3].u/A (gf180mcu_fd_io__bi_t)
+     1    2.865654    1.581011    2.635134   10.502694 ^ pad_SRAM_DQ[3].u/PAD (gf180mcu_fd_io__bi_t)
+                                                         SRAM_DQ[3] (net)
+                      1.581011    0.000000   10.502694 ^ SRAM_DQ[3] (inout)
+                                             10.502694   data arrival time
+
+                                 18.333334   18.333334   max_delay
+                                  0.000000   18.333334   clock clk_sys (rise edge)
+                                  0.000000   18.333334   clock network delay (propagated)
+                                 -0.250000   18.083334   clock uncertainty
+                                  0.000000   18.083334   clock reconvergence pessimism
+                                -33.333332  -15.249999   output external delay
+                                            -15.249999   data required time
+---------------------------------------------------------------------------------------------
+                                            -15.249999   data required time
+                                            -10.502694   data arrival time
+---------------------------------------------------------------------------------------------
+                  
+```
+
+This is mostly sane but there are two issues:
+
+* Minor issue: it includes the clock insertion delay (my fault as I didn't specify it should start from the Q)
+
+* Major issue: it still subtracts the output delay (also kind of my fault, OpenSTA doesn't list this on the list of things reset by `-reset_path`)
+
+Because only the OE paths have named flops (D comes from the processor if you recall) a way to fix this would be to relax the output delay on the pad as a whole and then tighten then OE paths via `set_max_delay` from flop Q to pad PAD.
+
+This is all kind of disgusting and, emboldened by my success with the ICGTNs (or at least I now depend on those working already) I'm going to re-add the negedge flops present on RISCBoy. They'll get the same +50% margin as the "negedge" ICGTN paths (though this is a genuine negedge). Timings from the specimen 5V SRAM part (12 ns version of R1RP0416DI, which is the slowest grade of this part):
+
+```
+                                         MIN MAX
+Read cycle time                    tRC   12  -
+Address access time                tAA   -   12
+Chip select access time            tACS  -   12
+Output enable to output valid      tOE   -   6
+Byte select to output valid        tBA   -   6
+Output hold from address change    tOH   3   -
+Chip select to output in low-Z     tCLZ  3   -
+Output enable to output in low-Z   tOLZ  0   -
+Byte select to output in low-Z     tBLZ  0   -
+Chip deselect to output in high-Z  tCHZ  -   6
+Output disable to output in high-Z tOHZ  -   6
+Byte deselect to output in high-Z  tBHZ  -   6
+
+                                        MIN MAX
+Write cycle time                   tWC  12  -
+Address valid to end of write      tAW  8   -
+Chip select to end of write        tCW  8   -
+Write pulse width                  tWP  8   -
+Byte select to end of write        tBW  8   -
+Address setup time                 tAS  0   -
+Write recovery time                tWR  0   -
+Data to write time overlap         tDW  6   -
+Data hold from write time          tDH  0   -
+Write disable to output in low-Z   tOW  3   -
+Output disable to output in high-Z tOHZ -   6
+Write enable to output in high-Z   tWHZ -   6
+```
+
+"Write recovery time" is effectively a hold time against WEn deassertion, and is 0. tDW (write overlap) is essentially a setup time against WEn deassertion, and is 6 ns, or half the cycle time. This means putting the output on a negedge is reasonable and I should be able to bend OpenSTA to my will by timing from the explicit flops I'll add back to the SRAM PHY.
