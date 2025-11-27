@@ -82,7 +82,7 @@ reg  [2:0] blank_ctr;
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
 		blank_ctr <= 3'd5;
-		q_r <= 16'd0;
+		q_r <= 16'h8000;
 	end else if (en) begin
 		if (en_shift) begin
 			blank_ctr <= blank_ctr - |blank_ctr;
