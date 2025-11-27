@@ -34,8 +34,6 @@ create_clock [get_pins pad_DCK/PAD] \
     -name dck \
     -period $DCK_PERIOD
 
-set SRAM_A_TO_Q 25
-
 ###############################################################################
 # CDC constraints
 
@@ -65,11 +63,73 @@ cdc_maxdelay clk_audio clk_sys $CLK_SYS_PERIOD
 set_false_path -setup -hold -through [get_pins *.magic_falsepath_anchor_u/Z]
 
 ###############################################################################
-# IO constraints
+# IO constraints (non-SRAM)
 
 set_output_delay 5                            [get_ports DIO] -clock [get_clock dck]
 set_input_delay -min 0                        [get_ports DIO] -clock [get_clock dck]
 set_input_delay -max [expr 0.5 * $DCK_PERIOD] [get_ports DIO] -clock [get_clock dck]
+
+# GPIO: half period I guess? Keeping the round trip to a whole period seems good.
+set_output_delay      [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
+set_input_delay  -max [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
+set_input_delay  -min 0                             -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
+
+# Reasonably tight on audio paths so we get the final flop and buffers fairly
+# close to the quiet supply pins. Note this is just the audio path; the GPIO
+# controls from clk_sys are false-pathed as they're not really important.
+set_output_delay      [expr 0.80 * $CLK_SYS_PERIOD] -clock [get_clock clk_audio] [get_ports {AUDIO_L AUDIO_R}]
+
+# LCD_SCK has the same consideration as SRAM_WEn as it's generated using an
+# ICGTN. Other than that just keep the SPI output paths rather tight as a way
+# of controlling skew.
+set LCD_SPI_OUTDELAY [expr 0.80 * $CLK_LCD_PERIOD]
+set_output_delay $LCD_SPI_OUTDELAY -clock [get_clock clk_lcd] [get_ports {
+    LCD_DAT
+    LCD_CSn
+    LCD_DC
+}]
+
+set_output_delay [expr $LCD_SPI_OUTDELAY - 0.50 * $CLK_LCD_PERIOD] -clock [get_clock clk_lcd] [get_ports {
+    LCD_CLK
+}]
+
+# Backlight PWM: low-frequency, timing unimportant
+set_false_path -setup -hold -through [get_ports LCD_BL]
+
+###############################################################################
+# SRAM constraints
+
+# Timings for 12 ns (slow grade) R1RP0416DI:
+#
+#                                                MIN MAX
+#     Read cycle time..................... tRC   12  -
+#     Address access time................. tAA   -   12
+#     Chip select access time............. tACS  -   12
+#     Output enable to output valid....... tOE   -   6
+#     Byte select to output valid......... tBA   -   6
+#     Output hold from address change..... tOH   3   -
+#     Chip select to output in low-Z...... tCLZ  3   -
+#     Output enable to output in low-Z.... tOLZ  0   -
+#     Byte select to output in low-Z...... tBLZ  0   -
+#     Chip deselect to output in high-Z... tCHZ  -   6
+#     Output disable to output in high-Z.. tOHZ  -   6
+#     Byte deselect to output in high-Z... tBHZ  -   6
+#
+#                                               MIN MAX
+#     Write cycle time.................... tWC  12  -
+#     Address valid to end of write....... tAW  8   -
+#     Chip select to end of write......... tCW  8   -
+#     Write pulse width................... tWP  8   -
+#     Byte select to end of write......... tBW  8   -
+#     Address setup time.................. tAS  0   -
+#     Write recovery time................. tWR  0   -
+#     Data to write time overlap.......... tDW  6   -
+#     Data hold from write time........... tDH  0   -
+#     Write disable to output in low-Z.... tOW  3   -
+#     Output disable to output in high-Z.. tOHZ -   6
+
+# Pad tRC/tWC so we can use faster RAMs or shorter clk_sys period:
+set SRAM_A_TO_Q 25
 
 # Put A-to-Q delay in middle of cycle:
 set SRAM_IO_DELAY [expr 0.50 * ($CLK_SYS_PERIOD + $SRAM_A_TO_Q)]
@@ -116,34 +176,6 @@ set_output_delay [expr $SRAM_IO_DELAY - 0.50 * $CLK_SYS_PERIOD] \
 set_input_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
     SRAM_DQ[*]
 }]
-
-# GPIO: half period I guess? Keeping the round trip to a whole period seems good.
-set_output_delay      [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
-set_input_delay  -max [expr 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
-set_input_delay  -min 0                             -clock [get_clock clk_sys] [get_ports {GPIO[*]}]
-
-# Reasonably tight on audio paths so we get the final flop and buffers fairly
-# close to the quiet supply pins. Note this is just the audio path; the GPIO
-# controls from clk_sys are false-pathed as they're not really important.
-set_output_delay      [expr 0.80 * $CLK_SYS_PERIOD] -clock [get_clock clk_audio] [get_ports {AUDIO_L AUDIO_R}]
-
-# LCD_SCK has the same consideration as SRAM_WEn as it's generated using an
-# ICGTN. Other than that just keep the SPI output paths rather tight as a way
-# of controlling skew.
-set LCD_SPI_OUTDELAY [expr 0.80 * $CLK_LCD_PERIOD]
-set_output_delay $LCD_SPI_OUTDELAY -clock [get_clock clk_lcd] [get_ports {
-    LCD_DAT
-    LCD_CSn
-    LCD_DC
-}]
-
-set_output_delay [expr $LCD_SPI_OUTDELAY - 0.50 * $CLK_LCD_PERIOD] -clock [get_clock clk_lcd] [get_ports {
-    LCD_CLK
-}]
-
-# Backlight PWM: low-frequency, timing unimportant
-set_false_path -setup -hold -through [get_ports LCD_BL]
-
 
 ###############################################################################
 # Cargo-culted from project template :)
