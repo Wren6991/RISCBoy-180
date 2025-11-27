@@ -64,4 +64,12 @@ static inline void vuart_puthex32(uint32_t x) {
 	}
 }
 
+
+static inline void vuart_puthex8(uint8_t x) {
+	for (int i = 0; i < 8; i += 4) {
+		vuart_putc(vuart_hex_table[(x >> (4 - i)) & 0xf]);
+	}
+}
+
+
 #endif // _VUART_H

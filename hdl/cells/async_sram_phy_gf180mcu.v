@@ -44,28 +44,39 @@ module async_sram_phy_gf180mcu #(
 // after the system comes out of reset. DQs do need a reset on their output
 // enables though.
 
-(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_1 reg_u_sram_addr [N_SRAM_A-1:0]  (
+(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_4 reg_u_sram_addr [N_SRAM_A-1:0]  (
 	.CLK (clk),
 	.D   (ctrl_addr),
 	.Q   (padout_sram_a)
 );
 
-(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffrnq_1 reg_out_u_sram_dq_oe [N_SRAM_DQ-1:0] (
+(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffrnq_4 reg_out_u_sram_dq_oe [N_SRAM_DQ-1:0] (
 	.CLK (clk),
 	.RN  (rst_n),
 	.D   (ctrl_dq_oe),
 	.Q   (padoe_sram_dq)
 );
 
-(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_1 reg_in_u_sram_dq_in [N_SRAM_DQ-1:0] (
+`ifdef UGH_CANT_DO_THIS
+(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffnq_4 reg_out_u_sram_dq_out [N_SRAM_DQ-1:0] (
+	.CLK (clk),
+	.D   (ctrl_dq_out),
+	.Q   (padout_sram_dq)
+);
+`else
+// The above is functionally correct but is difficult to constrain in OpenSTA
+// because it only lets you specify output delays *to* a pad, not *from*
+// specific sources. So, behold:
+assign padout_sram_dq = ctrl_dq_out;
+`endif
+
+(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_4 reg_in_u_sram_dq_in [N_SRAM_DQ-1:0] (
 	.CLK (clk),
 	.D   (padin_sram_dq),
 	.Q   (ctrl_dq_in)
 );
 
-assign padout_sram_dq = ctrl_dq_out;
-
-(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_1 reg_out_u_sram_strobe [3:0] (
+(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_4 reg_out_u_sram_strobe [3:0] (
 	.CLK  (clk),
 	.D    ({
 		ctrl_ce_n,
@@ -80,9 +91,14 @@ assign padout_sram_dq = ctrl_dq_out;
 	})
 );
 
+reg ctrl_we_n_1t;
+always @ (posedge clk) begin
+	ctrl_we_n_1t <= ctrl_we_n;
+end
+
 gf180mcu_fd_sc_mcu9t5v0__icgtn_4 clkgate_we_u (
 	.TE   (1'b0),
-	.E    (!ctrl_we_n),
+	.E    (!ctrl_we_n_1t),
 	.CLKN (clk),
 	.Q    (padout_sram_we_n)
 );

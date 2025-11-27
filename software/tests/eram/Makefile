@@ -1,8 +1,8 @@
 APP       := hellow
 MARCH     := rv32imb_zca_zcb_zbkb_zicsr
 
-EXTRA_SRC := ../../common/crt0_iram.S ../../common/libc.S
-LDSCRIPT  := ../../ldscript/iram.ld
+EXTRA_SRC := ../../common/crt0_eram.S ../../common/libc.S
+LDSCRIPT  := ../../ldscript/eram.ld
 INCDIR    := ../../include
 CROSS     := riscv32-unknown-elf-
 CFLAGS    := -Wall -Os -ffunction-sections -fdata-sections -Wl,--gc-sections

@@ -526,7 +526,9 @@ async def test_riscv_soft_irq(dut):
 @cocotb.test()
 @cocotb.parametrize(app=[
     "hellow",
-    "start_apu"
+    "start_apu",
+    "byte_strobe",
+    "iram_addr_width",
 ])
 async def test_execute_eram(dut, app="hellow"):
     """Execute code from IRAM"""
@@ -579,11 +581,53 @@ async def test_execute_eram(dut, app="hellow"):
         assert vuart_stdout == "Hello, world!\r\n"
     elif app == "start_apu":
         assert vuart_stdout == "Starting APU\r\n" + "Received IRQ\r\n"
+    elif app == "byte_strobe":
+        assert vuart_stdout.strip() == "\r\n".join([
+            "Zero init",
+            "00000000",
+            "00000000",
+            "00000000",
+            "00000000",
+            "Byte write",
+            "a3a2a1a0",
+            "a7a6a5a4",
+            "abaaa9a8",
+            "afaeadac",
+            "Halfword write",
+            "b3b2b1b0",
+            "b7b6b5b4",
+            "bbbab9b8",
+            "bfbebdbc",
+            "Word write",
+            "c3c2c1c0",
+            "c7c6c5c4",
+            "cbcac9c8",
+            "cfcecdcc",
+        ])
+    elif app == "iram_addr_width":
+        assert vuart_stdout.strip() == "\r\n".join([
+            "Writing",
+            "Reading",
+            "21",
+            "42",
+            "63",
+            "84",
+            "a5",
+            "c6",
+            "e7",
+            "08",
+            "29",
+            "4a",
+            "6b",
+            "8c",
+            "ad",
+        ])
 
 @cocotb.test()
 @cocotb.parametrize(app=[
     "hellow",
-    "start_apu"
+    "start_apu",
+    "byte_strobe",
 ])
 async def test_execute_iram(dut, app="hellow"):
     """Execute code from IRAM"""
@@ -636,6 +680,29 @@ async def test_execute_iram(dut, app="hellow"):
         assert vuart_stdout == "Hello, world!\r\n"
     elif app == "start_apu":
         assert vuart_stdout == "Starting APU\r\n" + "Received IRQ\r\n"
+    elif app == "byte_strobe":
+        assert vuart_stdout.strip() == "\r\n".join([
+            "Zero init",
+            "00000000",
+            "00000000",
+            "00000000",
+            "00000000",
+            "Byte write",
+            "a3a2a1a0",
+            "a7a6a5a4",
+            "abaaa9a8",
+            "afaeadac",
+            "Halfword write",
+            "b3b2b1b0",
+            "b7b6b5b4",
+            "bbbab9b8",
+            "bfbebdbc",
+            "Word write",
+            "c3c2c1c0",
+            "c7c6c5c4",
+            "cbcac9c8",
+            "cfcecdcc",
+        ])
 
 @cocotb.test()
 @cocotb.parametrize(app=[
