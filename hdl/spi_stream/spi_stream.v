@@ -154,6 +154,8 @@ always @ (*) begin
 	cs_n_nxt    = cs_n;
 	bit_ctr_nxt = bit_ctr;
 	sreg_nxt    = sreg;
+	addr_nxt    = addr;
+	count_nxt   = count;
 	fifo_push   = 1'b0;
 	finish_now  = 1'b0;
 	if (clk_en) case (state)
