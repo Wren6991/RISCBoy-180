@@ -638,3 +638,26 @@ Write enable to output in high-Z   tWHZ -   6
 ```
 
 "Write recovery time" is effectively a hold time against WEn deassertion, and is 0. tDW (write overlap) is essentially a setup time against WEn deassertion, and is 6 ns, or half the cycle time. This means putting the output on a negedge is reasonable and I should be able to bend OpenSTA to my will by timing from the explicit flops I'll add back to the SRAM PHY.
+
+The last big thing on my RTL list is the GPIOs and peripherals. There are two planned peripherals: a UART (optional as the TWD VUART thing seems to work great) and a streaming SPI read peripheral. The SPI read will probably go on the APU side as I don't have a DMA, so the idea is the APU can use it to stream out ADPCM etc directly from flash without involving the main CPU.
+
+The UART is the quickest one to add tonight. I took the RISCBoy UART, added a couple of missing features like FIFO flush, and added the ability to modulate the output at (e.g.) 38 kHz so you can use it for IR transmit and recieve.
+
+### Day 10: FIVE DAYS REMAIN
+
+I moved back to my Linux workstation (slower than my macbook but the tools run correctly) and noticed I am genuinely getting a lot of DRCs from both Magic and KLayout. All of the DRCs are in the standard cell library provided by Global Foundries. I spent some time looking into it and I'm pretty sure all of these are issues with the KLayout and Magic DRC decks, not genuine manufacturability issues. I filed an issue [here](https://github.com/wafer-space/gf180mcu-project-template/issues/34).
+
+I spent quite a while yesterday iterating on timing instead of closing down the final RTL. Let's try and get that locked down today. Anything after today doesn't make the cut. So:
+
+* SPI streaming read peripheral
+
+* Clock muxes and dividers
+
+* Maybe DCO ring osc
+
+* Prioritise palette writes over palette writes in PRAM (bad read makes one pixel wrong, bad write makes many pixels wrong).
+
+Let's go gamers.
+
+Uh actually first, I should look into why I'm getting 0.5 ns TNS hold violations in the fast corner. The WNS is only 70 ps, so I'll just add 80 ps more hold margin and not think any more about why my CTS is such a shitshow. (I have around 0.7 ns of skew on my system clock so I am already leaning *hard* on buffer fixes, but I don't think there is much more I can do to improve this within tool limitations.)
+
