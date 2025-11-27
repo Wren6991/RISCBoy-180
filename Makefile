@@ -74,6 +74,7 @@ regblocks: ## Regenerate all register blocks and their headers
 	./scripts/regblock -a hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny_regs.yml
 	./scripts/regblock -a hdl/vuart/vuart_dev_regs.yml
 	./scripts/regblock -a hdl/vuart/vuart_host_regs.yml
+	./scripts/regblock -a hdl/uart/uart_regs.yml
 .PHONY: sim-view
 
 copy-final: ## Copy final output files from the last run

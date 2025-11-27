@@ -217,7 +217,7 @@ gf180mcu_fd_io__bi_t pad_DIO (
 
 // False-path on loopback, timing isn't important as pulls have low edge rates
 wire [N_SRAM_DQ-1:0] padin_sram_dq_fp;
-falsepath_anchor fp_padin_u (
+falsepath_anchor fp_padin_u [N_SRAM_DQ-1:0] (
     .i (padin_sram_dq),
     .z (padin_sram_dq_fp)
 );

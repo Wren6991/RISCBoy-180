@@ -17,9 +17,15 @@
 
 ## "Verification"
 
-* Bring up hello world on main CPU IRAM
-* Bring up bootloader
 * Gate sims
+* Cover all address decode targets
+	* CPU
+	* APU
+	* PPU
+* Toggle every IRQ
+* Dump 4-bit 1.5 MSa/s stream from AOUT, filter it back down to 48 kHz, make sure it sounds good
+* Render a video frame on the PPU
+* Review all verilator lints
 
 ## Implementation
 

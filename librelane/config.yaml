@@ -68,6 +68,9 @@ VERILOG_FILES:
 - dir::../hdl/vuart/vuart_host_regs.v
 - dir::../hdl/vuart/vuart_dev_regs.v
 
+- dir::../hdl/uart/uart_mini.v
+- dir::../hdl/uart/uart_regs.v
+
 - dir::../hdl/mem/ahb_sync_sram.v
 - dir::../hdl/mem/sram_wrapper.v
 - dir::../hdl/mem/ahb_rom_boot.v
@@ -111,6 +114,7 @@ VERILOG_FILES:
 - dir::../hdl/libfpga/common/onehot_priority.v
 - dir::../hdl/libfpga/common/onehot_encoder.v
 - dir::../hdl/libfpga/common/sync_fifo.v
+- dir::../hdl/libfpga/common/clkdiv_frac.v
 - dir::../hdl/libfpga/cdc/sync_1bit.v
 - dir::../hdl/libfpga/cdc/async_fifo.v
 - dir::../hdl/libfpga/cdc/gray_counter.v

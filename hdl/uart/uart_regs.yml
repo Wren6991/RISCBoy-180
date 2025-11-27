@@ -1,0 +1,60 @@
+name: uart
+bus: apb
+addr: 16
+data: 32
+params:
+  W_DIV_INT: 12
+  W_DIV_FRAC: 4
+regs:
+  - name: csr
+    info: Control and status register
+    bits:
+      - {b: 0, name: en, access: rw,
+        info: UART runs when en is high. Synchronous reset (excluding FIFOs) when low.}
+      - {b: 1, name: busy, access: rov, info: UART TX is still sending data}
+      - {b: 2, name: txie, access: rw, info: Enable TX FIFO interrupt}
+      - {b: 3, name: rxie, access: rw, info: Enable RX FIFO interrupt}
+      - {b: 4, name: ctsen, access: rw, info: Enable pausing of TX while CTS is not asserted}
+      - {b: 8, name: loopback, access: rw, info: "Connect TX -> RX and RTS -> CTS internally (for testing)."}
+      - {b: 16, name: txflush, access: sc, info: "Force the TX FIFO level to 0."}
+      - {b: 17, name: rxflush, access: sc, info: "Force the RX FIFO level to 0."}
+  - name: div
+    info: Clock divider control fields
+    bits:
+      - {b: [W_DIV_INT + W_DIV_FRAC - 1, W_DIV_FRAC], name: int, access: wo, rst: 0x1}
+      - {b: [W_DIV_FRAC - 1, 0], name: frac, access: wo}
+  - name: fstat
+    info: FIFO status register
+    bits:
+      - {b: [7, 0], name: txlevel, access: rov}
+      - {b: 8,  name: txfull,  access: rov}
+      - {b: 9,  name: txempty, access: rov}
+      - {b: 10, name: txover,  access: w1c}
+      - {b: 11, name: txunder, access: w1c}
+      - {b: [23, 16], name: rxlevel, access: rov}
+      - {b: 24, name: rxfull,  access: rov}
+      - {b: 25, name: rxempty, access: rov}
+      - {b: 26, name: rxover,  access: w1c}
+      - {b: 27, name: rxunder, access: w1c}
+  - name: tx
+    info: "TX data FIFO"
+    bits:
+      - {b: [7, 0], access: wf}
+  - name: rx
+    info: "RX data FIFO"
+    bits:
+      - {b: [7, 0], access: rf}
+  - name: ir
+    info: "Control for infrared transmit mode"
+    bits:      
+      - {b: [11,0], name: div, access: rw, info: "Configure IR modulation
+        frequency. Modulation period is 2 x (DIV + 1) cycles. For example, 38
+        kHz from a 24 MHz clock would be DIV=315 (0.1% error)."}
+      - {b: 20, name: en, access: rw, info: "Enable modulation. The
+        modulation is an OR gate, with an optional invert on the TX line
+        before and after."}
+      - {b: 21, name: preinvert_tx, access: rw, info: "Invert before the modulation OR gate."}
+      - {b: 22, name: postinvert_tx, access: rw, info: "Invert after the modulation OR gate."}
+      - {b: 23, name: invert_rx, access: rw, info: "Invert the RX input."}
+
+

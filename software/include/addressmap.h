@@ -28,6 +28,7 @@
 #define PWM_BASE       (PERI_BASE + 0x4000)
 #define VUART_DEV_BASE (PERI_BASE + 0x5000)
 #define GPIO_BASE      (PERI_BASE + 0x6000)
+#define UART_BASE      (PERI_BASE + 0x7000)
 
 #ifndef __ASSEMBLER__
 

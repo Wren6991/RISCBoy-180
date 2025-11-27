@@ -24,6 +24,9 @@ module gpio #(
 	input  wire               audio_l,
 	input  wire               audio_r,
 
+	input  wire               uart_tx,
+	output wire               uart_rx,
+
 	output wire [N_GPIO-1:0] padout_gpio,
 	output wire [N_GPIO-1:0] padoe_gpio,
 	input  wire [N_GPIO-1:0] padin_gpio
@@ -39,14 +42,20 @@ localparam SYS_FALSEPATH_MASK = 8'hc0;
 wire [N_GPIO-1:0] alt_out = {
 	audio_l,
 	audio_r,
-	6'd0
+	uart_tx,
+	1'b0,
+	4'd0
 };
 
 wire [N_GPIO-1:0] alt_oen  = {
 	1'b1,
 	1'b1,
-	6'd0
+	1'b1,
+	1'b0,
+	4'd0
 };
+
+assign uart_rx = padin_gpio[3];
 
 // ----------------------------------------------------------------------------
 // Register block

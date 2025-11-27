@@ -13,8 +13,9 @@ rm ppu_dispctrl_dvi_regs.h
 rm sdram_ctrl_regs.h
 rm spi_03h_xip_regs.h
 rm spi_regs.h
-rm uart_regs.h
 
 # Force correct header when ambiguous
 rm gpio_regs.h
 ln -sf ../../../hdl/gpio/gpio_regs.h gpio_regs.h
+rm uart_regs.h
+ln -sf ../../../hdl/uart/uart_regs.h uart_regs.h
