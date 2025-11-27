@@ -244,7 +244,7 @@ for (genvar i = 0; i < N_SRAM_DQ; i++) begin: pad_SRAM_DQ
 
         // Loop back input for bus keeper function (pull down at reset):
         .PU     (padin_sram_dq_fp[i] && enable_fixed_outputs),
-        .PD     (!padin_sram_dq_fp[i] || enable_fixed_outputs)
+        .PD     (!padin_sram_dq_fp[i] || !enable_fixed_outputs)
     );
 end
 endgenerate
