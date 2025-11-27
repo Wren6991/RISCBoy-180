@@ -302,6 +302,7 @@ assign spi_sck = sck;
 
 assign csr_busy = state != S_IDLE && state != S_PAUSED_IDLE;
 assign pause_ack = state == S_PAUSED_IDLE || state == S_PAUSED_BUSY;
+assign csr_finished_i = finish_now;
 
 // ----------------------------------------------------------------------------
 // Data RX FIFO

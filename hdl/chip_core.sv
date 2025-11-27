@@ -1203,6 +1203,11 @@ gpio #(
     .uart_tx      (uart_tx),
     .uart_rx      (uart_rx),
 
+    .spi_cs_n     (spi_cs_n),
+    .spi_sck      (spi_sck),
+    .spi_mosi     (spi_mosi),
+    .spi_miso     (spi_miso),
+
     .padout_gpio  ({padout_audio_l, padout_audio_r, padout_gpio}),
     .padoe_gpio   ({padoe_audio_l,  padoe_audio_r,  padoe_gpio }),
     .padin_gpio   ({1'b0         ,  1'b0,           padin_gpio })
