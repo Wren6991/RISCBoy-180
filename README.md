@@ -1,6 +1,6 @@
 # RISCBoy 180
 
-RISCBoy is a Gameboy Advance from a parallel universe where RISC-V existed in 2001. It is a love letter to the handheld consoles from my childhood, and a 3AM drunk text to the technology that powered them.
+[RISCBoy](https://github.com/Wren6991/RISCBoy) is a Gameboy Advance from a parallel universe where RISC-V existed in 2001. It is a love letter to the handheld consoles from my childhood, and a 3AM drunk text to the technology that powered them.
 
 RISCBoy 180 is a two-week project to flesh out RISCBoy into a fully functioning games console on a chip, and tape it out on GF180MCU on the first [wafer.space](https://wafer.space) shuttle.
 
