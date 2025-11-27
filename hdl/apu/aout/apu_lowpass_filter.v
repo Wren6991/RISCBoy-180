@@ -62,10 +62,17 @@ wire [W_COEFF-1:0] c1 = COEFF[{2'd1, offset} * W_COEFF +: W_COEFF];
 wire [W_COEFF-1:0] c2 = COEFF[{2'd2, offset} * W_COEFF +: W_COEFF];
 wire [W_COEFF-1:0] c3 = COEFF[{2'd3, offset} * W_COEFF +: W_COEFF];
 
-wire [W_COEFF+W_SAMPLE-1:0] mul0 = {{W_COEFF{s[0][W_SAMPLE-1]}}, s[0]} * c0;
-wire [W_COEFF+W_SAMPLE-1:0] mul1 = {{W_COEFF{s[1][W_SAMPLE-1]}}, s[1]} * c1;
-wire [W_COEFF+W_SAMPLE-1:0] mul2 = {{W_COEFF{s[2][W_SAMPLE-1]}}, s[2]} * c2;
-wire [W_COEFF+W_SAMPLE-1:0] mul3 = {{W_COEFF{s[3][W_SAMPLE-1]}}, s[3]} * c3;
+reg  [W_COEFF+W_SAMPLE-1:0] mul0;
+reg  [W_COEFF+W_SAMPLE-1:0] mul1;
+reg  [W_COEFF+W_SAMPLE-1:0] mul2;
+reg  [W_COEFF+W_SAMPLE-1:0] mul3;
+
+always @ (posedge clk) if (en) begin
+	mul0 <= {{W_COEFF{s[0][W_SAMPLE-1]}}, s[0]} * c0;
+	mul1 <= {{W_COEFF{s[1][W_SAMPLE-1]}}, s[1]} * c1;
+	mul2 <= {{W_COEFF{s[2][W_SAMPLE-1]}}, s[2]} * c2;
+	mul3 <= {{W_COEFF{s[3][W_SAMPLE-1]}}, s[3]} * c3;
+end
 
 wire [W_COEFF+W_SAMPLE-1:0] sum = mul0 + mul1 + mul2 + mul3;
 
@@ -74,7 +81,7 @@ reg  [2:0] blank_ctr;
 
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
-		blank_ctr <= 3'd4;
+		blank_ctr <= 3'd5;
 		q_r <= 16'd0;
 	end else if (en) begin
 		if (en_shift) begin
