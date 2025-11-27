@@ -6,7 +6,7 @@
 `default_nettype none
 
 module gpio #(
-	parameter N_GPIO = 8 // do not change without updating registers
+	parameter N_GPIO = 8 // do not change without updating registers and SYS_FALSEPATH_MASK
 ) (
 	input wire                clk,
 	input wire                rst_n,
@@ -28,6 +28,10 @@ module gpio #(
 	output wire [N_GPIO-1:0] padoe_gpio,
 	input  wire [N_GPIO-1:0] padin_gpio
 );
+
+// Set bits here for low-priority clk_sys paths that merge with higher
+// priority paths on other clocks, to deprioritise the clk_sys path:
+localparam SYS_FALSEPATH_MASK = 8'hc0;
 
 // ----------------------------------------------------------------------------
 // Connect alternate functions
@@ -151,8 +155,26 @@ always @ (posedge clk or negedge rst_n) begin
 	end
 end
 
-assign padout_gpio = (gpio_out & ~fsel) | (alt_out & fsel);
-assign padoe_gpio  = (gpio_oen & ~fsel) | (alt_oen & fsel);
+genvar g;
+generate
+wire [N_GPIO-1:0] padin_gpio_fp;
+for (g = 0; g < N_GPIO; g = g + 1) begin: loop_g
+	wire sys_out;
+	wire sys_oen;
+	wire fsel_fp;
+	if (SYS_FALSEPATH_MASK[g]) begin: fp_g
+		falsepath_anchor fp_io_u [3:0] (
+			.i ({gpio_out[g], gpio_oen[g], fsel[g], padin_gpio[g]   }),
+			.z ({sys_out,     sys_oen,     fsel_fp, padin_gpio_fp[g]})
+		);
+	end else begin: nofp_g
+		assign {sys_out,     sys_oen,     fsel_fp, padin_gpio_fp[g]} =
+		       {gpio_out[g], gpio_oen[g], fsel[g], padin_gpio[g]   };
+	end
+	assign padout_gpio[g] = fsel_fp ? alt_out[g] : sys_out;
+	assign padoe_gpio[g]  = fsel_fp ? alt_oen[g] : sys_oen;
+end
+endgenerate
 
 // ----------------------------------------------------------------------------
 // Input synchronisers
@@ -160,7 +182,7 @@ assign padoe_gpio  = (gpio_oen & ~fsel) | (alt_oen & fsel);
 sync_1bit gpio_in_sync_u [N_GPIO-1:0] (
 	.clk   (clk),
 	.rst_n (rst_n),
-	.i     (padin_gpio),
+	.i     (padin_gpio_fp),
 	.o     (gpio_in)
 );
 
