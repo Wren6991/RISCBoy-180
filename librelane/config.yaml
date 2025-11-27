@@ -554,12 +554,14 @@ MACROS:
         location: [1000, 4100]
         orientation: "N"
 
-
 PDN_CFG: dir::pdn_cfg.tcl
 
-PDN_VERTICAL_HALO: 1
-
-PDN_HORIZONTAL_HALO: 1
+# Halo size around macros while cutting rows.
+# Workaround for: https://github.com/The-OpenROAD-Project/OpenROAD/issues/8868
+FP_MACRO_HORIZONTAL_HALO: 10
+FP_MACRO_VERTICAL_HALO: 10
+FP_PDN_HORIZONTAL_HALO: 5
+FP_PDN_VERTICAL_HALO: 5
 
 # Make sure netgen doesn't create 'no_connect' nets
 # Not needed since netgen 1.5.303
