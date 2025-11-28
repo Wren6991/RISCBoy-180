@@ -311,6 +311,18 @@ assign csr_finished_i = finish_now;
 
 wire fifo_empty;
 assign csr_fvalid = !fifo_empty;
+
+// Use sreg_nxt as this may come straight from the last bit in the
+// S_SHIFT_DATA state, or may be deferred after stalling in the S_FIFO_WAIT
+// state. Must be byte-swapped for endianness as this was shifted as a solid
+// 32-bit MSB-first word.
+wire [31:0] fifo_wdata = {
+	sreg_nxt[7:0],
+	sreg_nxt[15:8],
+	sreg_nxt[23:16],
+	sreg_nxt[31:24]
+};
+
 sync_fifo #(
 	.DEPTH (2),
 	.WIDTH (32)
@@ -318,7 +330,7 @@ sync_fifo #(
 	.clk   (clk),
 	.rst_n (rst_n),
 
-	.wdata (sreg_nxt),
+	.wdata (fifo_wdata),
 	.wen   (fifo_push),
 	.rdata (fifo_i),
 	.ren   (fifo_ren),

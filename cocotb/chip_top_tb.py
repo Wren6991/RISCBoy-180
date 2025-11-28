@@ -533,7 +533,7 @@ async def test_riscv_soft_irq(dut):
     "spi_stream_pause",
 ])
 async def test_execute_eram(dut, app="hellow"):
-    """Execute code from IRAM"""
+    """Execute code from ERAM"""
     swtest_dir = Path(__file__).resolve().parent.parent / "software/tests/eram"
     rc = subprocess.run(["make", "-C", swtest_dir, f"APP={app}"])
     assert rc.returncode == 0
@@ -632,42 +632,42 @@ async def test_execute_eram(dut, app="hellow"):
     elif app == "spi_stream_clkdiv":
         assert vuart_stdout.strip() == "\r\n".join([
             "Trying clkdiv: 02",
-            "04050607",
+            "07060504",
             "Trying clkdiv: 04",
-            "08090a0b",
+            "0b0a0908",
             "Trying clkdiv: 06",
-            "0c0d0e0f",
+            "0f0e0d0c",
             "Trying clkdiv: 08",
-            "10111213",
+            "13121110",
             "Trying clkdiv: 0a",
-            "14151617",
+            "17161514",
             "Trying clkdiv: 0c",
-            "18191a1b",
+            "1b1a1918",
             "Trying clkdiv: 0e",
-            "1c1d1e1f",
+            "1f1e1d1c",
             "Trying clkdiv: 10",
-            "20212223",
+            "23222120",
         ])
     elif app == "spi_stream_pause":
         assert vuart_stdout.strip() == "\r\n".join([
             "Trying clkdiv: 02",
-            "00010203",
-            "04050607",
-            "08090a0b",
-            "0c0d0e0f",
-            "10111213",
-            "14151617",
-            "18191a1b",
-            "1c1d1e1f",
+            "03020100",
+            "07060504",
+            "0b0a0908",
+            "0f0e0d0c",
+            "13121110",
+            "17161514",
+            "1b1a1918",
+            "1f1e1d1c",
             "Trying clkdiv: 08",
-            "00010203",
-            "04050607",
-            "08090a0b",
-            "0c0d0e0f",
-            "10111213",
-            "14151617",
-            "18191a1b",
-            "1c1d1e1f",
+            "03020100",
+            "07060504",
+            "0b0a0908",
+            "0f0e0d0c",
+            "13121110",
+            "17161514",
+            "1b1a1918",
+            "1f1e1d1c",
         ])
 
 
@@ -782,7 +782,7 @@ async def test_execute_flash(dut, app="hellow"):
             return True
         return False
 
-    for i in range(20):
+    for i in range(5):
         cocotb.log.info(f"Waiting {i} ms")
         await Timer(1, "ms")
 

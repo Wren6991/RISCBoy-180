@@ -3,42 +3,20 @@
 
 #include "addressmap.h"
 #include "gpio.h"
+#include "spi_stream.h"
 
 #define SECTOR_SIZE_BYTES 4096
 #define BINARY_SIZE_BYTES 1024
 
-static uint32_t spi_put_get(uint32_t outdata) {
-	uint32_t indata = 0;
-	for (int i = 0; i < 32; ++i) {
-		gpio_put(GPIO_SPI_IO0, outdata >> 31);
-		outdata <<= 1;
-		gpio_toggle(GPIO_SPI_SCK);
-		indata <<= 1;
-		indata |= (uint32_t)gpio_get(GPIO_SPI_IO1);
-		gpio_toggle(GPIO_SPI_SCK);
-	}
-	return __builtin_bswap32(indata);
-}
-
-static void spi_start_read(uint32_t addr) {
-	gpio_put(GPIO_SPI_CSN, 0);
-	(void)spi_put_get((addr & 0xffffffu) | (0x03u << 24));
-}
-
-static void spi_finish_read() {
-	gpio_put(GPIO_SPI_CSN, 1);
-}
-
 static void spi_init() {
-	// Set pad states
-	gpio_hw->out = 0;
-	gpio_hw->oen =
+	gpio_hw->fsel_set =
+		1u << GPIO_SPI_IO0 |
 		1u << GPIO_SPI_SCK |
 		1u << GPIO_SPI_CSN |
-		1u << GPIO_SPI_IO0;
-	// Exit continuous read state if any
-	(void)spi_put_get(0);
-	spi_finish_read();
+		1u << GPIO_SPI_IO1;
+	// CLKDIV=4 -> 3 MHz SCK at nominal 24 MHz CLK psd input (since clk_sys is
+	// divided by 2 initially)
+	spi_stream_set_clkdiv(4);
 }
 
 static uint32_t checksum_adler32(const uint8_t *buf, size_t len) {
@@ -68,11 +46,10 @@ int __attribute__((used, noreturn, naked)) main() {
 	// flash sectors. After 10 attempts, give up. 10 is chosen arbitrarily.
 	spi_init();
 	for (int i = 0; i < 10; ++i) {
-		spi_start_read((i & 1) * SECTOR_SIZE_BYTES);
+		spi_stream_start((i & 1) * SECTOR_SIZE_BYTES, BINARY_SIZE_BYTES);
 		for (int j = 0; j < BINARY_SIZE_BYTES / 4; ++j) {
-			iram32[j] = spi_put_get(0);
+			iram32[j] = spi_stream_get_blocking();
 		}
-		spi_finish_read();
 		uint32_t checksum_expect = *(uint32_t*)&iram[BINARY_SIZE_BYTES - 4];
 		uint32_t checksum_actual = checksum_adler32(iram, BINARY_SIZE_BYTES - 4);
 		if (checksum_expect == checksum_actual) {
