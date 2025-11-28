@@ -53,7 +53,7 @@ typedef struct {
 // Pull-up enable for GPIOs
 
 // Field: GPIO_PU  Access: RW
-// Reset: 0x32
+// Reset: 0x34
 #define PADCTRL_GPIO_PU_LSB  0
 #define PADCTRL_GPIO_PU_BITS 8
 #define PADCTRL_GPIO_PU_MASK 0xff
@@ -65,7 +65,7 @@ typedef struct {
 // Pull-down enable for GPIOs
 
 // Field: GPIO_PD  Access: RW
-// Reset: 0xcd
+// Reset: 0xcb
 #define PADCTRL_GPIO_PD_LSB  0
 #define PADCTRL_GPIO_PD_BITS 8
 #define PADCTRL_GPIO_PD_MASK 0xff

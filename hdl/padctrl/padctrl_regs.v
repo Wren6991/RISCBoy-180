@@ -226,8 +226,8 @@ always @ (posedge clk or negedge rst_n) begin
 		wen <= 1'b0;
 		ren <= 1'b0;
 		addr <= 20'd0;
-		gpio_pu_o <= 8'h32;
-		gpio_pd_o <= 8'hcd;
+		gpio_pu_o <= 8'h34;
+		gpio_pd_o <= 8'hcb;
 		gpio_drive_o <= 2'h0;
 		gpio_slew_o <= 1'h1;
 		gpio_schmitt_o <= 1'h1;

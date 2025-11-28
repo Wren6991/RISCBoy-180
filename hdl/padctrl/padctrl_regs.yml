@@ -8,11 +8,11 @@ regs:
   - name: gpio_pu
     info: Pull-up enable for GPIOs
     bits:
-      - {b: [N_GPIOS - 1, 0], access: rw, rst: 0x32}
+      - {b: [N_GPIOS - 1, 0], access: rw, rst: 0x34}
   - name: gpio_pd
     info: Pull-down enable for GPIOs
     bits:
-      - {b: [N_GPIOS - 1, 0], access: rw, rst: 0xcd}
+      - {b: [N_GPIOS - 1, 0], access: rw, rst: 0xcb}
   - name: gpio
     info: Pad controls for GPIOs
     bits:
