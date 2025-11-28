@@ -37,9 +37,18 @@ regs:
     bits:
       - {b: [N_GPIOS - 1, 0], access: rwv,
         info: "Mask bits (AND with complement) in output enables for GPIOS, or read to get current output enables"}
+  - name: fsel
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv, info: "Enable GPIO alternate functions. 0 = software-controlled, 1 = alternate."}
+  - name: fsel_xor
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv, info: "XOR bits into FSEL register"}
+  - name: fsel_set
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv, info: "OR bits into FSEL register"}
+  - name: fsel_clr
+    bits:
+      - {b: [N_GPIOS - 1, 0], access: rwv, info: "AND bits out of FSEL register"}
   - name: in
     bits:
       - {b: [N_GPIOS - 1, 0], access: rov, info: "Read pad inputs (always synchronised)"}
-  - name: fsel
-    bits:
-      - {b: [N_GPIOS - 1, 0], access: rw, info: "Enable GPIO alternate functions. 0 = software-controlled, 1 = alternate."}

@@ -42,7 +42,7 @@ always @ (posedge SCK or posedge CSn) begin
 			cmd = {cmd[6:0], IO0};
 			bit_ctr = bit_ctr - 1;
 			if (bit_ctr == 0) begin
-				if (cmd == 8'h03) begin
+				if (cmd == 8'h03 || cmd == 8'h0b) begin
 					state = S_ADDR;
 					bit_ctr = 24;
 				end else begin

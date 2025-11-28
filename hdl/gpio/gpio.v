@@ -49,10 +49,10 @@ wire [N_GPIO-1:0] alt_out = {
 	audio_r,
 	uart_tx,
 	1'b0,
-	spi_mosi,
-	spi_sck,
+	1'b0,
 	spi_cs_n,
-	1'b0
+	spi_sck,
+	spi_mosi
 };
 
 wire [N_GPIO-1:0] alt_oen  = {
@@ -60,16 +60,15 @@ wire [N_GPIO-1:0] alt_oen  = {
 	1'b1,
 	1'b1,
 	1'b0,
-	4'he
+	4'h7
 };
 
 assign uart_rx = padin_gpio[4];
-assign spi_miso = padin_gpio[0];
+assign spi_miso = padin_gpio[3];
 
 // ----------------------------------------------------------------------------
 // Register block
 
-wire [N_GPIO-1:0] out_i;
 wire [N_GPIO-1:0] out_o;
 wire              out_wen;
 wire [N_GPIO-1:0] out_xor_i;
@@ -81,7 +80,7 @@ wire              out_set_wen;
 wire [N_GPIO-1:0] out_clr_i;
 wire [N_GPIO-1:0] out_clr_o;
 wire              out_clr_wen;
-wire [N_GPIO-1:0] oen_i;
+
 wire [N_GPIO-1:0] oen_o;
 wire              oen_wen;
 wire [N_GPIO-1:0] oen_xor_i;
@@ -93,12 +92,25 @@ wire              oen_set_wen;
 wire [N_GPIO-1:0] oen_clr_i;
 wire [N_GPIO-1:0] oen_clr_o;
 wire              oen_clr_wen;
+
+wire [N_GPIO-1:0] fsel_o;
+wire              fsel_wen;
+wire [N_GPIO-1:0] fsel_xor_i;
+wire [N_GPIO-1:0] fsel_xor_o;
+wire              fsel_xor_wen;
+wire [N_GPIO-1:0] fsel_set_i;
+wire [N_GPIO-1:0] fsel_set_o;
+wire              fsel_set_wen;
+wire [N_GPIO-1:0] fsel_clr_i;
+wire [N_GPIO-1:0] fsel_clr_o;
+wire              fsel_clr_wen;
+
 wire [N_GPIO-1:0] gpio_in;
-wire [N_GPIO-1:0] fsel;
 
 // Actual registers aliased for write/XOR/set/clear:
 reg  [N_GPIO-1:0] gpio_out;
 reg  [N_GPIO-1:0] gpio_oen;
+reg  [N_GPIO-1:0] fsel;
 
 gpio_regs regs_u (
 	.clk          (clk),
@@ -139,9 +151,20 @@ gpio_regs regs_u (
 	.oen_clr_o    (oen_clr_o),
 	.oen_clr_wen  (oen_clr_wen),
 
-	.in_i         (gpio_in),
+	.fsel_i       (fsel),
+	.fsel_o       (fsel_o),
+	.fsel_wen     (fsel_wen),
+	.fsel_xor_i   (fsel),
+	.fsel_xor_o   (fsel_xor_o),
+	.fsel_xor_wen (fsel_xor_wen),
+	.fsel_set_i   (fsel),
+	.fsel_set_o   (fsel_set_o),
+	.fsel_set_wen (fsel_set_wen),
+	.fsel_clr_i   (fsel),
+	.fsel_clr_o   (fsel_clr_o),
+	.fsel_clr_wen (fsel_clr_wen),
 
-	.fsel_o       (fsel)
+	.in_i         (gpio_in)
 );
 
 // ----------------------------------------------------------------------------
@@ -151,6 +174,7 @@ always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
 		gpio_out <= {N_GPIO{1'b0}};
 		gpio_oen <= {N_GPIO{1'b0}};
+		fsel     <= {N_GPIO{1'b0}};
 	end else begin
 		if (out_wen) begin
 			gpio_out <= out_o;
@@ -169,6 +193,15 @@ always @ (posedge clk or negedge rst_n) begin
 			gpio_oen <= gpio_oen | oen_set_o;
 		end else if (oen_clr_wen) begin
 			gpio_oen <= gpio_oen & ~oen_clr_o;
+		end
+		if (fsel_wen) begin
+			fsel <= fsel_o;
+		end else if (fsel_xor_wen) begin
+			fsel <= fsel ^ fsel_xor_o;
+		end else if (fsel_set_wen) begin
+			fsel <= fsel | fsel_set_o;
+		end else if (fsel_clr_wen) begin
+			fsel <= fsel & ~fsel_clr_o;
 		end
 	end
 end

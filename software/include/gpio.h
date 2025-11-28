@@ -38,9 +38,9 @@ static inline void gpio_pull_none(int gpio) {
 static inline void gpio_set_alternate(int gpio, bool alt) {
 	uint32_t mask = 1u << gpio;
 	if (alt) {
-		gpio_hw->fsel |= mask;
+		gpio_hw->fsel_set = mask;
 	} else {
-		gpio_hw->fsel &= ~mask;
+		gpio_hw->fsel_clr = mask;
 	}
 }
 

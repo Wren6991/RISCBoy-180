@@ -48,8 +48,19 @@ module gpio_regs (
 	input  wire [7:0]  oen_clr_i,
 	output reg  [7:0]  oen_clr_o,
 	output reg         oen_clr_wen,
-	input  wire [7:0]  in_i,
-	output reg  [7:0]  fsel_o
+	input  wire [7:0]  fsel_i,
+	output reg  [7:0]  fsel_o,
+	output reg         fsel_wen,
+	input  wire [7:0]  fsel_xor_i,
+	output reg  [7:0]  fsel_xor_o,
+	output reg         fsel_xor_wen,
+	input  wire [7:0]  fsel_set_i,
+	output reg  [7:0]  fsel_set_o,
+	output reg         fsel_set_wen,
+	input  wire [7:0]  fsel_clr_i,
+	output reg  [7:0]  fsel_clr_o,
+	output reg         fsel_clr_wen,
+	input  wire [7:0]  in_i
 );
 
 // APB adapter
@@ -71,8 +82,11 @@ localparam ADDR_OEN = 16;
 localparam ADDR_OEN_XOR = 20;
 localparam ADDR_OEN_SET = 24;
 localparam ADDR_OEN_CLR = 28;
-localparam ADDR_IN = 32;
-localparam ADDR_FSEL = 36;
+localparam ADDR_FSEL = 32;
+localparam ADDR_FSEL_XOR = 36;
+localparam ADDR_FSEL_SET = 40;
+localparam ADDR_FSEL_CLR = 44;
+localparam ADDR_IN = 48;
 
 wire __out_wen = wen && addr == ADDR_OUT;
 wire __out_ren = ren && addr == ADDR_OUT;
@@ -90,10 +104,16 @@ wire __oen_set_wen = wen && addr == ADDR_OEN_SET;
 wire __oen_set_ren = ren && addr == ADDR_OEN_SET;
 wire __oen_clr_wen = wen && addr == ADDR_OEN_CLR;
 wire __oen_clr_ren = ren && addr == ADDR_OEN_CLR;
-wire __in_wen = wen && addr == ADDR_IN;
-wire __in_ren = ren && addr == ADDR_IN;
 wire __fsel_wen = wen && addr == ADDR_FSEL;
 wire __fsel_ren = ren && addr == ADDR_FSEL;
+wire __fsel_xor_wen = wen && addr == ADDR_FSEL_XOR;
+wire __fsel_xor_ren = ren && addr == ADDR_FSEL_XOR;
+wire __fsel_set_wen = wen && addr == ADDR_FSEL_SET;
+wire __fsel_set_ren = ren && addr == ADDR_FSEL_SET;
+wire __fsel_clr_wen = wen && addr == ADDR_FSEL_CLR;
+wire __fsel_clr_ren = ren && addr == ADDR_FSEL_CLR;
+wire __in_wen = wen && addr == ADDR_IN;
+wire __in_ren = ren && addr == ADDR_IN;
 
 wire [7:0]  out_wdata = wdata[7:0];
 wire [7:0]  out_rdata;
@@ -135,15 +155,30 @@ wire [7:0]  oen_clr_rdata;
 wire [31:0] __oen_clr_rdata = {24'h0, oen_clr_rdata};
 assign oen_clr_rdata = oen_clr_i;
 
+wire [7:0]  fsel_wdata = wdata[7:0];
+wire [7:0]  fsel_rdata;
+wire [31:0] __fsel_rdata = {24'h0, fsel_rdata};
+assign fsel_rdata = fsel_i;
+
+wire [7:0]  fsel_xor_wdata = wdata[7:0];
+wire [7:0]  fsel_xor_rdata;
+wire [31:0] __fsel_xor_rdata = {24'h0, fsel_xor_rdata};
+assign fsel_xor_rdata = fsel_xor_i;
+
+wire [7:0]  fsel_set_wdata = wdata[7:0];
+wire [7:0]  fsel_set_rdata;
+wire [31:0] __fsel_set_rdata = {24'h0, fsel_set_rdata};
+assign fsel_set_rdata = fsel_set_i;
+
+wire [7:0]  fsel_clr_wdata = wdata[7:0];
+wire [7:0]  fsel_clr_rdata;
+wire [31:0] __fsel_clr_rdata = {24'h0, fsel_clr_rdata};
+assign fsel_clr_rdata = fsel_clr_i;
+
 wire [7:0]  in_wdata = wdata[7:0];
 wire [7:0]  in_rdata;
 wire [31:0] __in_rdata = {24'h0, in_rdata};
 assign in_rdata = in_i;
-
-wire [7:0]  fsel_wdata = wdata[7:0];
-wire [7:0]  fsel_rdata;
-wire [31:0] __fsel_rdata = {24'h0, fsel_rdata};
-assign fsel_rdata = fsel_o;
 
 always @ (*) begin
 	case (addr)
@@ -155,8 +190,11 @@ always @ (*) begin
 		ADDR_OEN_XOR: rdata = __oen_xor_rdata;
 		ADDR_OEN_SET: rdata = __oen_set_rdata;
 		ADDR_OEN_CLR: rdata = __oen_clr_rdata;
-		ADDR_IN: rdata = __in_rdata;
 		ADDR_FSEL: rdata = __fsel_rdata;
+		ADDR_FSEL_XOR: rdata = __fsel_xor_rdata;
+		ADDR_FSEL_SET: rdata = __fsel_set_rdata;
+		ADDR_FSEL_CLR: rdata = __fsel_clr_rdata;
+		ADDR_IN: rdata = __in_rdata;
 		default: rdata = 32'h0;
 	endcase
 	out_wen = __out_wen;
@@ -175,6 +213,14 @@ always @ (*) begin
 	oen_set_o = oen_set_wdata;
 	oen_clr_wen = __oen_clr_wen;
 	oen_clr_o = oen_clr_wdata;
+	fsel_wen = __fsel_wen;
+	fsel_o = fsel_wdata;
+	fsel_xor_wen = __fsel_xor_wen;
+	fsel_xor_o = fsel_xor_wdata;
+	fsel_set_wen = __fsel_set_wen;
+	fsel_set_o = fsel_set_wdata;
+	fsel_clr_wen = __fsel_clr_wen;
+	fsel_clr_o = fsel_clr_wdata;
 end
 
 always @ (posedge clk or negedge rst_n) begin
@@ -182,13 +228,10 @@ always @ (posedge clk or negedge rst_n) begin
 		wen <= 1'b0;
 		ren <= 1'b0;
 		addr <= 16'd0;
-		fsel_o <= 8'h0;
 	end else begin
 		wen <= apbs_psel && !apbs_penable &&  apbs_pwrite;
 		ren <= apbs_psel && !apbs_penable && !apbs_pwrite;
 		if (apbs_psel && !apbs_penable) addr <= apbs_paddr & 16'h3c;
-		if (__fsel_wen)
-			fsel_o <= fsel_wdata;
 	end
 end
 

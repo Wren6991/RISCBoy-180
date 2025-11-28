@@ -20,8 +20,11 @@
 #define GPIO_OEN_XOR_OFFS 20
 #define GPIO_OEN_SET_OFFS 24
 #define GPIO_OEN_CLR_OFFS 28
-#define GPIO_IN_OFFS 32
-#define GPIO_FSEL_OFFS 36
+#define GPIO_FSEL_OFFS 32
+#define GPIO_FSEL_XOR_OFFS 36
+#define GPIO_FSEL_SET_OFFS 40
+#define GPIO_FSEL_CLR_OFFS 44
+#define GPIO_IN_OFFS 48
 
 #ifndef __ASSEMBLER__
 #include <stdint.h>
@@ -35,8 +38,11 @@ typedef struct {
 	volatile uint32_t oen_xor;
 	volatile uint32_t oen_set;
 	volatile uint32_t oen_clr;
-	volatile uint32_t in;
 	volatile uint32_t fsel;
+	volatile uint32_t fsel_xor;
+	volatile uint32_t fsel_set;
+	volatile uint32_t fsel_clr;
+	volatile uint32_t in;
 } gpio_hw_t;
 
 #endif // !__ASSEMBLER__
@@ -134,6 +140,50 @@ typedef struct {
 #define GPIO_OEN_CLR_MASK 0xff
 
 /*******************************************************************************
+*                                     FSEL                                     *
+*******************************************************************************/
+
+// Field: FSEL  Access: RWV
+// Reset: 0x0
+// Enable GPIO alternate functions. 0 = software-controlled, 1 = alternate.
+#define GPIO_FSEL_LSB  0
+#define GPIO_FSEL_BITS 8
+#define GPIO_FSEL_MASK 0xff
+
+/*******************************************************************************
+*                                   FSEL_XOR                                   *
+*******************************************************************************/
+
+// Field: FSEL_XOR  Access: RWV
+// Reset: 0x0
+// XOR bits into FSEL register
+#define GPIO_FSEL_XOR_LSB  0
+#define GPIO_FSEL_XOR_BITS 8
+#define GPIO_FSEL_XOR_MASK 0xff
+
+/*******************************************************************************
+*                                   FSEL_SET                                   *
+*******************************************************************************/
+
+// Field: FSEL_SET  Access: RWV
+// Reset: 0x0
+// OR bits into FSEL register
+#define GPIO_FSEL_SET_LSB  0
+#define GPIO_FSEL_SET_BITS 8
+#define GPIO_FSEL_SET_MASK 0xff
+
+/*******************************************************************************
+*                                   FSEL_CLR                                   *
+*******************************************************************************/
+
+// Field: FSEL_CLR  Access: RWV
+// Reset: 0x0
+// AND bits out of FSEL register
+#define GPIO_FSEL_CLR_LSB  0
+#define GPIO_FSEL_CLR_BITS 8
+#define GPIO_FSEL_CLR_MASK 0xff
+
+/*******************************************************************************
 *                                      IN                                      *
 *******************************************************************************/
 
@@ -143,16 +193,5 @@ typedef struct {
 #define GPIO_IN_LSB  0
 #define GPIO_IN_BITS 8
 #define GPIO_IN_MASK 0xff
-
-/*******************************************************************************
-*                                     FSEL                                     *
-*******************************************************************************/
-
-// Field: FSEL  Access: RW
-// Reset: 0x0
-// Enable GPIO alternate functions. 0 = software-controlled, 1 = alternate.
-#define GPIO_FSEL_LSB  0
-#define GPIO_FSEL_BITS 8
-#define GPIO_FSEL_MASK 0xff
 
 #endif // _GPIO_REGS_H_

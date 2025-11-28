@@ -529,6 +529,7 @@ async def test_riscv_soft_irq(dut):
     "start_apu",
     "byte_strobe",
     "iram_addr_width",
+    "spi_stream_clkdiv",
 ])
 async def test_execute_eram(dut, app="hellow"):
     """Execute code from IRAM"""
@@ -542,6 +543,11 @@ async def test_execute_eram(dut, app="hellow"):
     for i, hword in enumerate(prog_hwords):
         dut.eram_u.mem[i].value = hword
         dut.eram_u.mem[i].value = Release()
+
+    # Test pattern at start of flash
+    for i in range(256):
+        dut.flash_u.mem[i].value = i
+        dut.flash_u.mem[i].value = Release()
 
     await start_up(dut)
     await twd_connect(dut)
@@ -622,6 +628,26 @@ async def test_execute_eram(dut, app="hellow"):
             "8c",
             "ad",
         ])
+    elif app == "spi_stream_clkdiv":
+        assert vuart_stdout.strip() == "\r\n".join([
+            "Trying clkdiv: 02",
+            "04050607",
+            "Trying clkdiv: 04",
+            "08090a0b",
+            "Trying clkdiv: 06",
+            "0c0d0e0f",
+            "Trying clkdiv: 08",
+            "10111213",
+            "Trying clkdiv: 0a",
+            "14151617",
+            "Trying clkdiv: 0c",
+            "18191a1b",
+            "Trying clkdiv: 0e",
+            "1c1d1e1f",
+            "Trying clkdiv: 10",
+            "20212223",
+        ])
+
 
 @cocotb.test()
 @cocotb.parametrize(app=[

@@ -142,6 +142,7 @@ reg [11:0]          count_nxt;
 // Inputs
 reg                 clk_en;
 wire                fifo_full;
+wire                start_sticky;
 
 // Outputs
 reg                 fifo_push;
@@ -162,7 +163,7 @@ always @ (*) begin
 	S_IDLE: begin
 		if (pause_req) begin
 			state_nxt = S_PAUSED_IDLE;
-		end else if (csr_start) begin
+		end else if (start_sticky) begin
 			state_nxt = S_FRONTPORCH;
 			cs_n_nxt = 1'b0;
 		end
@@ -178,7 +179,7 @@ always @ (*) begin
 		if (sck) begin
 			if (~|bit_ctr) begin
 				bit_ctr_nxt = 5'd23;
-				mosi_nxt = addr[23];
+				mosi_nxt = addr[21];
 				state_nxt = S_ADDR;
 				sreg_nxt[31 -: 23] = {addr[20:0], 2'b00};
 			end else begin
@@ -250,7 +251,7 @@ always @ (*) begin
 		end
 	end
 	S_PAUSED_IDLE: begin
-		if (csr_start) begin
+		if (start_sticky) begin
 			state_nxt = S_PAUSED_BUSY;
 		end else if (!pause_req) begin
 			state_nxt = S_IDLE;
@@ -343,6 +344,18 @@ always @ (posedge clk or negedge rst_n) begin
 	end else begin
 		clkdiv_ctr <= clkdiv_ctr - 3'd1;
 		clk_en <= 1'b0;
+	end
+end
+
+// Latch start events that happen during clock disable
+reg delayed_start;
+assign start_sticky = csr_start || delayed_start;
+
+always @ (posedge clk or negedge rst_n) begin
+	if (!rst_n) begin
+		delayed_start <= 1'b0;
+	end else begin
+		delayed_start <= (delayed_start && !clk_en) || csr_start;
 	end
 end
 
