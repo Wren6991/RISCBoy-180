@@ -2,19 +2,12 @@
 
 ## RTL
 
-* PPU
-	* Think harder about palette RAM read/write collisions
-	* Possible to reduce RAM bandwidth for ABLIT/ATILE? (possibly have timing budget for 1-entry tilenum cache)
-* GPIOs
-	* Finalise list of peripherals
-* SPI flash read
 * Clocking
 	* Create DCO
 		* Hard macro?
 	* Create clock muxes and dividers
 	* Create control registers and hook everything up
 * Review resettable flops and see if they can be made non-reset for better density/routing
-* Hazard3: can use predecoded, registered versions of d_rs1/d_rs2 for stalled regfile read
 
 ## "Verification"
 
@@ -662,3 +655,14 @@ Let's go gamers.
 
 Uh actually first, I should look into why I'm getting 0.5 ns TNS hold violations in the fast corner. The WNS is only 70 ps, so I'll just add 80 ps more hold margin and not think any more about why my CTS is such a shitshow. (I have around 0.7 ns of skew on my system clock so I am already leaning *hard* on buffer fixes, but I don't think there is much more I can do to improve this within tool limitations.)
 
+Ok, I'm pretty happy with the design of the SPI streaming peripheral now. It's on the APU side, but the CPU can reach across and "pause" the stream which cleanly interrupts the sequence of SPI transfers and releases the chip select. The CPU can then do its stuff with the GPIOs (like reading from a shift register to get the buttons) and then unpause the stream. The APU doesn't have to do anything special to handle this, other than tolerate occasional drops in bandwidth.
+
+The SPI is single-width only, because this is going to have to go through level shifters to get to the 3.3V SPI flash. I'm not exposing myself to the horrors of bidirectional level shifters again.
+
+I made the PPU PRAM change, and while I was in there I also put some pipestaging on the APB signals going to the RAM. I haven't really seen these on any timing reports but without these there is only one stage of flops between the CPU's address adders and the palette RAM address bus, and they are physically distant, so this was a 100% vibe-based optimisation.
+
+I looked at the difficult paths in Hazard3. There was a small simplification I could make which is to use the pre-registered regnum in stage 2 for the re-read during stall. I looked at using a simpler condition for the select and bringing the stall in later as a clock enable, and mostly succeeded in reminding myself why this circuit is the way it currently is :)
+
+Clock dividers! I had lots of fun ideas but I don't have time to implement them. It's going to be two stages of ripple divider with a mux to select between 0, 1 and 2 stages. This gives division by 1, 2 and 4. It's getting pretty late...
+
+Currently I'm trying a number of things which intuitively I think should improve timing, and timing is degraded or swings wildly around. This is an experience I've had a lot with Yosys on FPGAs, just have to push through it.

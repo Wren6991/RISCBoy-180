@@ -77,12 +77,12 @@ set_input_delay  -min 0                             -clock [get_clock clk_sys] [
 # Reasonably tight on audio paths so we get the final flop and buffers fairly
 # close to the quiet supply pins. Note this is just the audio path; the GPIO
 # controls from clk_sys are false-pathed as they're not really important.
-set_output_delay      [expr 0.80 * $CLK_SYS_PERIOD] -clock [get_clock clk_audio] [get_ports {AUDIO_L AUDIO_R}]
+set_output_delay      [expr 0.70 * $CLK_SYS_PERIOD] -clock [get_clock clk_audio] [get_ports {AUDIO_L AUDIO_R}]
 
 # LCD_SCK has the same consideration as SRAM_WEn as it's generated using an
 # ICGTN. Other than that just keep the SPI output paths rather tight as a way
 # of controlling skew.
-set LCD_SPI_OUTDELAY [expr 0.80 * $CLK_LCD_PERIOD]
+set LCD_SPI_OUTDELAY [expr 0.70 * $CLK_LCD_PERIOD]
 set_output_delay $LCD_SPI_OUTDELAY -clock [get_clock clk_lcd] [get_ports {
     LCD_DAT
     LCD_CSn
@@ -129,7 +129,10 @@ set_false_path -setup -hold -through [get_ports LCD_BL]
 #     Output disable to output in high-Z.. tOHZ -   6
 
 # Pad tRC/tWC so we can use faster RAMs or shorter clk_sys period:
-set SRAM_A_TO_Q 25
+set SRAM_A_TO_Q 20
+
+# Input paths are less challenging, so squeeze them a bit more
+set SRAM_Q_EXTRA_JUICE 5
 
 # Put A-to-Q delay in middle of cycle:
 set SRAM_IO_DELAY [expr 0.50 * ($CLK_SYS_PERIOD + $SRAM_A_TO_Q)]
@@ -155,7 +158,7 @@ set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
 # different output delays through the OE (out enable) and A (out value) pins
 # to the pad. Instead constrain both paths with relaxed timing and then apply
 # additional delay to OEn.
-set SRAM_D_DERATE 10
+set SRAM_D_DERATE 6
 set_output_delay [expr $SRAM_IO_DELAY - $SRAM_D_DERATE] \
     -clock [get_clock clk_sys] [get_ports {SRAM_DQ[*]}]
 
@@ -173,7 +176,7 @@ set_max_delay [expr $CLK_SYS_PERIOD - $SRAM_D_DERATE] -ignore_clock_latency \
 set_output_delay [expr $SRAM_IO_DELAY - 0.50 * $CLK_SYS_PERIOD] \
     -clock [get_clock clk_sys] [get_ports {SRAM_WEn}]
 
-set_input_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
+set_input_delay [expr $SRAM_IO_DELAY + $SRAM_Q_EXTRA_JUICE] -clock [get_clock clk_sys] [get_ports {
     SRAM_DQ[*]
 }]
 
