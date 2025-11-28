@@ -80,7 +80,7 @@ always @ (*) case (addr)
 	20'hbc: rom_rdata = 32'h51634589;
 	20'hc0: rom_rdata = 32'h24230205;
 	20'hc4: rom_rdata = 32'hc34c0107;
-	20'hc8: rom_rdata = 32'h07865310;
+	20'hc8: rom_rdata = 32'h07865b10;
 	20'hcc: rom_rdata = 32'h5613c34c;
 	20'hd0: rom_rdata = 32'h16fd4836;
 	20'hd4: rom_rdata = 32'h8fd10506;
