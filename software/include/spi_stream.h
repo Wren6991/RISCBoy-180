@@ -21,6 +21,10 @@ static inline uint32_t spi_stream_get_blocking(void) {
 	return spi_stream_hw->fifo;
 }
 
+static inline int spi_stream_get_fifo_level(void) {
+	return (spi_stream_hw->csr & SPI_STREAM_CSR_FLEVEL_MASK) >> SPI_STREAM_CSR_FLEVEL_LSB;
+}
+
 // FIFO level ranges from 0 to 2. IRQ is raised when FIFO level is greater
 // than IRQLEVEL, or when the FINISHED flag is raised (count decrements
 // through 0).

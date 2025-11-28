@@ -530,6 +530,7 @@ async def test_riscv_soft_irq(dut):
     "byte_strobe",
     "iram_addr_width",
     "spi_stream_clkdiv",
+    "spi_stream_pause",
 ])
 async def test_execute_eram(dut, app="hellow"):
     """Execute code from IRAM"""
@@ -646,6 +647,27 @@ async def test_execute_eram(dut, app="hellow"):
             "1c1d1e1f",
             "Trying clkdiv: 10",
             "20212223",
+        ])
+    elif app == "spi_stream_pause":
+        assert vuart_stdout.strip() == "\r\n".join([
+            "Trying clkdiv: 02",
+            "00010203",
+            "04050607",
+            "08090a0b",
+            "0c0d0e0f",
+            "10111213",
+            "14151617",
+            "18191a1b",
+            "1c1d1e1f",
+            "Trying clkdiv: 08",
+            "00010203",
+            "04050607",
+            "08090a0b",
+            "0c0d0e0f",
+            "10111213",
+            "14151617",
+            "18191a1b",
+            "1c1d1e1f",
         ])
 
 

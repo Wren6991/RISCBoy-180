@@ -248,6 +248,7 @@ always @ (*) begin
 	S_PAUSED_BUSY: begin
 		if (!pause_req) begin
 			state_nxt = S_FRONTPORCH;
+			cs_n_nxt = 1'b0;
 		end
 	end
 	S_PAUSED_IDLE: begin
