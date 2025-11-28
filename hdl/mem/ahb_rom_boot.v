@@ -40,7 +40,7 @@ always @ (*) case (addr)
 	20'h1c: rom_rdata = 32'h65c14791;
 	20'h20: rom_rdata = 32'hc35c7541;
 	20'h24: rom_rdata = 32'h0f134601;
-	20'h28: rom_rdata = 32'h08933ff0;
+	20'h28: rom_rdata = 32'h08930ff0;
 	20'h2c: rom_rdata = 32'h15c1400e;
 	20'h30: rom_rdata = 32'h0313053d;
 	20'h34: rom_rdata = 32'h4ea93fce;

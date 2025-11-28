@@ -46,7 +46,7 @@ int __attribute__((used, noreturn, naked)) main() {
 	// flash sectors. After 10 attempts, give up. 10 is chosen arbitrarily.
 	spi_init();
 	for (int i = 0; i < 10; ++i) {
-		spi_stream_start((i & 1) * SECTOR_SIZE_BYTES, BINARY_SIZE_BYTES);
+		spi_stream_start((i & 1) * SECTOR_SIZE_BYTES, BINARY_SIZE_BYTES / 4);
 		for (int j = 0; j < BINARY_SIZE_BYTES / 4; ++j) {
 			iram32[j] = spi_stream_get_blocking();
 		}
