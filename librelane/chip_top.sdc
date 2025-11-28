@@ -4,18 +4,41 @@ set_units -time ns
 ###############################################################################
 # Clock definitions
 
-set CLK_SYS_MHZ 24
+# Pad clocks
+set PADIN_CLK_MHZ 48
 set DCK_MHZ 20
-set CLK_LCD_MHz 36
+
+# Internally generated clocks
+set CLK_SYS_MHZ 24
+set CLK_LCD_MHz 48
 set CLK_AUDIO_MHZ 24
 
+set PADIN_CLK_PERIOD [expr 1000.0 / $PADIN_CLK_MHZ]
 set CLK_SYS_PERIOD   [expr 1000.0 / $CLK_SYS_MHZ]
 set DCK_PERIOD       [expr 1000.0 / $DCK_MHZ]
 set CLK_LCD_PERIOD   [expr 1000.0 / $CLK_LCD_MHz]
 set CLK_AUDIO_PERIOD [expr 1000.0 / $CLK_AUDIO_MHZ]
 
+# Primary input clock. Source of all other clocks except for DCK.
+create_clock [get_pins i_chip_core.clocks_u.clkroot_padin_clk_u.magic_clkroot_anchor_u/Z] \
+    -name padin_clk \
+    -period $PADIN_CLK_PERIOD
+
+# Divisions of primary input clock. These only clock a few flops and a clock
+# gate in the clock muxes (each). There are no synchronous paths between these
+# and other clocks, so they are constrained as primary instead of generated
+# clocks.
+
+create_clock [get_pins i_chip_core.clocks_u.clkroot_div_2_u.magic_clkroot_anchor_u/Z] \
+    -name padin_clk_div_2 \
+    -period [expr 2.0 * $PADIN_CLK_PERIOD]
+
+create_clock [get_pins i_chip_core.clocks_u.clkroot_div_3over2_u.magic_clkroot_anchor_u/Z] \
+    -name padin_clk_div_3over2 \
+    -period [expr 1.5 * $PADIN_CLK_PERIOD]
+
 # System clock: main CPU, SRAM, digital peripherals and external SRAM interface
-create_clock [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z] \
+create_clock [get_pins i_chip_core.clocks_u.clkroot_sys_u.magic_clkroot_anchor_u/Z] \
     -name clk_sys \
     -period $CLK_SYS_PERIOD
 
@@ -29,7 +52,8 @@ create_clock [get_pins i_chip_core.clkroot_audio_u.magic_clkroot_anchor_u/Z] \
     -name clk_audio \
     -period $CLK_AUDIO_PERIOD
 
-# Debug clock: clocks the debug transport module and one side of its bus CDC
+# Debug clock: clocks the debug transport module and one side of its bus CDC.
+# Defined at the pad so we can constrain IO against it.
 create_clock [get_pins pad_DCK/PAD] \
     -name dck \
     -period $DCK_PERIOD
@@ -65,7 +89,7 @@ set_false_path -setup -hold -through [get_pins *.magic_falsepath_anchor_u/Z]
 ###############################################################################
 # IO constraints (non-SRAM)
 
-set_output_delay 5                            [get_ports DIO] -clock [get_clock dck]
+set_output_delay     [expr 0.5 * $DCK_PERIOD] [get_ports DIO] -clock [get_clock dck]
 set_input_delay -min 0                        [get_ports DIO] -clock [get_clock dck]
 set_input_delay -max [expr 0.5 * $DCK_PERIOD] [get_ports DIO] -clock [get_clock dck]
 

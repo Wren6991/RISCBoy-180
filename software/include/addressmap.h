@@ -30,6 +30,7 @@
 #define VUART_DEV_BASE      (PERI_BASE + 0x5000)
 #define GPIO_BASE           (PERI_BASE + 0x6000)
 #define UART_BASE           (PERI_BASE + 0x7000)
+#define CLOCKS_BASE         (PERI_BASE + 0x8000)
 
 #ifndef __ASSEMBLER__
 

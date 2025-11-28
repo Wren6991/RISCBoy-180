@@ -33,9 +33,16 @@ CLOCK_PERIOD: 20 # ns
 
 STD_CELL_LIBRARY: gf180mcu_fd_sc_mcu9t5v0
 
-# Force use of chonky bois to reduce clock skew (default list is 2, 4, 8)
+# Force use of chonky bois to reduce clock skew (default list is 2, 4, 8). d20
+# is 9-track only I think
 CTS_CLK_BUFFERS:
+  # - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_8"
   - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_16"
+  # - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_20"
+
+# Doesn't seem to achieve much but the docs imply this should be set if you
+# have CG cells on your clock tree (or any cells inserted prior to CTS)
+CTS_BALANCE_LEVELS: True
 
 # Magic, thank you Lofty
 SYNTH_STRATEGY: "AREA 3"
@@ -63,6 +70,9 @@ VERILOG_FILES:
 - dir::../hdl/apu/aout/apu_sdm.v
 - dir::../hdl/apu/timer/apu_timer.v
 - dir::../hdl/apu/timer/apu_timer_regs.v
+
+- dir::../hdl/clocks/clocks.v
+- dir::../hdl/clocks/clocks_regs.v
 
 - dir::../hdl/vuart/vuart.v
 - dir::../hdl/vuart/vuart_host_regs.v
@@ -129,7 +139,9 @@ VERILOG_FILES:
 
 - dir::../hdl/cells/clkroot_anchor.v
 - dir::../hdl/cells/falsepath_anchor.v
+- dir::../hdl/cells/cell_clkdiv_3over2.v
 - dir::../hdl/cells/cell_clkgate_low.v
+- dir::../hdl/cells/cell_clkmux_glitchless.v
 - dir::../hdl/cells/cell_clkxor.v
 - dir::../hdl/cells/cell_ddr_out.v
 - dir::../hdl/cells/reset_sync.v

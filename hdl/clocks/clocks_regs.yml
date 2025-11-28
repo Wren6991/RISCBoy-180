@@ -1,0 +1,24 @@
+name: clocks
+bus: apb
+addr: 20
+data: 32
+regs:
+  - name: clk_sys
+    info: Controls for clk_sys
+    bits:
+      - {b: [1, 0], name: select, access: rw, rst: 2, info: "Select system
+        clock source: 0-3 are CLK, CLK x 2/3, CLK x 1/2, DCK."}
+      - {b: [11, 8], name: selected, access: rov, info: "Currently selected
+        clock mask status."}
+  - name: clk_audio
+    info: Controls for clk_audio
+    bits:
+      - {b: [1, 0], name: select, access: rw, rst: 2, info: "Select audio clock source
+        clock source: 0-3 are CLK, CLK x 2/3, CLK x 1/2, DCK."}
+      - {b: [11, 8], name: selected, access: rov, info: "Currently selected
+        clock mask status."}
+  - name: mtime_tick
+    info: "Set number of clk_sys cycles per RISC-V timer tick."
+    bits:
+      - {b: [5, 0], access: rw, rst: 24}
+
