@@ -25,7 +25,33 @@ module sram_wrapper #(
 	output wire [WIDTH-1:0]         rdata
 );
 
-`ifdef GF180MCU
+`ifndef GF180MCU
+`define BEHAV_SRAM_1RW
+`endif
+
+`ifdef BEHAV_SRAM_1RW
+// ----------------------------------------------------------------------------
+// Behavioural model
+
+reg [WIDTH-1:0] mem [0:DEPTH-1];
+
+reg [WIDTH-1:0] rdata_q;
+assign rdata = rdata_q;
+always @ (posedge clk) begin: update
+	integer i;
+	if (!cs_n && we_n) begin
+		rdata_q <= mem[addr];
+	end
+	if (!cs_n && !we_n) begin
+		for (i = 0; i < WIDTH / 8; i = i + 1) begin
+			if (!be_n[i]) begin
+				mem[addr][i * 8 +: 8] <= wdata[i * 8 +: 8];
+			end
+		end	
+	end
+end
+
+`elsif GF180MCU
 // ----------------------------------------------------------------------------
 // ASIC memory instantiation for GF180MCU process
 
@@ -145,27 +171,7 @@ end
 endgenerate
 
 `else
-// ----------------------------------------------------------------------------
-// Behavioural model
-
-reg [WIDTH-1:0] mem [0:DEPTH-1];
-
-reg [WIDTH-1:0] rdata_q;
-assign rdata = rdata_q;
-always @ (posedge clk) begin: update
-	integer i;
-	if (!cs_n && we_n) begin
-		rdata_q <= mem[addr];
-	end
-	if (!cs_n && !we_n) begin
-		for (i = 0; i < WIDTH / 8; i = i + 1) begin
-			if (!be_n[i]) begin
-				mem[addr][i * 8 +: 8] <= wdata[i * 8 +: 8];
-			end
-		end	
-	end
-end
-
+initial $fatal("No SRAM type specified.");
 `endif
 
 endmodule

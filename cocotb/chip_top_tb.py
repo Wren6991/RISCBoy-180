@@ -819,6 +819,9 @@ def get_sources_defines_includes():
         "tb/sram_async.v"
     ])
 
+    defines["GF180MCU"]       = True # Use inserted cells
+    defines["BEHAV_SRAM_1RW"] = True # Don't use vendor models (TODO)
+
     # SCL models: included even for RTL sims, as RTL may instantiate cells in some rare cases
     sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v")
     sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / "primitives.v")
@@ -826,8 +829,8 @@ def get_sources_defines_includes():
     if gl:
         # We use the powered netlist
         sources.append(proj_path / f"../final/pnl/{"tb"}.pnl.v")
-
-        defines = {"FUNCTIONAL": True, "USE_POWER_PINS": True, "GF180MCU": True}
+        defines["FUNCTIONAL"] = True
+        defines["USE_POWER_PINS"] = True
     else:
         config = yaml.safe_load(open("../librelane/config.yaml"))
         sources.extend([x.replace("dir::", "") for x in config["VERILOG_FILES"]])
