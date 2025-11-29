@@ -24,51 +24,56 @@ create_clock [get_pins i_chip_core.clocks_u.clkroot_padin_clk_u.magic_clkroot_an
     -name padin_clk \
     -period $PADIN_CLK_PERIOD
 
-# Not defining intermediates because OpenSTA is the way that it is
+# Divisions of primary input clock. These only clock a few flops and a clock
+# gate in the clock muxes (each). There are no synchronous paths between these
+# and other clocks, so they are constrained as primary instead of generated
+# clocks.
 
-# create_clock [get_pins i_chip_core.clocks_u.clkroot_div_2_u.magic_clkroot_anchor_u/Z] \
-#     -name padin_clk_div_2 \
-#     -period [expr 2.0 * $PADIN_CLK_PERIOD]
+create_clock [get_pins i_chip_core.clocks_u.clkroot_div_2_u.magic_clkroot_anchor_u/Z] \
+    -name padin_clk_div_2 \
+    -period [expr 2.0 * $PADIN_CLK_PERIOD]
 
-# create_clock [get_pins i_chip_core.clocks_u.clkroot_div_3over2_u.magic_clkroot_anchor_u/Z] \
-#     -name padin_clk_div_3over2 \
-#     -period [expr 1.5 * $PADIN_CLK_PERIOD]
+create_clock [get_pins i_chip_core.clocks_u.clkroot_div_3over2_u.magic_clkroot_anchor_u/Z] \
+    -name padin_clk_div_3over2 \
+    -period [expr 1.5 * $PADIN_CLK_PERIOD]
 
-# OpenSTA seems to want to propagate upstream clocks through points that are
-# already defined as primary clocks, even though the docs imply it does not do
-# this. So, plan B: constrain functional clocks as generated clocks with fixed
-# divisors. There is a false path buffer on the path from DCK into these
-# generators which hopefully gets the tools to ignore that.
+## System-level clocks:
 
 # System clock: main CPU, SRAM, digital peripherals and external SRAM interface
-create_generated_clock \
-    -source [get_pins i_chip_core.clocks_u.clkroot_padin_clk_u.magic_clkroot_anchor_u/Z] \
-    -master_clock [get_clocks padin_clk] \
+create_clock [get_pins i_chip_core.clocks_u.clkroot_sys_u.magic_clkroot_anchor_u/Z] \
     -name clk_sys \
-    -divide_by 2 \
-    [get_pins i_chip_core.clocks_u.clkroot_sys_u.magic_clkroot_anchor_u/Z]
-
-# Audio clock
-create_generated_clock  \
-    -source [get_pins i_chip_core.clocks_u.clkroot_padin_clk_u.magic_clkroot_anchor_u/Z] \
-    -master_clock [get_clocks padin_clk] \
-    -name clk_audio \
-    -divide_by 2 \
-    [get_pins i_chip_core.clocks_u.clkroot_audio_u.magic_clkroot_anchor_u/Z]
+    -period $CLK_SYS_PERIOD
 
 # LCD serial clock
-create_generated_clock \
-    -source [get_pins i_chip_core.clocks_u.clkroot_padin_clk_u.magic_clkroot_anchor_u/Z] \
-    -master_clock [get_clocks padin_clk] \
+create_clock [get_pins i_chip_core.clkroot_lcd_u.magic_clkroot_anchor_u/Z] \
     -name clk_lcd \
-    -divide_by 1 \
-    [get_pins i_chip_core.clocks_u.clkroot_lcd_u.magic_clkroot_anchor_u/Z]
+    -period $CLK_LCD_PERIOD
+
+# Audio clock
+create_clock [get_pins i_chip_core.clkroot_audio_u.magic_clkroot_anchor_u/Z] \
+    -name clk_audio \
+    -period $CLK_AUDIO_PERIOD
 
 # Debug clock: clocks the debug transport module and one side of its bus CDC.
-# Primary clock. Defined at the pad so we can constrain IO against it.
+# Defined at the pad so we can constrain IO against it.
 create_clock [get_pins pad_DCK/PAD] \
     -name dck \
     -period $DCK_PERIOD
+
+# Prevent all other clocks from propagating through the point we define as the
+# origin of clock generator outputs
+proc block_pregen_clocks {dst} {
+    set_sense -stop_propagation [get_pins $dst] -clock [get_clocks {
+        padin_clk
+        padin_clk_div_2
+        padin_clk_div_3over2
+        dck
+    }]
+}
+
+block_pregen_clocks i_chip_core.clocks_u.clkroot_sys_u.magic_clkroot_anchor_u/Z
+block_pregen_clocks i_chip_core.clocks_u.clkroot_lcd_u.magic_clkroot_anchor_u/Z
+block_pregen_clocks i_chip_core.clocks_u.clkroot_audio_u.magic_clkroot_anchor_u/Z
 
 ###############################################################################
 # CDC constraints

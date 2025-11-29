@@ -123,23 +123,11 @@ clkroot_anchor clkroot_div_3over2_u (
 wire clk_sys_unrooted;
 wire clk_audio_unrooted;
 
-// Hey :) OpenSTA :) This :) Does :) Not :) Propagate :)
-wire dck_falsepath_aaaarrghh_opensta;
-falsepath_anchor falsepath_dck_aaaarrghh_opensta_u (
-	.i (padin_dck),
-	.z (dck_falsepath_aaaarrghh_opensta)
-);
-
 wire [3:0] clk_sys_selected_async;
 cell_clkmux_glitchless #(
 	.N_CLOCKS (4)
 ) clkmux_sys_u (
-	.clk_in   ({
-		dck_falsepath_aaaarrghh_opensta,
-		padin_clk_div_2,
-		padin_clk_div_3over2,
-		padin_clk_rooted
-	}),
+	.clk_in   ({padin_dck, padin_clk_div_2, padin_clk_div_3over2, padin_clk_rooted}),
 	.rst_n    (rst_n_padin_clk),
 	.sel      (clk_sys_select),
 	.selected (clk_sys_selected_async),
@@ -150,12 +138,7 @@ wire [3:0] clk_audio_selected_async;
 cell_clkmux_glitchless #(
 	.N_CLOCKS (4)
 ) clkmux_audio_u (
-	.clk_in   ({
-		dck_falsepath_aaaarrghh_opensta,
-		padin_clk_div_2,
-		padin_clk_div_3over2,
-		padin_clk_rooted
-	}),
+	.clk_in   ({padin_dck, padin_clk_div_2, padin_clk_div_3over2, padin_clk_rooted}),
 	.rst_n    (rst_n_padin_clk),
 	.sel      (clk_audio_select),
 	.selected (clk_audio_selected_async),
