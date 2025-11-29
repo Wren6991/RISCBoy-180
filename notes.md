@@ -732,3 +732,95 @@ create_clock [get_pins pad_DCK/PAD] \
 ```
 
 The first hold path I see in the STA makes no sense. It's a path from the data path flops in the APU async FIFO on the clk_sys side to the receiving flop on the clk_audio side, **but**, the originating clock is reported as `padin_clk` and the receiving clock is reported as `dck`. That is not a functional path and could only be reported if OpenSTA was propagating the upstream clock through the root of the primary clock I defined. The docs imply it does not do that, but the reports imply that it DEFINITELY DOES. I could also just be confused by CTS.
+
+After a couple of misfires the next promising solution I tried was defining generated clocks on the divider outputs (which do not work the same way as the OpenSTA docs):
+
+```tcl
+# System clock: main CPU, SRAM, digital peripherals and external SRAM interface
+create_generated_clock \
+    -source [get_pins i_chip_core.clocks_u.clkroot_padin_clk_u.magic_clkroot_anchor_u/Z] \
+    -master_clock [get_clocks padin_clk] \
+    -name clk_sys \
+    -divide_by 2 \
+    [get_pins i_chip_core.clocks_u.clkroot_sys_u.magic_clkroot_anchor_u/Z]
+
+# Audio clock
+create_generated_clock  \
+    -source [get_pins i_chip_core.clocks_u.clkroot_padin_clk_u.magic_clkroot_anchor_u/Z] \
+    -master_clock [get_clocks padin_clk] \
+    -name clk_audio \
+    -divide_by 2 \
+    [get_pins i_chip_core.clocks_u.clkroot_audio_u.magic_clkroot_anchor_u/Z]
+
+# LCD serial clock
+create_generated_clock \
+    -source [get_pins i_chip_core.clocks_u.clkroot_padin_clk_u.magic_clkroot_anchor_u/Z] \
+    -master_clock [get_clocks padin_clk] \
+    -name clk_lcd \
+    -divide_by 1 \
+    [get_pins i_chip_core.clocks_u.clkroot_lcd_u.magic_clkroot_anchor_u/Z]
+```
+
+This takes my setup WNS from -37 ns to -11 ns. Still not sure what that degraded at all.
+
+Ok, I'm just losing far too much time to OpenSTA issues. Time to do something drastic. I'm considering going to go to one functional clock (plus DCK) and a parallel bus connection for the display.
+
+Currently this is my top level:
+
+```verilog
+module chip_top #(
+    parameter N_DVDD    = 8,
+    parameter N_DVSS    = 10,
+    parameter N_SRAM_DQ = 16,
+    parameter N_SRAM_A  = 18,
+    parameter N_GPIO    = 6
+) (
+    // Power supply pads
+    inout  wire                 VDD,
+    inout  wire                 VSS,
+
+    // Root clock and global reset
+    inout  wire                 CLK,
+    inout  wire                 RSTn,
+
+    // Debug (clock/data)
+    inout  wire                 DCK,
+    inout  wire                 DIO,
+
+    // Parallel async SRAM
+    inout  wire [N_SRAM_DQ-1:0] SRAM_DQ,
+    inout  wire [N_SRAM_A-1:0]  SRAM_A,
+    inout  wire                 SRAM_OEn,
+    inout  wire                 SRAM_CSn,
+    inout  wire                 SRAM_WEn,
+    inout  wire                 SRAM_UBn,
+    inout  wire                 SRAM_LBn,
+
+    // Audio PWM
+    inout  wire                 AUDIO_L,
+    inout  wire                 AUDIO_R,
+
+    // Serial LCD and backlight PWM
+    inout  wire                 LCD_CLK,
+    inout  wire                 LCD_DAT,
+    inout  wire                 LCD_CSn,
+    inout  wire                 LCD_DC,
+    inout  wire                 LCD_BL,
+
+    // Other stuff (incl boot SPI flash)
+    inout  wire [N_GPIO-1:0]    GPIO
+);
+```
+
+I'm pretty sure I can tie the RD (for an 8080 mode display) and just pulse CSn. So LCD_CLK and LCD_DAT would both disappear, and I would need to find 6 more signals from somewhere to make up my 8-bit parallel bus.
+
+GPIO has a minimum of 4 if I want to do SPI flash for boot and games storage. So, that's 2 I can steal.
+
+Buttons can be attached with 1k or so resistors to the LCD data bus, then read during vblank by tristating and enabling the pad pull-ups.
+
+I could sacrifice one audio pin. That would also free up a bit of logic.
+
+I could drop an address pin on the RAM. It would be a shame but survivable.
+
+Still two to find. Debug is not negotiable. SRAM data bus is not negotiable. SRAM_CSn could go, but it wastes a shit ton of power; I think the specimen part I looked at used 70 mA while selected and < 1 mA otherwise. I _could_ get rid of the byte strobes, if I implemented byte writes as read-modify-write.
+
