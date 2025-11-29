@@ -14,9 +14,8 @@ static void spi_init() {
 		1u << GPIO_SPI_SCK |
 		1u << GPIO_SPI_CSN |
 		1u << GPIO_SPI_IO1;
-	// CLKDIV=4 -> 3 MHz SCK at nominal 24 MHz CLK psd input (since clk_sys is
-	// divided by 2 initially)
-	spi_stream_set_clkdiv(4);
+	// -> 3 MHz at 24 MHz clk_sys
+	spi_stream_set_clkdiv(8);
 }
 
 static uint32_t checksum_adler32(const uint8_t *buf, size_t len) {
