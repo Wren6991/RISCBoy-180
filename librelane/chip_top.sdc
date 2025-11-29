@@ -4,76 +4,23 @@ set_units -time ns
 ###############################################################################
 # Clock definitions
 
-# Pad clocks
-set PADIN_CLK_MHZ 48
+set CLK_SYS_MHZ 24
 set DCK_MHZ 20
 
-# Internally generated clocks
-set CLK_SYS_MHZ 24
-set CLK_LCD_MHz 48
-set CLK_AUDIO_MHZ 24
-
-set PADIN_CLK_PERIOD [expr 1000.0 / $PADIN_CLK_MHZ]
 set CLK_SYS_PERIOD   [expr 1000.0 / $CLK_SYS_MHZ]
 set DCK_PERIOD       [expr 1000.0 / $DCK_MHZ]
-set CLK_LCD_PERIOD   [expr 1000.0 / $CLK_LCD_MHz]
-set CLK_AUDIO_PERIOD [expr 1000.0 / $CLK_AUDIO_MHZ]
 
-# Primary input clock. Source of all other clocks except for DCK.
-create_clock [get_pins i_chip_core.clocks_u.clkroot_padin_clk_u.magic_clkroot_anchor_u/Z] \
-    -name padin_clk \
-    -period $PADIN_CLK_PERIOD
-
-# Divisions of primary input clock. These only clock a few flops and a clock
-# gate in the clock muxes (each). There are no synchronous paths between these
-# and other clocks, so they are constrained as primary instead of generated
-# clocks.
-
-create_clock [get_pins i_chip_core.clocks_u.clkroot_div_2_u.magic_clkroot_anchor_u/Z] \
-    -name padin_clk_div_2 \
-    -period [expr 2.0 * $PADIN_CLK_PERIOD]
-
-create_clock [get_pins i_chip_core.clocks_u.clkroot_div_3over2_u.magic_clkroot_anchor_u/Z] \
-    -name padin_clk_div_3over2 \
-    -period [expr 1.5 * $PADIN_CLK_PERIOD]
-
-## System-level clocks:
-
-# System clock: main CPU, SRAM, digital peripherals and external SRAM interface
-create_clock [get_pins i_chip_core.clocks_u.clkroot_sys_u.magic_clkroot_anchor_u/Z] \
+# System clock: clocks processors, SRAM interface, audio filters + SDM, and
+# LCD interface.
+create_clock [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z] \
     -name clk_sys \
     -period $CLK_SYS_PERIOD
-
-# LCD serial clock
-create_clock [get_pins i_chip_core.clkroot_lcd_u.magic_clkroot_anchor_u/Z] \
-    -name clk_lcd \
-    -period $CLK_LCD_PERIOD
-
-# Audio clock
-create_clock [get_pins i_chip_core.clkroot_audio_u.magic_clkroot_anchor_u/Z] \
-    -name clk_audio \
-    -period $CLK_AUDIO_PERIOD
 
 # Debug clock: clocks the debug transport module and one side of its bus CDC.
 # Defined at the pad so we can constrain IO against it.
 create_clock [get_pins pad_DCK/PAD] \
     -name dck \
     -period $DCK_PERIOD
-
-# Prevent all other clocks from propagating through the point we define as the
-# origin of clock generator outputs
-proc block_pregen_clocks {dst} {
-    set_sense -stop_propagation [get_pins $dst] -clock [get_clocks {
-        padin_clk
-        padin_clk_div_2
-        padin_clk_div_3over2
-        dck
-    }]
-}
-
-block_pregen_clocks i_chip_core.clocks_u.clkroot_sys_u.magic_clkroot_anchor_u/Z
-block_pregen_clocks i_chip_core.clocks_u.clkroot_lcd_u.magic_clkroot_anchor_u/Z
-block_pregen_clocks i_chip_core.clocks_u.clkroot_audio_u.magic_clkroot_anchor_u/Z
 
 ###############################################################################
 # CDC constraints
@@ -91,14 +38,6 @@ proc cdc_maxdelay {clk_from clk_to period_to} {
 # sufficient.
 cdc_maxdelay dck clk_sys $CLK_SYS_PERIOD
 cdc_maxdelay clk_sys dck $DCK_PERIOD
-
-# Should just be an async FIFO and some 2DFF'd control signals
-cdc_maxdelay clk_sys clk_lcd $CLK_LCD_PERIOD
-cdc_maxdelay clk_lcd clk_sys $CLK_SYS_PERIOD
-
-# Should just be an async FIFO and some 2DFF'd control signals
-cdc_maxdelay clk_sys clk_audio $CLK_AUDIO_PERIOD
-cdc_maxdelay clk_audio clk_sys $CLK_SYS_PERIOD
 
 # Apply RTL-inserted false path constraints (setup/hold only, still constrain slew)
 set_false_path -setup -hold -through [get_pins *.magic_falsepath_anchor_u/Z]
@@ -118,19 +57,19 @@ set_input_delay  -min 0                             -clock [get_clock clk_sys] [
 # Reasonably tight on audio paths so we get the final flop and buffers fairly
 # close to the quiet supply pins. Note this is just the audio path; the GPIO
 # controls from clk_sys are false-pathed as they're not really important.
-set_output_delay      [expr 0.70 * $CLK_SYS_PERIOD] -clock [get_clock clk_audio] [get_ports {AUDIO_L AUDIO_R}]
+set_output_delay      [expr 0.70 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {AUDIO_L AUDIO_R}]
 
 # LCD_SCK has the same consideration as SRAM_WEn as it's generated using an
 # ICGTN. Other than that just keep the SPI output paths rather tight as a way
 # of controlling skew.
-set LCD_SPI_OUTDELAY [expr 0.70 * $CLK_LCD_PERIOD]
-set_output_delay $LCD_SPI_OUTDELAY -clock [get_clock clk_lcd] [get_ports {
+set LCD_SPI_OUTDELAY [expr 0.70 * $CLK_SYS_PERIOD]
+set_output_delay $LCD_SPI_OUTDELAY -clock [get_clock clk_sys] [get_ports {
     LCD_DAT
     LCD_CSn
     LCD_DC
 }]
 
-set_output_delay [expr $LCD_SPI_OUTDELAY - 0.50 * $CLK_LCD_PERIOD] -clock [get_clock clk_lcd] [get_ports {
+set_output_delay [expr $LCD_SPI_OUTDELAY - 0.50 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {
     LCD_CLK
 }]
 

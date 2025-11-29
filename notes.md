@@ -29,6 +29,10 @@
 * Report all IO paths and review
 * Report all cross-domain paths and review
 * Report all false-path constraints inserted by RTL buffers and check their endpoints
+* QoR:
+	* Write mapping for DFFE -> SDFF
+	* Write extraction for mux + flop -> SDFF
+	* Look at SYNTH_ABC_BUFFERING
 
 ## Submission
 
@@ -860,7 +864,7 @@ block_pregen_clocks i_chip_core.clocks_u.clkroot_lcd_u.magic_clkroot_anchor_u/Z
 block_pregen_clocks i_chip_core.clocks_u.clkroot_audio_u.magic_clkroot_anchor_u/Z
 ```
 
-Setup: -37 ns WNS. Someone somewhere is doing something dumb and I've run out of time to debug it.
+Setup: -37 ns WNS. Someone somewhere is doing something dumb and I've run out of time to debug it. The generated clocks approach yesterday was getting -11 ns WNS. I looked at the path and a high-fanout flop inside the processor (part of the current instruction register) was still unit drive, and had a 
 
 Looking at parallel displays. Taking ST7796S as an example:
 

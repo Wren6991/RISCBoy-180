@@ -1,8 +1,5 @@
 .section .init, "ax"
 
-#include "addressmap.h"
-#include "hw/clocks_regs.h"
-
 .global _start
 _start:
 .option push
@@ -10,10 +7,6 @@ _start:
 	la gp, __global_pointer$
 .option pop
 	la sp, __stacktop
-
-	// wheeeee fast clock
-	li a0, CLOCKS_BASE + CLOCKS_CLK_SYS_OFFS
-	sw zero, (a0)
 
 _bss_clear:
 	la a0, __sbss

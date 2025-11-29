@@ -3,6 +3,9 @@
 |                     SPDX-License-Identifier: Apache-2.0                     |
 \*****************************************************************************/
 
+// This is unfortunately unused because I couldn't get CTS to stop doing dumb
+// shit. Seems to work functionally though.
+
 `default_nettype none
 
 module clocks (
