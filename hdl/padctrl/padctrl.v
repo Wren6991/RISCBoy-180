@@ -6,7 +6,7 @@
 `default_nettype none
 
 module padctrl #(
-	parameter N_GPIO = 6
+	parameter N_GPIO = 13
 ) (
 	input  wire        clk,
 	input  wire        rst_n,
@@ -41,11 +41,12 @@ module padctrl #(
     output wire                 lcd_clk_slew,
     output wire [1:0]           lcd_clk_drive,
 
+    output wire                 lcd_dat_schmitt,
     output wire                 lcd_dat_slew,
     output wire [1:0]           lcd_dat_drive,
 
-    output wire                 lcd_dccs_slew,
-    output wire [1:0]           lcd_dccs_drive,
+    output wire                 lcd_dc_slew,
+    output wire [1:0]           lcd_dc_drive,
 
     output wire                 lcd_bl_slew,
     output wire [1:0]           lcd_bl_drive,
@@ -73,10 +74,11 @@ wire              audio_slew_nofp;
 wire [1:0]        audio_drive_nofp;
 wire              lcd_clk_slew_nofp;
 wire [1:0]        lcd_clk_drive_nofp;
+wire              lcd_dat_schmitt_nofp;
 wire              lcd_dat_slew_nofp;
 wire [1:0]        lcd_dat_drive_nofp;
-wire              lcd_dccs_slew_nofp;
-wire [1:0]        lcd_dccs_drive_nofp;
+wire              lcd_dc_slew_nofp;
+wire [1:0]        lcd_dc_drive_nofp;
 wire              lcd_bl_slew_nofp;
 wire [1:0]        lcd_bl_drive_nofp;
 wire              gpio_schmitt_nofp;
@@ -101,11 +103,13 @@ padctrl_regs regs_u	(
 	.dio_drive_o         (dio_drive_nofp),
 	.dio_slew_o          (dio_slew_nofp),
 	.dio_schmitt_o       (dio_schmitt_nofp),
+
 	.gpio_drive_o        (gpio_drive_nofp),
 	.gpio_slew_o         (gpio_slew_nofp),
 	.gpio_schmitt_o      (gpio_schmitt_nofp),
 	.gpio_pu_o           (gpio_pu_nofp),
 	.gpio_pd_o           (gpio_pd_nofp),
+
 	.sram_dq_drive_o     (sram_dq_drive_nofp),
 	.sram_dq_slew_o      (sram_dq_slew_nofp),
 	.sram_dq_schmitt_o   (sram_dq_schmitt_nofp),
@@ -113,15 +117,18 @@ padctrl_regs regs_u	(
 	.sram_a_slew_o       (sram_a_slew_nofp),
 	.sram_strobe_drive_o (sram_strobe_drive_nofp),
 	.sram_strobe_slew_o  (sram_strobe_slew_nofp),
+
 	.audio_schmitt_o     (audio_schmitt_nofp),
 	.audio_drive_o       (audio_drive_nofp),
 	.audio_slew_o        (audio_slew_nofp),
+
 	.lcd_clk_drive_o     (lcd_clk_drive_nofp),
 	.lcd_clk_slew_o      (lcd_clk_slew_nofp),
+	.lcd_dat_schmitt_o   (lcd_dat_schmitt_nofp),
 	.lcd_dat_drive_o     (lcd_dat_drive_nofp),
 	.lcd_dat_slew_o      (lcd_dat_slew_nofp),
-	.lcd_dccs_drive_o    (lcd_dccs_drive_nofp),
-	.lcd_dccs_slew_o     (lcd_dccs_slew_nofp),
+	.lcd_dc_drive_o   	 (lcd_dc_drive_nofp),
+	.lcd_dc_slew_o    	 (lcd_dc_slew_nofp),
 	.lcd_bl_drive_o      (lcd_bl_drive_nofp),
 	.lcd_bl_slew_o       (lcd_bl_slew_nofp)
 );
@@ -141,10 +148,10 @@ falsepath_anchor fp_audio_slew_u                      (.i (audio_slew_nofp      
 falsepath_anchor fp_audio_drive_u        [1:0]        (.i (audio_drive_nofp      ), .z (audio_drive      ));
 falsepath_anchor fp_lcd_clk_slew_u                    (.i (lcd_clk_slew_nofp     ), .z (lcd_clk_slew     ));
 falsepath_anchor fp_lcd_clk_drive_u      [1:0]        (.i (lcd_clk_drive_nofp    ), .z (lcd_clk_drive    ));
-falsepath_anchor fp_lcd_dat_slew_u                    (.i (lcd_dat_slew_nofp     ), .z (lcd_dat_slew     ));
+falsepath_anchor fp_lcd_dat_schmitt_u                 (.i (lcd_dat_schmitt_nofp  ), .z (lcd_dat_schmitt  ));
 falsepath_anchor fp_lcd_dat_drive_u      [1:0]        (.i (lcd_dat_drive_nofp    ), .z (lcd_dat_drive    ));
-falsepath_anchor fp_lcd_dccs_slew_u                   (.i (lcd_dccs_slew_nofp    ), .z (lcd_dccs_slew    ));
-falsepath_anchor fp_lcd_dccs_drive_u     [1:0]        (.i (lcd_dccs_drive_nofp   ), .z (lcd_dccs_drive   ));
+falsepath_anchor fp_lcd_dc_slew_u                     (.i (lcd_dc_slew_nofp      ), .z (lcd_dc_slew      ));
+falsepath_anchor fp_lcd_dc_drive_u       [1:0]        (.i (lcd_dc_drive_nofp     ), .z (lcd_dc_drive     ));
 falsepath_anchor fp_lcd_bl_slew_u                     (.i (lcd_bl_slew_nofp      ), .z (lcd_bl_slew      ));
 falsepath_anchor fp_lcd_bl_drive_u       [1:0]        (.i (lcd_bl_drive_nofp     ), .z (lcd_bl_drive     ));
 falsepath_anchor fp_gpio_schmitt_u                    (.i (gpio_schmitt_nofp     ), .z (gpio_schmitt     ));

@@ -2,13 +2,9 @@
 
 ## RTL
 
-* SRAM controller:
-	* Implement 8-bit writes as RMW so UBn/LBn can be removed
 * RISCBoy display controller:
 	* Support 8 bits per clock (for use with 8080 instead of SPI)
 	* Support VGA output
-* APU:
-	* Go to mono output only
 * Review resettable flops and see if they can be made non-reset for better density/routing
 
 ## "Verification"
@@ -952,4 +948,6 @@ All 8x LCD_DAT will also be available as software-controlled GPIO. In serial mod
 Maximum external RAM is now 256 kB (17 address bits, 128k x 16). I'll also take this opportunity to shrink the processor address space to 19 bits (512 kB total) because this slightly improves address-phase timing.
 
 Also worth noting serial LCD at 24 Mbps gives 26 FPS on a 240 x 240 serial LCD (like ST7789) so it's not completely useless.
+
+The modifications to the SRAM controller were mostly painless. I still don't have system-level tests with the PPU fetching from RAM so I just hooked up the "DMA" read port on the RAM controller to toggle on/off every cycle to give it a quick smoke test with CPU contending with PPU access.
 

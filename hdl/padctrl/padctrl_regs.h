@@ -22,7 +22,7 @@
 #define PADCTRL_SRAM_STROBE_OFFS 28
 #define PADCTRL_LCD_CLK_OFFS 32
 #define PADCTRL_LCD_DAT_OFFS 36
-#define PADCTRL_LCD_DCCS_OFFS 40
+#define PADCTRL_LCD_DC_OFFS 40
 #define PADCTRL_LCD_BL_OFFS 44
 
 #ifndef __ASSEMBLER__
@@ -39,7 +39,7 @@ typedef struct {
 	volatile uint32_t sram_strobe;
 	volatile uint32_t lcd_clk;
 	volatile uint32_t lcd_dat;
-	volatile uint32_t lcd_dccs;
+	volatile uint32_t lcd_dc;
 	volatile uint32_t lcd_bl;
 } padctrl_hw_t;
 
@@ -53,10 +53,10 @@ typedef struct {
 // Pull-up enable for GPIOs
 
 // Field: GPIO_PU  Access: RW
-// Reset: 0x34
+// Reset: 0x4
 #define PADCTRL_GPIO_PU_LSB  0
-#define PADCTRL_GPIO_PU_BITS 8
-#define PADCTRL_GPIO_PU_MASK 0xff
+#define PADCTRL_GPIO_PU_BITS 13
+#define PADCTRL_GPIO_PU_MASK 0x1fff
 
 /*******************************************************************************
 *                                   GPIO_PD                                    *
@@ -65,10 +65,10 @@ typedef struct {
 // Pull-down enable for GPIOs
 
 // Field: GPIO_PD  Access: RW
-// Reset: 0xcb
+// Reset: 0x1ffb
 #define PADCTRL_GPIO_PD_LSB  0
-#define PADCTRL_GPIO_PD_BITS 8
-#define PADCTRL_GPIO_PD_MASK 0xff
+#define PADCTRL_GPIO_PD_BITS 13
+#define PADCTRL_GPIO_PD_MASK 0x1fff
 
 /*******************************************************************************
 *                                     GPIO                                     *
@@ -245,25 +245,31 @@ typedef struct {
 #define PADCTRL_LCD_DAT_SLEW_LSB  2
 #define PADCTRL_LCD_DAT_SLEW_BITS 1
 #define PADCTRL_LCD_DAT_SLEW_MASK 0x4
+// Field: LCD_DAT_SCHMITT  Access: RW
+// Reset: 0x1
+// Schmitt trigger: 1 = enabled
+#define PADCTRL_LCD_DAT_SCHMITT_LSB  3
+#define PADCTRL_LCD_DAT_SCHMITT_BITS 1
+#define PADCTRL_LCD_DAT_SCHMITT_MASK 0x8
 
 /*******************************************************************************
-*                                   LCD_DCCS                                   *
+*                                    LCD_DC                                    *
 *******************************************************************************/
 
-// Pad controls for LCD_DC and LCD_CS
+// Pad controls for LCD_DC
 
-// Field: LCD_DCCS_DRIVE  Access: RW
+// Field: LCD_DC_DRIVE  Access: RW
 // Reset: 0x0
 // Drive selection, values 0-3 are 4/8/12/16 mA.
-#define PADCTRL_LCD_DCCS_DRIVE_LSB  0
-#define PADCTRL_LCD_DCCS_DRIVE_BITS 2
-#define PADCTRL_LCD_DCCS_DRIVE_MASK 0x3
-// Field: LCD_DCCS_SLEW  Access: RW
+#define PADCTRL_LCD_DC_DRIVE_LSB  0
+#define PADCTRL_LCD_DC_DRIVE_BITS 2
+#define PADCTRL_LCD_DC_DRIVE_MASK 0x3
+// Field: LCD_DC_SLEW  Access: RW
 // Reset: 0x1
 // Slew selection: 0 = fast, 1 = slow
-#define PADCTRL_LCD_DCCS_SLEW_LSB  2
-#define PADCTRL_LCD_DCCS_SLEW_BITS 1
-#define PADCTRL_LCD_DCCS_SLEW_MASK 0x4
+#define PADCTRL_LCD_DC_SLEW_LSB  2
+#define PADCTRL_LCD_DC_SLEW_BITS 1
+#define PADCTRL_LCD_DC_SLEW_MASK 0x4
 
 /*******************************************************************************
 *                                    LCD_BL                                    *

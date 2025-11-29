@@ -41,17 +41,15 @@ module chip_core #(
     output wire                 padout_sram_lb_n,
 
     // Audio PWM signals (output only)
-    output wire                 padout_audio_l,
-    output wire                 padout_audio_r,
-    output wire                 padoe_audio_l,
-    output wire                 padoe_audio_r,
-    input  wire                 padin_audio_l,
-    input  wire                 padin_audio_r,
+    output wire                 padout_audio,
+    output wire                 padoe_audio,
+    input  wire                 padin_audio,
 
     // LCD signals (output only)
     output wire                 padout_lcd_clk,
-    output wire                 padout_lcd_dat,
-    output wire                 padout_lcd_cs_n,
+    output wire [7:0]           padout_lcd_dat,
+    output wire [7:0]           padoe_lcd_dat,
+    input  wire [7:0]           padin_lcd_dat,
     output wire                 padout_lcd_dc,
     output wire                 padout_lcd_bl,
 
@@ -83,11 +81,12 @@ module chip_core #(
     output wire                 lcd_clk_slew,
     output wire [1:0]           lcd_clk_drive,
 
+    output wire                 lcd_dat_schmitt,
     output wire                 lcd_dat_slew,
     output wire [1:0]           lcd_dat_drive,
 
-    output wire                 lcd_dccs_slew,
-    output wire [1:0]           lcd_dccs_drive,
+    output wire                 lcd_dc_slew,
+    output wire [1:0]           lcd_dc_drive,
 
     output wire                 lcd_bl_slew,
     output wire [1:0]           lcd_bl_drive,
@@ -98,10 +97,10 @@ module chip_core #(
 
     output wire [N_GPIO-1:0]    gpio_pu,
     output wire [N_GPIO-1:0]    gpio_pd,
-    output wire                 audio_l_pu,
-    output wire                 audio_l_pd,
-    output wire                 audio_r_pu,
-    output wire                 audio_r_pd
+    output wire [7:0]           lcd_dat_pu,
+    output wire [7:0]           lcd_dat_pd,
+    output wire                 audio_pu,
+    output wire                 audio_pd
 );
 
 
@@ -441,8 +440,8 @@ cell_clkgate_low clkgate_cpu_u (
 );
 
 hazard3_cpu_1port #(
-    .RESET_VECTOR        (32'h000a0000),
-    .MTVEC_INIT          (32'h000a0000),
+    .RESET_VECTOR        (32'h00050000),
+    .MTVEC_INIT          (32'h00050000),
 
     .EXTENSION_A         (0),
     .EXTENSION_C         (1),
@@ -557,11 +556,11 @@ hazard3_cpu_1port #(
 
 // 1 MB system address space:
 //
-// 00000 to 7ffff: external SRAM     (up to 512 kB)
-// 80000 to 9ffff: internal SRAM     (mirrored across 128 kB)
-// a0000 to bffff: boot ROM          (mirrored across 128 kB)
-// c0000 to dffff: APU address space (128 kB aperture)
-// e0000 to fffff: APB peripherals   (128 kB address space, ~4 kB each)
+// 00000 to 3ffff: external SRAM     (up to 256 kB)
+// 40000 to 4ffff: internal SRAM     (mirrored across 64 kB)
+// 50000 to 5ffff: boot ROM          (mirrored across 64 kB)
+// 60000 to 6ffff: APU address space (64 kB aperture)
+// 70000 to 7ffff: APB peripherals   (64 kB address space, ~4 kB each)
 
 wire [19:0]         eram_haddr;
 wire                eram_hwrite;
@@ -655,8 +654,8 @@ ahbl_splitter #(
     .N_PORTS   (5),
     .W_ADDR    (20),
     .W_DATA    (32),
-    .ADDR_MAP  (100'he0000_c0000_a0000_80000_00000),
-    .ADDR_MASK (100'he0000_e0000_e0000_e0000_80000)
+    .ADDR_MAP  (100'h70000_60000_50000_40000_00000),
+    .ADDR_MASK (100'h70000_70000_70000_70000_40000)
 ) splitter_u (
     .clk             (clk_sys),
     .rst_n           (rst_n_sys),
@@ -878,8 +877,7 @@ ahb_rom_boot rom_u (
 // ------------------------------------------------------------------------
 // Audio processing unit
 
-wire audio_l;
-wire audio_r;
+wire audio_pwm;
 
 wire spi_cs_n;
 wire spi_sck;
@@ -928,8 +926,7 @@ audio_processor #(
     .irq_apu_timer_to_cpu       (irq[IRQ_APU_TIMER]),
     .irq_spi_stream_to_cpu      (irq[IRQ_SPI_STREAM]),
 
-    .audio_l                    (audio_l),
-    .audio_r                    (audio_r),
+    .audio                      (audio_pwm),
 
     .spi_cs_n                   (spi_cs_n),
     .spi_sck                    (spi_sck),
@@ -985,6 +982,8 @@ riscboy_ppu #(
     .scanout_buf_release (ppu_scanout_buf_release)
 );
 
+wire [7:0] dispctrl_lcd_dat;
+
 riscboy_ppu_dispctrl_spi #(
     .PXFIFO_DEPTH (8)
 ) ppu_dispctrl_spi_u (
@@ -1009,10 +1008,9 @@ riscboy_ppu_dispctrl_spi #(
     .scanout_buf_rdy     (ppu_scanout_buf_rdy),
     .scanout_buf_release (ppu_scanout_buf_release),
 
-    .lcd_cs              (padout_lcd_cs_n),
     .lcd_dc              (padout_lcd_dc),
     .lcd_sck             (padout_lcd_clk),
-    .lcd_mosi            (padout_lcd_dat)
+    .lcd_dat             (dispctrl_lcd_dat)
 );
 
 // ------------------------------------------------------------------------
@@ -1110,8 +1108,9 @@ uart_mini #(
     .irq          (irq[IRQ_UART])
 );
 
+localparam W_GPIO_CTRL = 1 + 8 + 4;
 padctrl #(
-    .N_GPIO (N_GPIO + 2)
+    .N_GPIO (W_GPIO_CTRL)
 ) padctrl_u (
     .clk               (clk_sys),
     .rst_n             (rst_n_sys),
@@ -1140,22 +1139,23 @@ padctrl #(
     .audio_drive       (audio_drive),
     .lcd_clk_slew      (lcd_clk_slew),
     .lcd_clk_drive     (lcd_clk_drive),
+    .lcd_dat_schmitt   (lcd_dat_schmitt),
     .lcd_dat_slew      (lcd_dat_slew),
     .lcd_dat_drive     (lcd_dat_drive),
-    .lcd_dccs_slew     (lcd_dccs_slew),
-    .lcd_dccs_drive    (lcd_dccs_drive),
+    .lcd_dc_slew       (lcd_dc_slew),
+    .lcd_dc_drive      (lcd_dc_drive),
     .lcd_bl_slew       (lcd_bl_slew),
     .lcd_bl_drive      (lcd_bl_drive),
     .gpio_schmitt      (gpio_schmitt),
     .gpio_slew         (gpio_slew),
     .gpio_drive        (gpio_drive),
-    .gpio_pu           ({audio_l_pu, audio_r_pu, gpio_pu}),
-    .gpio_pd           ({audio_l_pd, audio_r_pd, gpio_pd})
+    .gpio_pu           ({audio_pu, lcd_dat_pu, gpio_pu}),
+    .gpio_pd           ({audio_pd, lcd_dat_pd, gpio_pd})
 );
 
 
 gpio #(
-    .N_GPIO (N_GPIO + 2)
+    .N_GPIO (W_GPIO_CTRL)
 ) gpio_u (
     .clk          (clk_sys),
     .rst_n        (rst_n_sys),
@@ -1169,20 +1169,21 @@ gpio #(
     .apbs_pready  (gpio_pready),
     .apbs_pslverr (gpio_pslverr),
 
-    .audio_l      (audio_l),
-    .audio_r      (audio_r),
+    .audio        (audio_pwm),
 
     .uart_tx      (uart_tx),
     .uart_rx      (uart_rx),
+
+    .dispctrl_dat (dispctrl_lcd_dat),
 
     .spi_cs_n     (spi_cs_n),
     .spi_sck      (spi_sck),
     .spi_mosi     (spi_mosi),
     .spi_miso     (spi_miso),
 
-    .padout_gpio  ({padout_audio_l, padout_audio_r, padout_gpio}),
-    .padoe_gpio   ({padoe_audio_l,  padoe_audio_r,  padoe_gpio }),
-    .padin_gpio   ({1'b0         ,  1'b0,           padin_gpio })
+    .padout_gpio  ({padout_audio, padout_lcd_dat, padout_gpio}),
+    .padoe_gpio   ({padoe_audio,  padoe_lcd_dat,  padoe_gpio }),
+    .padin_gpio   ({padin_audio,  padin_lcd_dat,  padin_gpio })
 );
 
 

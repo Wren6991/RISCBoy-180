@@ -12,8 +12,8 @@ module chip_top #(
     parameter N_DVDD    = 8,
     parameter N_DVSS    = 10,
     parameter N_SRAM_DQ = 16,
-    parameter N_SRAM_A  = 18,
-    parameter N_GPIO    = 6
+    parameter N_SRAM_A  = 17,
+    parameter N_GPIO    = 4
 ) (
     // Power supply pads
     inout  wire                 VDD,
@@ -33,24 +33,20 @@ module chip_top #(
     inout  wire                 SRAM_OEn,
     inout  wire                 SRAM_CSn,
     inout  wire                 SRAM_WEn,
-    inout  wire                 SRAM_UBn,
-    inout  wire                 SRAM_LBn,
 
-    // Audio PWM
-    inout  wire                 AUDIO_L,
-    inout  wire                 AUDIO_R,
+    // Audio PWM, or software GPIO
+    inout  wire                 AUDIO,
 
-    // Serial LCD and backlight PWM
+    // LCD data bus and backlight PWM.
+    // LCD_DAT[7:6] are available as GPIO if LCD is serial.
     inout  wire                 LCD_CLK,
-    inout  wire                 LCD_DAT,
-    inout  wire                 LCD_CSn,
+    inout  wire [7:0]           LCD_DAT,
     inout  wire                 LCD_DC,
     inout  wire                 LCD_BL,
 
-    // Other stuff (incl boot SPI flash)
+    // Software GPIO or boot flash
     inout  wire [N_GPIO-1:0]    GPIO
 );
-
 // ----------------------------------------------------------------------------
 // IO signals connected to core
 
@@ -81,17 +77,15 @@ wire                 padout_sram_ub_n;
 wire                 padout_sram_lb_n;
 
 // Audio PWM signals (bidirectional as they have GPIO alternates):
-wire                 padout_audio_l;
-wire                 padout_audio_r;
-wire                 padoe_audio_l;
-wire                 padoe_audio_r;
-wire                 padin_audio_l;
-wire                 padin_audio_r;
+wire                 padout_audio;
+wire                 padoe_audio;
+wire                 padin_audio;
 
-// LCD signals (output only)
+// LCD signals
 wire                 padout_lcd_clk;
-wire                 padout_lcd_dat;
-wire                 padout_lcd_cs_n;
+wire [7:0]           padout_lcd_dat;
+wire [7:0]           padoe_lcd_dat;
+wire [7:0]           padin_lcd_dat;
 wire                 padout_lcd_dc;
 wire                 padout_lcd_bl;
 
@@ -123,11 +117,12 @@ wire [1:0]           audio_drive;
 wire                 lcd_clk_slew;
 wire [1:0]           lcd_clk_drive;
 
+wire                 lcd_dat_schmitt;
 wire                 lcd_dat_slew;
 wire [1:0]           lcd_dat_drive;
 
-wire                 lcd_dccs_slew;
-wire [1:0]           lcd_dccs_drive;
+wire                 lcd_dc_slew;
+wire [1:0]           lcd_dc_drive;
 
 wire                 lcd_bl_slew;
 wire [1:0]           lcd_bl_drive;
@@ -138,10 +133,10 @@ wire [1:0]           gpio_drive;
 
 wire [N_GPIO-1:0]    gpio_pu;
 wire [N_GPIO-1:0]    gpio_pd;
-wire                 audio_l_pu;
-wire                 audio_l_pd;
-wire                 audio_r_pu;
-wire                 audio_r_pd;
+wire [7:0]           lcd_dat_pu;
+wire [7:0]           lcd_dat_pd;
+wire                 audio_pu;
+wire                 audio_pd;
 
 // ----------------------------------------------------------------------------
 // IO pad instances: clock, reset, debug
@@ -340,91 +335,28 @@ gf180mcu_fd_io__bi_t pad_SRAM_OEn (
     .PD     (1'b0)
 );
 
-gf180mcu_fd_io__bi_t pad_SRAM_UBn (
-    .DVDD   (VDD),
-    .DVSS   (VSS),
-    .VDD    (VDD),
-    .VSS    (VSS),
-
-    .A      (padout_sram_ub_n),
-    .OE     (enable_fixed_outputs),
-    .Y      (/* unused */),
-    .PAD    (SRAM_UBn),
-
-    .CS     (1'b0),
-    .SL     (sram_strobe_slew),
-    .PDRV1  (sram_strobe_drive[1]),
-    .PDRV0  (sram_strobe_drive[0]),
-    .IE     (1'b0),
-
-    .PU     (!enable_fixed_outputs),
-    .PD     (1'b0)
-);
-
-gf180mcu_fd_io__bi_t pad_SRAM_LBn (
-    .DVDD   (VDD),
-    .DVSS   (VSS),
-    .VDD    (VDD),
-    .VSS    (VSS),
-
-    .A      (padout_sram_lb_n),
-    .OE     (enable_fixed_outputs),
-    .Y      (/* unused */),
-    .PAD    (SRAM_LBn),
-
-    .CS     (1'b0),
-    .SL     (sram_strobe_slew),
-    .PDRV1  (sram_strobe_drive[1]),
-    .PDRV0  (sram_strobe_drive[0]),
-    .IE     (1'b0),
-
-    .PU     (!enable_fixed_outputs),
-    .PD     (1'b0)
-);
-
 // ----------------------------------------------------------------------------
 // IO pad instances: Audio (also available for GPIO use)
 
-gf180mcu_fd_io__bi_t pad_AUDIO_L (
+gf180mcu_fd_io__bi_t pad_AUDIO (
     .DVDD   (VDD),
     .DVSS   (VSS),
     .VDD    (VDD),
     .VSS    (VSS),
 
-    .A      (padout_audio_l),
-    .OE     (padoe_audio_l),
-    .Y      (padin_audio_l),
-    .PAD    (AUDIO_L),
+    .A      (padout_audio),
+    .OE     (padoe_audio),
+    .Y      (padin_audio),
+    .PAD    (AUDIO),
 
     .CS     (audio_schmitt),
     .SL     (audio_slew),
     .PDRV1  (audio_drive[1]),
     .PDRV0  (audio_drive[0]),
-    .IE     (!padoe_audio_l),
+    .IE     (!padoe_audio),
 
-    .PU     (audio_l_pu),
-    .PD     (audio_l_pd)
-);
-
-gf180mcu_fd_io__bi_t pad_AUDIO_R (
-    .DVDD   (VDD),
-    .DVSS   (VSS),
-    .VDD    (VDD),
-    .VSS    (VSS),
-
-    .A      (padout_audio_r),
-    .OE     (padoe_audio_r),
-    .Y      (padin_audio_r),
-    .PAD    (AUDIO_R),
-
-    .CS     (audio_schmitt),
-    .SL     (audio_slew),
-    .PDRV1  (audio_drive[1]),
-    .PDRV0  (audio_drive[0]),
-    .IE     (!padoe_audio_r),
-
-    .PU     (audio_r_pu),
-    .PD     (audio_r_pd)
+    .PU     (audio_pu),
+    .PD     (audio_pd)
 );
 
 // ----------------------------------------------------------------------------
@@ -452,49 +384,30 @@ gf180mcu_fd_io__bi_t pad_LCD_CLK (
     .PD     (!enable_fixed_outputs)
 );
 
-// Data: pulled LOW at reset
-gf180mcu_fd_io__bi_t pad_LCD_DAT (
-    .DVDD   (VDD),
-    .DVSS   (VSS),
-    .VDD    (VDD),
-    .VSS    (VSS),
+generate
+for (genvar i = 0; i < 8; i++) begin: pad_LCD_DAT
+    gf180mcu_fd_io__bi_t u (
+        .DVDD   (VDD),
+        .DVSS   (VSS),
+        .VDD    (VDD),
+        .VSS    (VSS),
 
-    .A      (padout_lcd_dat),
-    .OE     (enable_fixed_outputs),
-    .Y      (/* unused */),
-    .PAD    (LCD_DAT),
+        .A      (padout_lcd_dat[i]),
+        .OE     (padoe_lcd_dat[i]),
+        .Y      (padin_lcd_dat[i]),
+        .PAD    (LCD_DAT[i]),
 
-    .CS     (1'b0),
-    .SL     (lcd_dat_slew),
-    .PDRV1  (lcd_dat_drive[1]),
-    .PDRV0  (lcd_dat_drive[0]),
-    .IE     (1'b0),
+        .CS     (lcd_dat_schmitt),
+        .SL     (lcd_dat_slew),
+        .PDRV1  (lcd_dat_drive[1]),
+        .PDRV0  (lcd_dat_drive[0]),
+        .IE     (!padoe_lcd_dat[i]),
 
-    .PU     (1'b0),
-    .PD     (!enable_fixed_outputs)
-);
-
-// CSn: pulled HIGH at reset
-gf180mcu_fd_io__bi_t pad_LCD_CSn (
-    .DVDD   (VDD),
-    .DVSS   (VSS),
-    .VDD    (VDD),
-    .VSS    (VSS),
-
-    .A      (padout_lcd_cs_n),
-    .OE     (enable_fixed_outputs),
-    .Y      (/* unused */),
-    .PAD    (LCD_CSn),
-
-    .CS     (1'b0),
-    .SL     (lcd_dccs_slew),
-    .PDRV1  (lcd_dccs_drive[1]),
-    .PDRV0  (lcd_dccs_drive[0]),
-    .IE     (1'b0),
-
-    .PU     (!enable_fixed_outputs),
-    .PD     (1'b0)
-);
+        .PU     (lcd_dat_pu[i]),
+        .PD     (lcd_dat_pd[i])
+    );
+end
+endgenerate
 
 // DC: pulled LOW at reset
 gf180mcu_fd_io__bi_t pad_LCD_DC (
@@ -509,9 +422,9 @@ gf180mcu_fd_io__bi_t pad_LCD_DC (
     .PAD    (LCD_DC),
 
     .CS     (1'b0),
-    .SL     (lcd_dccs_slew),
-    .PDRV1  (lcd_dccs_drive[1]),
-    .PDRV0  (lcd_dccs_drive[0]),
+    .SL     (lcd_dc_slew),
+    .PDRV1  (lcd_dc_drive[1]),
+    .PDRV0  (lcd_dc_drive[0]),
     .IE     (1'b0),
 
     .PU     (1'b0),
@@ -622,15 +535,13 @@ chip_core #(
     .padout_sram_we_n      (padout_sram_we_n),
     .padout_sram_ub_n      (padout_sram_ub_n),
     .padout_sram_lb_n      (padout_sram_lb_n),
-    .padout_audio_l        (padout_audio_l),
-    .padout_audio_r        (padout_audio_r),
-    .padoe_audio_l         (padoe_audio_l),
-    .padoe_audio_r         (padoe_audio_r),
-    .padin_audio_l         (padin_audio_l),
-    .padin_audio_r         (padin_audio_r),
+    .padout_audio          (padout_audio),
+    .padoe_audio           (padoe_audio),
+    .padin_audio           (padin_audio),
     .padout_lcd_clk        (padout_lcd_clk),
     .padout_lcd_dat        (padout_lcd_dat),
-    .padout_lcd_cs_n       (padout_lcd_cs_n),
+    .padoe_lcd_dat         (padoe_lcd_dat),
+    .padin_lcd_dat         (padin_lcd_dat),
     .padout_lcd_dc         (padout_lcd_dc),
     .padout_lcd_bl         (padout_lcd_bl),
     .padin_gpio            (padin_gpio),
@@ -651,21 +562,22 @@ chip_core #(
     .audio_drive           (audio_drive),
     .lcd_clk_slew          (lcd_clk_slew),
     .lcd_clk_drive         (lcd_clk_drive),
+    .lcd_dat_schmitt       (lcd_dat_schmitt),
     .lcd_dat_slew          (lcd_dat_slew),
     .lcd_dat_drive         (lcd_dat_drive),
-    .lcd_dccs_slew         (lcd_dccs_slew),
-    .lcd_dccs_drive        (lcd_dccs_drive),
+    .lcd_dc_slew           (lcd_dc_slew),
+    .lcd_dc_drive          (lcd_dc_drive),
     .lcd_bl_slew           (lcd_bl_slew),
     .lcd_bl_drive          (lcd_bl_drive),
     .gpio_schmitt          (gpio_schmitt),
     .gpio_slew             (gpio_slew),
     .gpio_drive            (gpio_drive),
+    .lcd_dat_pu            (lcd_dat_pu),
+    .lcd_dat_pd            (lcd_dat_pd),
     .gpio_pu               (gpio_pu),
     .gpio_pd               (gpio_pd),
-    .audio_l_pu            (audio_l_pu),
-    .audio_l_pd            (audio_l_pd),
-    .audio_r_pu            (audio_r_pu),
-    .audio_r_pd            (audio_r_pd)
+    .audio_pu              (audio_pu),
+    .audio_pd              (audio_pd)
 );
 
 // ----------------------------------------------------------------------------

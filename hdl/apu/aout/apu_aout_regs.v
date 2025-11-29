@@ -32,10 +32,8 @@ module apu_aout_regs (
 	output reg  [7:0]  csr_interval_o,
 	output reg  [2:0]  csr_irqlevel_o,
 	input  wire [2:0]  csr_flevel_i,
-	output reg  [15:0] fifo_l_o,
-	output reg         fifo_l_wen,
-	output reg  [15:0] fifo_r_o,
-	output reg         fifo_r_wen
+	output reg  [15:0] fifo_o,
+	output reg         fifo_wen
 );
 
 // AHB-Lite adapter
@@ -91,13 +89,10 @@ assign csr_interval_rdata = csr_interval_o;
 assign csr_irqlevel_rdata = csr_irqlevel_o;
 assign csr_flevel_rdata = csr_flevel_i;
 
-wire [15:0] fifo_l_wdata = wdata[31:16];
-wire [15:0] fifo_l_rdata;
-wire [15:0] fifo_r_wdata = wdata[15:0];
-wire [15:0] fifo_r_rdata;
-wire [31:0] __fifo_rdata = {fifo_l_rdata, fifo_r_rdata};
-assign fifo_l_rdata = 16'h0;
-assign fifo_r_rdata = 16'h0;
+wire [15:0] fifo_wdata = wdata[15:0];
+wire [15:0] fifo_rdata;
+wire [31:0] __fifo_rdata = {16'h0, fifo_rdata};
+assign fifo_rdata = 16'h0;
 
 always @ (*) begin
 	case (addr)
@@ -105,10 +100,8 @@ always @ (*) begin
 		ADDR_FIFO: rdata = __fifo_rdata;
 		default: rdata = 32'h0;
 	endcase
-	fifo_l_wen = __fifo_wen;
-	fifo_l_o = fifo_l_wdata;
-	fifo_r_wen = __fifo_wen;
-	fifo_r_o = fifo_r_wdata;
+	fifo_wen = __fifo_wen;
+	fifo_o = fifo_wdata;
 end
 
 always @ (posedge clk or negedge rst_n) begin

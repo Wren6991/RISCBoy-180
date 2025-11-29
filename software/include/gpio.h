@@ -12,10 +12,16 @@
 #define GPIO_SPI_SCK 1
 #define GPIO_SPI_CSN 2
 #define GPIO_SPI_IO1 3
-#define GPIO_UART_RX 4
-#define GPIO_UART_TX 5
-#define GPIO_AUDIO_R 6
-#define GPIO_AUDIO_L 7
+#define GPIO_LCD_DAT0 4
+// DAT1 is also chip select in SPI mode:
+#define GPIO_LCD_DAT1 5
+#define GPIO_LCD_DAT2 6
+#define GPIO_LCD_DAT3 7
+#define GPIO_LCD_DAT4 8
+#define GPIO_LCD_DAT5 9
+#define GPIO_LCD_DAT6 10
+#define GPIO_LCD_DAT7 11
+#define GPIO_AUDIO 12
 
 static inline void gpio_pull_down(int gpio) {
 	uint32_t mask = 1u << gpio;

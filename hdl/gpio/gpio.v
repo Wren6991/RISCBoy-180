@@ -6,7 +6,7 @@
 `default_nettype none
 
 module gpio #(
-	parameter N_GPIO = 8 // do not change without updating registers and SYS_FALSEPATH_MASK
+	parameter N_GPIO = 13 // do not change without updating registers and SYS_FALSEPATH_MASK
 ) (
 	input wire                clk,
 	input wire                rst_n,
@@ -21,8 +21,9 @@ module gpio #(
 	output wire               apbs_pready,
 	output wire               apbs_pslverr,
 
-	input  wire               audio_l,
-	input  wire               audio_r,
+	input  wire               audio,
+
+	input  wire [7:0]         dispctrl_dat,
 
 	input  wire               uart_tx,
 	output wire               uart_rx,
@@ -39,16 +40,15 @@ module gpio #(
 
 // Set bits here for low-priority clk_sys paths that merge with higher
 // priority paths on other clocks, to deprioritise the clk_sys path:
-localparam SYS_FALSEPATH_MASK = 8'hc0;
+localparam SYS_FALSEPATH_MASK = 13'h1ff0;
 
 // ----------------------------------------------------------------------------
 // Connect alternate functions
 
+// TODO UART TX? Maybe wants muxing onto LCD pins but only one mux control bit.
 wire [N_GPIO-1:0] alt_out = {
-	audio_l,
-	audio_r,
-	uart_tx,
-	1'b0, // rx
+	audio,
+	dispctrl_dat,
 	1'b0, // miso
 	spi_cs_n,
 	spi_sck,
@@ -56,14 +56,12 @@ wire [N_GPIO-1:0] alt_out = {
 };
 
 wire [N_GPIO-1:0] alt_oen  = {
-	1'b1,
-	1'b1,
-	1'b1,
-	1'b0,
-	4'h7
+	1'b1,  // audio
+	8'hff, // lcd
+	4'h7   // all but miso
 };
 
-assign uart_rx = padin_gpio[4];
+assign uart_rx = padin_gpio[4]; // TODO wrong
 assign spi_miso = padin_gpio[3];
 
 // ----------------------------------------------------------------------------

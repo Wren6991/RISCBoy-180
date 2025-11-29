@@ -19,11 +19,10 @@ module apu_aout (
 
 	input  wire [7:0]  repeat_interval,
 
-	input  wire [31:0] sample,
+	input  wire [15:0] sample,
 	output wire        sample_rdy,
 
-	output wire        pwm_l,
-	output wire        pwm_r
+	output wire        pwm
 );
 
 // repeat_interval is in units of 1/4 cycle, because we're targeting upsampled
@@ -58,9 +57,9 @@ end
 
 assign sample_rdy = ctr_wrap && ~|stuff_ctr;
 
-wire [31:0] sample_filtered;
+wire [15:0] sample_filtered;
 
-apu_lowpass_filter lpf_u [1:0] (
+apu_lowpass_filter lpf_u (
 	.clk      (clk),
 	.rst_n    (rst_n),
 	.en       (ctr_wrap),
@@ -69,11 +68,11 @@ apu_lowpass_filter lpf_u [1:0] (
 	.q        (sample_filtered)
 );
 
-apu_sdm sdm_u [1:0] (
+apu_sdm sdm_u (
 	.clk   (clk),
 	.rst_n (rst_n),
-	.d     (sample_filtered ^ 32'h80008000), // FIXME: sdm is currently unsigned, but EFF version would be signed
-	.q     ({pwm_l, pwm_r})
+	.d     (sample_filtered ^ 16'h8000), // TODO: sdm is currently unsigned, but EFF version would be signed
+	.q     (pwm)
 );
 
 endmodule

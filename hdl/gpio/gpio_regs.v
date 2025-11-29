@@ -24,43 +24,43 @@ module gpio_regs (
 	output wire        apbs_pslverr,
 	
 	// Register interfaces
-	input  wire [7:0]  out_i,
-	output reg  [7:0]  out_o,
+	input  wire [12:0] out_i,
+	output reg  [12:0] out_o,
 	output reg         out_wen,
-	input  wire [7:0]  out_xor_i,
-	output reg  [7:0]  out_xor_o,
+	input  wire [12:0] out_xor_i,
+	output reg  [12:0] out_xor_o,
 	output reg         out_xor_wen,
-	input  wire [7:0]  out_set_i,
-	output reg  [7:0]  out_set_o,
+	input  wire [12:0] out_set_i,
+	output reg  [12:0] out_set_o,
 	output reg         out_set_wen,
-	input  wire [7:0]  out_clr_i,
-	output reg  [7:0]  out_clr_o,
+	input  wire [12:0] out_clr_i,
+	output reg  [12:0] out_clr_o,
 	output reg         out_clr_wen,
-	input  wire [7:0]  oen_i,
-	output reg  [7:0]  oen_o,
+	input  wire [12:0] oen_i,
+	output reg  [12:0] oen_o,
 	output reg         oen_wen,
-	input  wire [7:0]  oen_xor_i,
-	output reg  [7:0]  oen_xor_o,
+	input  wire [12:0] oen_xor_i,
+	output reg  [12:0] oen_xor_o,
 	output reg         oen_xor_wen,
-	input  wire [7:0]  oen_set_i,
-	output reg  [7:0]  oen_set_o,
+	input  wire [12:0] oen_set_i,
+	output reg  [12:0] oen_set_o,
 	output reg         oen_set_wen,
-	input  wire [7:0]  oen_clr_i,
-	output reg  [7:0]  oen_clr_o,
+	input  wire [12:0] oen_clr_i,
+	output reg  [12:0] oen_clr_o,
 	output reg         oen_clr_wen,
-	input  wire [7:0]  fsel_i,
-	output reg  [7:0]  fsel_o,
+	input  wire [12:0] fsel_i,
+	output reg  [12:0] fsel_o,
 	output reg         fsel_wen,
-	input  wire [7:0]  fsel_xor_i,
-	output reg  [7:0]  fsel_xor_o,
+	input  wire [12:0] fsel_xor_i,
+	output reg  [12:0] fsel_xor_o,
 	output reg         fsel_xor_wen,
-	input  wire [7:0]  fsel_set_i,
-	output reg  [7:0]  fsel_set_o,
+	input  wire [12:0] fsel_set_i,
+	output reg  [12:0] fsel_set_o,
 	output reg         fsel_set_wen,
-	input  wire [7:0]  fsel_clr_i,
-	output reg  [7:0]  fsel_clr_o,
+	input  wire [12:0] fsel_clr_i,
+	output reg  [12:0] fsel_clr_o,
 	output reg         fsel_clr_wen,
-	input  wire [7:0]  in_i
+	input  wire [12:0] in_i
 );
 
 // APB adapter
@@ -115,69 +115,69 @@ wire __fsel_clr_ren = ren && addr == ADDR_FSEL_CLR;
 wire __in_wen = wen && addr == ADDR_IN;
 wire __in_ren = ren && addr == ADDR_IN;
 
-wire [7:0]  out_wdata = wdata[7:0];
-wire [7:0]  out_rdata;
-wire [31:0] __out_rdata = {24'h0, out_rdata};
+wire [12:0] out_wdata = wdata[12:0];
+wire [12:0] out_rdata;
+wire [31:0] __out_rdata = {19'h0, out_rdata};
 assign out_rdata = out_i;
 
-wire [7:0]  out_xor_wdata = wdata[7:0];
-wire [7:0]  out_xor_rdata;
-wire [31:0] __out_xor_rdata = {24'h0, out_xor_rdata};
+wire [12:0] out_xor_wdata = wdata[12:0];
+wire [12:0] out_xor_rdata;
+wire [31:0] __out_xor_rdata = {19'h0, out_xor_rdata};
 assign out_xor_rdata = out_xor_i;
 
-wire [7:0]  out_set_wdata = wdata[7:0];
-wire [7:0]  out_set_rdata;
-wire [31:0] __out_set_rdata = {24'h0, out_set_rdata};
+wire [12:0] out_set_wdata = wdata[12:0];
+wire [12:0] out_set_rdata;
+wire [31:0] __out_set_rdata = {19'h0, out_set_rdata};
 assign out_set_rdata = out_set_i;
 
-wire [7:0]  out_clr_wdata = wdata[7:0];
-wire [7:0]  out_clr_rdata;
-wire [31:0] __out_clr_rdata = {24'h0, out_clr_rdata};
+wire [12:0] out_clr_wdata = wdata[12:0];
+wire [12:0] out_clr_rdata;
+wire [31:0] __out_clr_rdata = {19'h0, out_clr_rdata};
 assign out_clr_rdata = out_clr_i;
 
-wire [7:0]  oen_wdata = wdata[7:0];
-wire [7:0]  oen_rdata;
-wire [31:0] __oen_rdata = {24'h0, oen_rdata};
+wire [12:0] oen_wdata = wdata[12:0];
+wire [12:0] oen_rdata;
+wire [31:0] __oen_rdata = {19'h0, oen_rdata};
 assign oen_rdata = oen_i;
 
-wire [7:0]  oen_xor_wdata = wdata[7:0];
-wire [7:0]  oen_xor_rdata;
-wire [31:0] __oen_xor_rdata = {24'h0, oen_xor_rdata};
+wire [12:0] oen_xor_wdata = wdata[12:0];
+wire [12:0] oen_xor_rdata;
+wire [31:0] __oen_xor_rdata = {19'h0, oen_xor_rdata};
 assign oen_xor_rdata = oen_xor_i;
 
-wire [7:0]  oen_set_wdata = wdata[7:0];
-wire [7:0]  oen_set_rdata;
-wire [31:0] __oen_set_rdata = {24'h0, oen_set_rdata};
+wire [12:0] oen_set_wdata = wdata[12:0];
+wire [12:0] oen_set_rdata;
+wire [31:0] __oen_set_rdata = {19'h0, oen_set_rdata};
 assign oen_set_rdata = oen_set_i;
 
-wire [7:0]  oen_clr_wdata = wdata[7:0];
-wire [7:0]  oen_clr_rdata;
-wire [31:0] __oen_clr_rdata = {24'h0, oen_clr_rdata};
+wire [12:0] oen_clr_wdata = wdata[12:0];
+wire [12:0] oen_clr_rdata;
+wire [31:0] __oen_clr_rdata = {19'h0, oen_clr_rdata};
 assign oen_clr_rdata = oen_clr_i;
 
-wire [7:0]  fsel_wdata = wdata[7:0];
-wire [7:0]  fsel_rdata;
-wire [31:0] __fsel_rdata = {24'h0, fsel_rdata};
+wire [12:0] fsel_wdata = wdata[12:0];
+wire [12:0] fsel_rdata;
+wire [31:0] __fsel_rdata = {19'h0, fsel_rdata};
 assign fsel_rdata = fsel_i;
 
-wire [7:0]  fsel_xor_wdata = wdata[7:0];
-wire [7:0]  fsel_xor_rdata;
-wire [31:0] __fsel_xor_rdata = {24'h0, fsel_xor_rdata};
+wire [12:0] fsel_xor_wdata = wdata[12:0];
+wire [12:0] fsel_xor_rdata;
+wire [31:0] __fsel_xor_rdata = {19'h0, fsel_xor_rdata};
 assign fsel_xor_rdata = fsel_xor_i;
 
-wire [7:0]  fsel_set_wdata = wdata[7:0];
-wire [7:0]  fsel_set_rdata;
-wire [31:0] __fsel_set_rdata = {24'h0, fsel_set_rdata};
+wire [12:0] fsel_set_wdata = wdata[12:0];
+wire [12:0] fsel_set_rdata;
+wire [31:0] __fsel_set_rdata = {19'h0, fsel_set_rdata};
 assign fsel_set_rdata = fsel_set_i;
 
-wire [7:0]  fsel_clr_wdata = wdata[7:0];
-wire [7:0]  fsel_clr_rdata;
-wire [31:0] __fsel_clr_rdata = {24'h0, fsel_clr_rdata};
+wire [12:0] fsel_clr_wdata = wdata[12:0];
+wire [12:0] fsel_clr_rdata;
+wire [31:0] __fsel_clr_rdata = {19'h0, fsel_clr_rdata};
 assign fsel_clr_rdata = fsel_clr_i;
 
-wire [7:0]  in_wdata = wdata[7:0];
-wire [7:0]  in_rdata;
-wire [31:0] __in_rdata = {24'h0, in_rdata};
+wire [12:0] in_wdata = wdata[12:0];
+wire [12:0] in_rdata;
+wire [31:0] __in_rdata = {19'h0, in_rdata};
 assign in_rdata = in_i;
 
 always @ (*) begin

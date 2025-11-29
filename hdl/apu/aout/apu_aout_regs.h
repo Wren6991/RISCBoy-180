@@ -72,7 +72,7 @@ typedef struct {
 #define APU_AOUT_CSR_IRQLEVEL_MASK 0x70
 // Field: CSR_FLEVEL  Access: ROV
 // Reset: 0x0
-// Returns the current occupancy of the sample FIFO (4 x 32-bit).
+// Returns the current occupancy of the sample FIFO (4 x 16-bit).
 #define APU_AOUT_CSR_FLEVEL_LSB  0
 #define APU_AOUT_CSR_FLEVEL_BITS 3
 #define APU_AOUT_CSR_FLEVEL_MASK 0x7
@@ -81,17 +81,11 @@ typedef struct {
 *                                     FIFO                                     *
 *******************************************************************************/
 
-// Field: FIFO_L  Access: WF
+// Field: FIFO  Access: WF
 // Reset: 0x0
-// Left audio sample
-#define APU_AOUT_FIFO_L_LSB  16
-#define APU_AOUT_FIFO_L_BITS 16
-#define APU_AOUT_FIFO_L_MASK 0xffff0000
-// Field: FIFO_R  Access: WF
-// Reset: 0x0
-// Right audio sample
-#define APU_AOUT_FIFO_R_LSB  0
-#define APU_AOUT_FIFO_R_BITS 16
-#define APU_AOUT_FIFO_R_MASK 0xffff
+// Audio sample
+#define APU_AOUT_FIFO_LSB  0
+#define APU_AOUT_FIFO_BITS 16
+#define APU_AOUT_FIFO_MASK 0xffff
 
 #endif // _APU_AOUT_REGS_H_

@@ -7,8 +7,8 @@ module tb;
 // Deliberately do not set these in the module instantiation to avoid testing
 // a configuration different from the one that is taped out:
 localparam N_SRAM_DQ = 16;
-localparam N_SRAM_A  = 18;
-localparam N_GPIO    = 6;
+localparam N_SRAM_A  = 17;
+localparam N_GPIO    = 4;
 
 wire                 VDD;
 wire                 VSS;
@@ -21,13 +21,9 @@ wire [N_SRAM_A-1:0]  SRAM_A;
 wire                 SRAM_OEn;
 wire                 SRAM_CSn;
 wire                 SRAM_WEn;
-wire                 SRAM_UBn;
-wire                 SRAM_LBn;
-wire                 AUDIO_L;
-wire                 AUDIO_R;
+wire                 AUDIO;
 wire                 LCD_CLK;
-wire                 LCD_DAT;
-wire                 LCD_CSn;
+wire [7:0]           LCD_DAT;
 wire                 LCD_DC;
 wire                 LCD_BL;
 wire [N_GPIO-1:0]    GPIO;
@@ -59,13 +55,9 @@ chip_top chip_u (
 	.SRAM_OEn (SRAM_OEn),
 	.SRAM_CSn (SRAM_CSn),
 	.SRAM_WEn (SRAM_WEn),
-	.SRAM_UBn (SRAM_UBn),
-	.SRAM_LBn (SRAM_LBn),
-	.AUDIO_L  (AUDIO_L),
-	.AUDIO_R  (AUDIO_R),
+	.AUDIO    (AUDIO),
 	.LCD_CLK  (LCD_CLK),
 	.LCD_DAT  (LCD_DAT),
-	.LCD_CSn  (LCD_CSn),
 	.LCD_DC   (LCD_DC),
 	.LCD_BL   (LCD_BL),
 	.GPIO     (GPIO)
@@ -80,14 +72,14 @@ spi_flash_model flash_u (
 
 sram_async #(
 	.W_DATA (16),
-	.DEPTH (1 << 18)
+	.DEPTH (1 << N_SRAM_A)
 ) eram_u (
 	.addr  (SRAM_A),
 	.dq    (SRAM_DQ),
 	.ce_n  (SRAM_CSn),
 	.oe_n  (SRAM_OEn),
 	.we_n  (SRAM_WEn),
-	.ben_n ({SRAM_UBn, SRAM_LBn})
+	.ben_n (2'b00)
 );
 
 endmodule

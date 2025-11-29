@@ -1,6 +1,6 @@
 MEMORY {
 	ERAM (rwx)  : ORIGIN = 0x00000, LENGTH = 512K
-	IRAM (rwx)  : ORIGIN = 0x80000, LENGTH = 8K
+	IRAM (rwx)  : ORIGIN = 0x40000, LENGTH = 8K
 }
 
 OUTPUT_FORMAT("elf32-littleriscv")

@@ -26,9 +26,9 @@ gl = os.getenv("GL", False)
 # System address map
 
 ERAM_BASE    = 0x00000
-IRAM_BASE    = 0x80000
-APU_BASE     = 0xc0000
-PERI_BASE    = 0xe0000
+IRAM_BASE    = 0x40000
+APU_BASE     = 0x60000
+PERI_BASE    = 0x70000
 
 IRAM_END     = IRAM_BASE + 0x2000
 APU_RAM_BASE = APU_BASE

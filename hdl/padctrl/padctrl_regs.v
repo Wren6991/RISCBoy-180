@@ -24,8 +24,8 @@ module padctrl_regs (
 	output wire        apbs_pslverr,
 	
 	// Register interfaces
-	output reg  [7:0]  gpio_pu_o,
-	output reg  [7:0]  gpio_pd_o,
+	output reg  [12:0] gpio_pu_o,
+	output reg  [12:0] gpio_pd_o,
 	output reg  [1:0]  gpio_drive_o,
 	output reg         gpio_slew_o,
 	output reg         gpio_schmitt_o,
@@ -46,8 +46,9 @@ module padctrl_regs (
 	output reg         lcd_clk_slew_o,
 	output reg  [1:0]  lcd_dat_drive_o,
 	output reg         lcd_dat_slew_o,
-	output reg  [1:0]  lcd_dccs_drive_o,
-	output reg         lcd_dccs_slew_o,
+	output reg         lcd_dat_schmitt_o,
+	output reg  [1:0]  lcd_dc_drive_o,
+	output reg         lcd_dc_slew_o,
 	output reg  [1:0]  lcd_bl_drive_o,
 	output reg         lcd_bl_slew_o
 );
@@ -73,7 +74,7 @@ localparam ADDR_SRAM_A = 24;
 localparam ADDR_SRAM_STROBE = 28;
 localparam ADDR_LCD_CLK = 32;
 localparam ADDR_LCD_DAT = 36;
-localparam ADDR_LCD_DCCS = 40;
+localparam ADDR_LCD_DC = 40;
 localparam ADDR_LCD_BL = 44;
 
 wire __gpio_pu_wen = wen && addr == ADDR_GPIO_PU;
@@ -96,19 +97,19 @@ wire __lcd_clk_wen = wen && addr == ADDR_LCD_CLK;
 wire __lcd_clk_ren = ren && addr == ADDR_LCD_CLK;
 wire __lcd_dat_wen = wen && addr == ADDR_LCD_DAT;
 wire __lcd_dat_ren = ren && addr == ADDR_LCD_DAT;
-wire __lcd_dccs_wen = wen && addr == ADDR_LCD_DCCS;
-wire __lcd_dccs_ren = ren && addr == ADDR_LCD_DCCS;
+wire __lcd_dc_wen = wen && addr == ADDR_LCD_DC;
+wire __lcd_dc_ren = ren && addr == ADDR_LCD_DC;
 wire __lcd_bl_wen = wen && addr == ADDR_LCD_BL;
 wire __lcd_bl_ren = ren && addr == ADDR_LCD_BL;
 
-wire [7:0]  gpio_pu_wdata = wdata[7:0];
-wire [7:0]  gpio_pu_rdata;
-wire [31:0] __gpio_pu_rdata = {24'h0, gpio_pu_rdata};
+wire [12:0] gpio_pu_wdata = wdata[12:0];
+wire [12:0] gpio_pu_rdata;
+wire [31:0] __gpio_pu_rdata = {19'h0, gpio_pu_rdata};
 assign gpio_pu_rdata = gpio_pu_o;
 
-wire [7:0]  gpio_pd_wdata = wdata[7:0];
-wire [7:0]  gpio_pd_rdata;
-wire [31:0] __gpio_pd_rdata = {24'h0, gpio_pd_rdata};
+wire [12:0] gpio_pd_wdata = wdata[12:0];
+wire [12:0] gpio_pd_rdata;
+wire [31:0] __gpio_pd_rdata = {19'h0, gpio_pd_rdata};
 assign gpio_pd_rdata = gpio_pd_o;
 
 wire [1:0]  gpio_drive_wdata = wdata[1:0];
@@ -183,17 +184,20 @@ wire [1:0]  lcd_dat_drive_wdata = wdata[1:0];
 wire [1:0]  lcd_dat_drive_rdata;
 wire        lcd_dat_slew_wdata = wdata[2];
 wire        lcd_dat_slew_rdata;
-wire [31:0] __lcd_dat_rdata = {29'h0, lcd_dat_slew_rdata, lcd_dat_drive_rdata};
+wire        lcd_dat_schmitt_wdata = wdata[3];
+wire        lcd_dat_schmitt_rdata;
+wire [31:0] __lcd_dat_rdata = {28'h0, lcd_dat_schmitt_rdata, lcd_dat_slew_rdata, lcd_dat_drive_rdata};
 assign lcd_dat_drive_rdata = lcd_dat_drive_o;
 assign lcd_dat_slew_rdata = lcd_dat_slew_o;
+assign lcd_dat_schmitt_rdata = lcd_dat_schmitt_o;
 
-wire [1:0]  lcd_dccs_drive_wdata = wdata[1:0];
-wire [1:0]  lcd_dccs_drive_rdata;
-wire        lcd_dccs_slew_wdata = wdata[2];
-wire        lcd_dccs_slew_rdata;
-wire [31:0] __lcd_dccs_rdata = {29'h0, lcd_dccs_slew_rdata, lcd_dccs_drive_rdata};
-assign lcd_dccs_drive_rdata = lcd_dccs_drive_o;
-assign lcd_dccs_slew_rdata = lcd_dccs_slew_o;
+wire [1:0]  lcd_dc_drive_wdata = wdata[1:0];
+wire [1:0]  lcd_dc_drive_rdata;
+wire        lcd_dc_slew_wdata = wdata[2];
+wire        lcd_dc_slew_rdata;
+wire [31:0] __lcd_dc_rdata = {29'h0, lcd_dc_slew_rdata, lcd_dc_drive_rdata};
+assign lcd_dc_drive_rdata = lcd_dc_drive_o;
+assign lcd_dc_slew_rdata = lcd_dc_slew_o;
 
 wire [1:0]  lcd_bl_drive_wdata = wdata[1:0];
 wire [1:0]  lcd_bl_drive_rdata;
@@ -215,7 +219,7 @@ always @ (*) begin
 		ADDR_SRAM_STROBE: rdata = __sram_strobe_rdata;
 		ADDR_LCD_CLK: rdata = __lcd_clk_rdata;
 		ADDR_LCD_DAT: rdata = __lcd_dat_rdata;
-		ADDR_LCD_DCCS: rdata = __lcd_dccs_rdata;
+		ADDR_LCD_DC: rdata = __lcd_dc_rdata;
 		ADDR_LCD_BL: rdata = __lcd_bl_rdata;
 		default: rdata = 32'h0;
 	endcase
@@ -226,8 +230,8 @@ always @ (posedge clk or negedge rst_n) begin
 		wen <= 1'b0;
 		ren <= 1'b0;
 		addr <= 20'd0;
-		gpio_pu_o <= 8'h34;
-		gpio_pd_o <= 8'hcb;
+		gpio_pu_o <= 13'h4;
+		gpio_pd_o <= 13'h1ffb;
 		gpio_drive_o <= 2'h0;
 		gpio_slew_o <= 1'h1;
 		gpio_schmitt_o <= 1'h1;
@@ -248,8 +252,9 @@ always @ (posedge clk or negedge rst_n) begin
 		lcd_clk_slew_o <= 1'h1;
 		lcd_dat_drive_o <= 2'h0;
 		lcd_dat_slew_o <= 1'h1;
-		lcd_dccs_drive_o <= 2'h0;
-		lcd_dccs_slew_o <= 1'h1;
+		lcd_dat_schmitt_o <= 1'h1;
+		lcd_dc_drive_o <= 2'h0;
+		lcd_dc_slew_o <= 1'h1;
 		lcd_bl_drive_o <= 2'h0;
 		lcd_bl_slew_o <= 1'h1;
 	end else begin
@@ -300,10 +305,12 @@ always @ (posedge clk or negedge rst_n) begin
 			lcd_dat_drive_o <= lcd_dat_drive_wdata;
 		if (__lcd_dat_wen)
 			lcd_dat_slew_o <= lcd_dat_slew_wdata;
-		if (__lcd_dccs_wen)
-			lcd_dccs_drive_o <= lcd_dccs_drive_wdata;
-		if (__lcd_dccs_wen)
-			lcd_dccs_slew_o <= lcd_dccs_slew_wdata;
+		if (__lcd_dat_wen)
+			lcd_dat_schmitt_o <= lcd_dat_schmitt_wdata;
+		if (__lcd_dc_wen)
+			lcd_dc_drive_o <= lcd_dc_drive_wdata;
+		if (__lcd_dc_wen)
+			lcd_dc_slew_o <= lcd_dc_slew_wdata;
 		if (__lcd_bl_wen)
 			lcd_bl_drive_o <= lcd_bl_drive_wdata;
 		if (__lcd_bl_wen)

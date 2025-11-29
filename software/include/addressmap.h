@@ -3,14 +3,14 @@
 
 // External SRAM/main memory:
 #define ERAM_BASE           0x00000
-#define ERAM_END            0x80000
+#define ERAM_END            0x40000
 
 // Internal SRAM:
-#define IRAM_BASE           0x80000
+#define IRAM_BASE           0x40000
 #define IRAM_END            (IRAM_BASE + 0x02000)
 
 // Audio processing unit address space (accessible to both CPU and APU):
-#define APU_BASE            0xc0000
+#define APU_BASE            0x60000
 #define APU_RAM_BASE        APU_BASE
 #define APU_RAM_END         (APU_RAM_BASE + 0x800)
 
@@ -21,7 +21,7 @@
 #define APU_SPI_STREAM_BASE (APU_PERI_BASE + 0x3000)
 
 // CPU peripherals:
-#define PERI_BASE           0xe0000
+#define PERI_BASE           0x70000
 #define TIMER_BASE          (PERI_BASE + 0x0000)
 #define PADCTRL_BASE        (PERI_BASE + 0x1000)
 #define PPU_BASE            (PERI_BASE + 0x2000)

@@ -210,21 +210,21 @@ PAD_WEST: [
     "dvss_pads\\[8\\].pad", # FIXED 16
 
     # 6 IOs (15 through 10):
-    "pad_GPIO\\[0\\].u",
-    "pad_LCD_BL",
-    "pad_LCD_DC",
-    "pad_LCD_CSn",
-    "pad_LCD_DAT",
+    "pad_LCD_DAT\\[3\\].u",
+    "pad_LCD_DAT\\[2\\].u",
+    "pad_LCD_DAT\\[1\\].u",
+    "pad_LCD_DAT\\[0\\].u",
     "pad_LCD_CLK",
+    "pad_LCD_DC",
 
     "dvdd_pads\\[5\\].pad", # FIXED 9
     "dvss_pads\\[7\\].pad", # FIXED 8
 
     # 4 IOs (7 through 4):
+    "pad_LCD_BL",
     "pad_CLK",
     "pad_RSTn",
-    "pad_AUDIO_L",
-    "pad_AUDIO_R",
+    "pad_AUDIO",
 
     "dvdd_pads\\[4\\].pad", # FIXED 3
     "dvss_pads\\[6\\].pad", # FIXED 2
@@ -237,26 +237,26 @@ PAD_WEST: [
 # Pads 20 through 36
 PAD_SOUTH: [
     # 8 IOs (20 through 27):
+    "pad_LCD_DAT\\[4\\].u",
+    "pad_LCD_DAT\\[5\\].u",
+    "pad_LCD_DAT\\[6\\].u",
+    "pad_LCD_DAT\\[7\\].u",
+    "pad_GPIO\\[0\\].u",
     "pad_GPIO\\[1\\].u",
     "pad_GPIO\\[2\\].u",
     "pad_GPIO\\[3\\].u",
-    "pad_GPIO\\[4\\].u",
-    "pad_GPIO\\[5\\].u",
-    "pad_SRAM_DQ\\[11\\].u",
-    "pad_SRAM_DQ\\[10\\].u",
-    "pad_SRAM_DQ\\[9\\].u",
 
     "dvss_pads\\[0\\].pad", # FIXED 28
 
     # 8 IOs (29 through 36):
+    "pad_SRAM_DQ\\[11\\].u",
+    "pad_SRAM_DQ\\[10\\].u",
+    "pad_SRAM_DQ\\[9\\].u",
     "pad_SRAM_DQ\\[8\\].u",
     "pad_SRAM_A\\[14\\].u",
     "pad_SRAM_A\\[13\\].u",
     "pad_SRAM_A\\[12\\].u",
     "pad_SRAM_A\\[11\\].u",
-    "pad_SRAM_A\\[10\\].u",
-    "pad_SRAM_A\\[9\\].u",
-    "pad_SRAM_A\\[8\\].u",
 ]
 
 # Pads 37 through 56
@@ -265,23 +265,23 @@ PAD_EAST: [
     "dvss_pads\\[1\\].pad", # FIXED 38
 
     # 6 IOs (39 through 44));
+    "pad_SRAM_A\\[10\\].u",
+    "pad_SRAM_A\\[9\\].u",
+    "pad_SRAM_A\\[8\\].u",
     "pad_SRAM_A\\[7\\].u",
     "pad_SRAM_A\\[6\\].u",
     "pad_SRAM_A\\[5\\].u",
-    "pad_SRAM_WEn",
-    "pad_SRAM_DQ\\[7\\].u",
-    "pad_SRAM_DQ\\[6\\].u",
 
     "dvdd_pads\\[1\\].pad", # FIXED 45
     "dvss_pads\\[2\\].pad", # FIXED 46
 
     # 6 IOs (47 through 52):
+    "pad_SRAM_WEn",
+    "pad_SRAM_DQ\\[7\\].u",
+    "pad_SRAM_DQ\\[6\\].u",
     "pad_SRAM_DQ\\[5\\].u",
     "pad_SRAM_DQ\\[4\\].u",
     "pad_SRAM_DQ\\[3\\].u",
-    "pad_SRAM_DQ\\[2\\].u",
-    "pad_SRAM_DQ\\[1\\].u",
-    "pad_SRAM_DQ\\[0\\].u",
 
     "dvss_pads\\[3\\].pad", # FIXED 53
     "dvdd_pads\\[2\\].pad", # FIXED 54
@@ -296,22 +296,22 @@ PAD_NORTH: [
     "pad_SRAM_DQ\\[13\\].u",
     "pad_SRAM_DQ\\[14\\].u",
     "pad_SRAM_DQ\\[15\\].u",
-    "pad_SRAM_LBn",
-    "pad_SRAM_UBn",
     "pad_SRAM_OEn",
     "pad_SRAM_A\\[15\\].u",
+    "pad_SRAM_A\\[16\\].u",
+    "pad_SRAM_A\\[0\\].u",
 
     "dvss_pads\\[5\\].pad", # FIXED 65
 
     # 8 IOs: 65 through 57
-    "pad_SRAM_A\\[16\\].u",
-    "pad_SRAM_A\\[17\\].u",
-    "pad_SRAM_A\\[0\\].u",
     "pad_SRAM_A\\[1\\].u",
     "pad_SRAM_A\\[2\\].u",
     "pad_SRAM_A\\[3\\].u",
     "pad_SRAM_A\\[4\\].u",
     "pad_SRAM_CSn",
+    "pad_SRAM_DQ\\[2\\].u",
+    "pad_SRAM_DQ\\[1\\].u",
+    "pad_SRAM_DQ\\[0\\].u",
 ]
 
 # SDC files

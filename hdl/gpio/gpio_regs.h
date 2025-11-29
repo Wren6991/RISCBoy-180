@@ -56,8 +56,8 @@ typedef struct {
 // Reset: 0x0
 // Write output levels for GPIOS, or read to get current output levels
 #define GPIO_OUT_LSB  0
-#define GPIO_OUT_BITS 8
-#define GPIO_OUT_MASK 0xff
+#define GPIO_OUT_BITS 13
+#define GPIO_OUT_MASK 0x1fff
 
 /*******************************************************************************
 *                                   OUT_XOR                                    *
@@ -67,8 +67,8 @@ typedef struct {
 // Reset: 0x0
 // XOR bits in output levels for GPIOS, or read to get current output levels
 #define GPIO_OUT_XOR_LSB  0
-#define GPIO_OUT_XOR_BITS 8
-#define GPIO_OUT_XOR_MASK 0xff
+#define GPIO_OUT_XOR_BITS 13
+#define GPIO_OUT_XOR_MASK 0x1fff
 
 /*******************************************************************************
 *                                   OUT_SET                                    *
@@ -78,8 +78,8 @@ typedef struct {
 // Reset: 0x0
 // OR bits in output levels for GPIOS, or read to get current output levels
 #define GPIO_OUT_SET_LSB  0
-#define GPIO_OUT_SET_BITS 8
-#define GPIO_OUT_SET_MASK 0xff
+#define GPIO_OUT_SET_BITS 13
+#define GPIO_OUT_SET_MASK 0x1fff
 
 /*******************************************************************************
 *                                   OUT_CLR                                    *
@@ -90,8 +90,8 @@ typedef struct {
 // Mask bits (AND with complement) in output levels for GPIOS, or read to get
 // current output levels
 #define GPIO_OUT_CLR_LSB  0
-#define GPIO_OUT_CLR_BITS 8
-#define GPIO_OUT_CLR_MASK 0xff
+#define GPIO_OUT_CLR_BITS 13
+#define GPIO_OUT_CLR_MASK 0x1fff
 
 /*******************************************************************************
 *                                     OEN                                      *
@@ -102,8 +102,8 @@ typedef struct {
 // Write output enables (active high) for GPIOS, or read to get current output
 // enables
 #define GPIO_OEN_LSB  0
-#define GPIO_OEN_BITS 8
-#define GPIO_OEN_MASK 0xff
+#define GPIO_OEN_BITS 13
+#define GPIO_OEN_MASK 0x1fff
 
 /*******************************************************************************
 *                                   OEN_XOR                                    *
@@ -113,8 +113,8 @@ typedef struct {
 // Reset: 0x0
 // XOR bits in output enables for GPIOS, or read to get current output enables
 #define GPIO_OEN_XOR_LSB  0
-#define GPIO_OEN_XOR_BITS 8
-#define GPIO_OEN_XOR_MASK 0xff
+#define GPIO_OEN_XOR_BITS 13
+#define GPIO_OEN_XOR_MASK 0x1fff
 
 /*******************************************************************************
 *                                   OEN_SET                                    *
@@ -124,8 +124,8 @@ typedef struct {
 // Reset: 0x0
 // OR bits in output enables for GPIOS, or read to get current output enables
 #define GPIO_OEN_SET_LSB  0
-#define GPIO_OEN_SET_BITS 8
-#define GPIO_OEN_SET_MASK 0xff
+#define GPIO_OEN_SET_BITS 13
+#define GPIO_OEN_SET_MASK 0x1fff
 
 /*******************************************************************************
 *                                   OEN_CLR                                    *
@@ -136,8 +136,8 @@ typedef struct {
 // Mask bits (AND with complement) in output enables for GPIOS, or read to get
 // current output enables
 #define GPIO_OEN_CLR_LSB  0
-#define GPIO_OEN_CLR_BITS 8
-#define GPIO_OEN_CLR_MASK 0xff
+#define GPIO_OEN_CLR_BITS 13
+#define GPIO_OEN_CLR_MASK 0x1fff
 
 /*******************************************************************************
 *                                     FSEL                                     *
@@ -147,8 +147,8 @@ typedef struct {
 // Reset: 0x0
 // Enable GPIO alternate functions. 0 = software-controlled, 1 = alternate.
 #define GPIO_FSEL_LSB  0
-#define GPIO_FSEL_BITS 8
-#define GPIO_FSEL_MASK 0xff
+#define GPIO_FSEL_BITS 13
+#define GPIO_FSEL_MASK 0x1fff
 
 /*******************************************************************************
 *                                   FSEL_XOR                                   *
@@ -158,8 +158,8 @@ typedef struct {
 // Reset: 0x0
 // XOR bits into FSEL register
 #define GPIO_FSEL_XOR_LSB  0
-#define GPIO_FSEL_XOR_BITS 8
-#define GPIO_FSEL_XOR_MASK 0xff
+#define GPIO_FSEL_XOR_BITS 13
+#define GPIO_FSEL_XOR_MASK 0x1fff
 
 /*******************************************************************************
 *                                   FSEL_SET                                   *
@@ -169,8 +169,8 @@ typedef struct {
 // Reset: 0x0
 // OR bits into FSEL register
 #define GPIO_FSEL_SET_LSB  0
-#define GPIO_FSEL_SET_BITS 8
-#define GPIO_FSEL_SET_MASK 0xff
+#define GPIO_FSEL_SET_BITS 13
+#define GPIO_FSEL_SET_MASK 0x1fff
 
 /*******************************************************************************
 *                                   FSEL_CLR                                   *
@@ -180,8 +180,8 @@ typedef struct {
 // Reset: 0x0
 // AND bits out of FSEL register
 #define GPIO_FSEL_CLR_LSB  0
-#define GPIO_FSEL_CLR_BITS 8
-#define GPIO_FSEL_CLR_MASK 0xff
+#define GPIO_FSEL_CLR_BITS 13
+#define GPIO_FSEL_CLR_MASK 0x1fff
 
 /*******************************************************************************
 *                                      IN                                      *
@@ -191,7 +191,7 @@ typedef struct {
 // Reset: 0x0
 // Read pad inputs (always synchronised)
 #define GPIO_IN_LSB  0
-#define GPIO_IN_BITS 8
-#define GPIO_IN_MASK 0xff
+#define GPIO_IN_BITS 13
+#define GPIO_IN_MASK 0x1fff
 
 #endif // _GPIO_REGS_H_

@@ -3,16 +3,16 @@ bus: apb
 addr: 20
 data: 32
 params:
-  N_GPIOS: 8
+  N_GPIOS: 13
 regs:
   - name: gpio_pu
     info: Pull-up enable for GPIOs
     bits:
-      - {b: [N_GPIOS - 1, 0], access: rw, rst: 0x34}
+      - {b: [N_GPIOS - 1, 0], access: rw, rst: 0x0004}
   - name: gpio_pd
     info: Pull-down enable for GPIOs
     bits:
-      - {b: [N_GPIOS - 1, 0], access: rw, rst: 0xcb}
+      - {b: [N_GPIOS - 1, 0], access: rw, rst: 0x1ffb}
   - name: gpio
     info: Pad controls for GPIOs
     bits:
@@ -77,8 +77,10 @@ regs:
         info: "Drive selection, values 0-3 are 4/8/12/16 mA."}
       - {b: 2, name: slew, access: rw, rst: 0x1,
         info: "Slew selection: 0 = fast, 1 = slow"}
-  - name: lcd_dccs
-    info: Pad controls for LCD_DC and LCD_CS
+      - {b: 3, name: schmitt, access: rw, rst: 0x1,
+        info: "Schmitt trigger: 1 = enabled"} 
+  - name: lcd_dc
+    info: Pad controls for LCD_DC
     bits:
       - {b: [1, 0], name: drive, access: rw, rst: 0x0,
         info: "Drive selection, values 0-3 are 4/8/12/16 mA."}

@@ -21,8 +21,7 @@ regs:
       - {b: [6, 4], name: irqlevel, access: rw, rst: 2,
         info: "IRQ is asserted when FIFO level is less than or equal to IRQLEVEL."}
       - {b: [2, 0], name: flevel, access: rov,
-        info: "Returns the current occupancy of the sample FIFO (4 x 32-bit)."}
+        info: "Returns the current occupancy of the sample FIFO (4 x 16-bit)."}
   - name: fifo
     bits:
-      - {b: [31, 16], name: l, access: wf, info: "Left audio sample"}
-      - {b: [15,  0], name: r, access: wf, info: "Right audio sample"}
+      - {b: [15,  0], access: wf, info: "Audio sample"}

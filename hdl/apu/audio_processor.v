@@ -50,8 +50,7 @@ module audio_processor #(
     output wire        irq_apu_aout_to_cpu,
     output wire        irq_spi_stream_to_cpu,
 
-	output wire        audio_l,
-	output wire        audio_r,
+	output wire        audio,
 
     output wire        spi_cs_n,
     output wire        spi_sck,
@@ -504,7 +503,7 @@ spi_stream spi_stream_u (
 // ----------------------------------------------------------------------------
 // Sample FIFO and AOUT control interface
 
-wire [31:0] aout_fifo_wdata;
+wire [15:0] aout_fifo_bus_wdata;
 wire        aout_fifo_wpush;
 wire        aout_fifo_wfull;
 wire        aout_fifo_wempty;
@@ -516,15 +515,9 @@ wire        aout_csr_enable;
 wire [7:0]  aout_csr_interval;
 wire [2:0]  aout_csr_irqlevel;
 
-wire [15:0] aout_fifo_l_wdata;
-wire        aout_fifo_l_wen;
-wire [15:0] aout_fifo_r_wdata;
-wire        aout_fifo_r_wen;
-
-assign aout_fifo_wpush = aout_fifo_l_wen || aout_fifo_r_wen;
-assign aout_fifo_wdata =
-    {!aout_csr_signed, 15'd0, !aout_csr_signed, 15'd0} ^
-    {      aout_fifo_l_wdata,       aout_fifo_r_wdata};
+wire [15:0] aout_fifo_wdata =
+    {!aout_csr_signed, 15'd0} ^
+    {    aout_fifo_bus_wdata};
 
 assign irq[IRQ_AOUT] = aout_fifo_wlevel <= aout_csr_irqlevel;
 
@@ -550,20 +543,18 @@ apu_aout_regs aout_regs_u (
     .csr_irqlevel_o    (aout_csr_irqlevel),
     .csr_flevel_i      (aout_fifo_wlevel),
 
-    .fifo_l_o          (aout_fifo_l_wdata),
-    .fifo_l_wen        (aout_fifo_l_wen),
-    .fifo_r_o          (aout_fifo_r_wdata),
-    .fifo_r_wen        (aout_fifo_r_wen)
+    .fifo_o            (aout_fifo_bus_wdata),
+    .fifo_wen          (aout_fifo_wpush)
 );
 
-wire [31:0] aout_fifo_rdata;
+wire [15:0] aout_fifo_rdata;
 wire        aout_fifo_rpop;
 wire        aout_fifo_rfull;
 wire        aout_fifo_rempty;
 wire [2:0]  aout_fifo_rlevel;
 
 async_fifo #(
-    .W_DATA (32),
+    .W_DATA (16),
     .W_ADDR (2)
 ) aout_fifo_u (
     .wrst_n (rst_n_sys),
@@ -622,8 +613,7 @@ apu_aout apu_aout_u (
     .repeat_interval (aout_csr_interval_resync),
     .sample          (aout_fifo_rdata),
     .sample_rdy      (aout_fifo_rpop),
-    .pwm_l           (audio_l),
-    .pwm_r           (audio_r)
+    .pwm             (audio)
 );
 
 endmodule

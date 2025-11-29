@@ -21,6 +21,8 @@
 //   for screen update
 // - Shift out individual bytes from the APB interface, for control purposes
 
+`default_nettype none
+
 module riscboy_ppu_dispctrl_spi #(
 	parameter PXFIFO_DEPTH = 8,
 	parameter W_COORD_SX = 9,
@@ -50,14 +52,12 @@ module riscboy_ppu_dispctrl_spi #(
 	output wire                  scanout_buf_release,
 
 	// Outputs to display
-	output wire                  lcd_cs,
 	output wire                  lcd_dc,
 	output wire                  lcd_sck,
-	output wire                  lcd_mosi
+	output wire [7:0]            lcd_dat
 );
 
-// Should be locals but ISIM bug etc etc:
-parameter W_PXFIFO_LEVEL  = $clog2(PXFIFO_DEPTH + 1);
+localparam W_PXFIFO_LEVEL  = $clog2(PXFIFO_DEPTH + 1);
 
 // ----------------------------------------------------------------------------
 // Scanbuf interface and APB slave interface (system clock domain)
@@ -87,7 +87,7 @@ dispctrl_spi_regs inst_dispctrl_spi_regs (
 
 	.csr_pxfifo_empty_i (pxfifo_wempty),
 	.csr_pxfifo_full_i  (pxfifo_wfull),
-	.csr_lcd_cs_o       (lcd_cs),
+	.csr_lcd_cs_o       (/* FIXME */),
 	.csr_lcd_dc_o       (lcd_dc),
 	.csr_tx_busy_i      (lcdctrl_busy),
 	.csr_lcd_shiftcnt_o (lcdctrl_shamt),
@@ -207,6 +207,11 @@ gf180mcu_fd_sc_mcu9t5v0__icgtn_4 clkgate_sck_u (
 	.Q    (sck_n)
 );
 assign lcd_sck = !sck_n;
-assign lcd_mosi = shift[W_DATA-1];
+// FIXME just making sure these outputs are connected to something:
+assign lcd_dat = shift[W_DATA-1 -: 8];
 
 endmodule
+
+`ifndef YOSYS
+`default_nettype wire
+`endif
