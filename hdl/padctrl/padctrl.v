@@ -149,6 +149,7 @@ falsepath_anchor fp_audio_drive_u        [1:0]        (.i (audio_drive_nofp     
 falsepath_anchor fp_lcd_clk_slew_u                    (.i (lcd_clk_slew_nofp     ), .z (lcd_clk_slew     ));
 falsepath_anchor fp_lcd_clk_drive_u      [1:0]        (.i (lcd_clk_drive_nofp    ), .z (lcd_clk_drive    ));
 falsepath_anchor fp_lcd_dat_schmitt_u                 (.i (lcd_dat_schmitt_nofp  ), .z (lcd_dat_schmitt  ));
+falsepath_anchor fp_lcd_dat_slew_u                    (.i (lcd_dat_slew_nofp     ), .z (lcd_dat_slew     ));
 falsepath_anchor fp_lcd_dat_drive_u      [1:0]        (.i (lcd_dat_drive_nofp    ), .z (lcd_dat_drive    ));
 falsepath_anchor fp_lcd_dc_slew_u                     (.i (lcd_dc_slew_nofp      ), .z (lcd_dc_slew      ));
 falsepath_anchor fp_lcd_dc_drive_u       [1:0]        (.i (lcd_dc_drive_nofp     ), .z (lcd_dc_drive     ));
