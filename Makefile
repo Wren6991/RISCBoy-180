@@ -70,7 +70,7 @@ regblocks: ## Regenerate all register blocks and their headers
 	./scripts/regblock -a hdl/spi_stream/spi_stream_regs.yml
 	./scripts/regblock -a hdl/gpio/gpio_regs.yml
 	./scripts/regblock -a hdl/padctrl/padctrl_regs.yml
-	./scripts/regblock -a hdl/riscboy/hdl/graphics/ppu/dispctrl/regs/ppu_dispctrl_spi_regs.yml
+	./scripts/regblock -a hdl/dispctrl/regs/ppu_dispctrl_spi_regs.yml
 	./scripts/regblock -a hdl/riscboy/hdl/graphics/ppu/regs/ppu_regs.yml
 	./scripts/regblock -a hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny_regs.yml
 	./scripts/regblock -a hdl/vuart/vuart_dev_regs.yml

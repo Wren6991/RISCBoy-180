@@ -19,3 +19,5 @@ rm gpio_regs.h
 ln -sf ../../../hdl/gpio/gpio_regs.h gpio_regs.h
 rm uart_regs.h
 ln -sf ../../../hdl/uart/uart_regs.h uart_regs.h
+rm ppu_dispctrl_spi_regs.h
+ln -sf ../../../hdl/dispctrl/regs/ppu_dispctrl_spi_regs.h ppu_dispctrl_spi_regs.h

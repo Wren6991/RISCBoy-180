@@ -48,6 +48,7 @@ CTS_BALANCE_LEVELS: True
 SYNTH_STRATEGY: "AREA 3"
 
 # Why is this not the default???
+# TODO also try: SYNTH_ABC_BUFFERING (docs imply this is mutually exclusive with sizing ???)
 SYNTH_SIZING: True
 
 # ICG inference; the CTS still inexplicably puts a clock root after each gate
@@ -160,10 +161,6 @@ VERILOG_FILES:
 - dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_blender.v
 - dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_ahbl_adapter.v
 - dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_tile_agu.v
-- dir::../hdl/riscboy/hdl/graphics/ppu/dispctrl/riscboy_ppu_dispctrl_spi.v
-- dir::../hdl/riscboy/hdl/graphics/ppu/dispctrl/regs/ppu_dispctrl_dvi_regs.v
-- dir::../hdl/riscboy/hdl/graphics/ppu/dispctrl/regs/ppu_dispctrl_spi_regs.v
-- dir::../hdl/riscboy/hdl/graphics/ppu/dispctrl/riscboy_ppu_dispctrl_dvi.v
 - dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_affine_coord_gen.v
 - dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu.v
 - dir::../hdl/riscboy/hdl/graphics/ppu/regs/ppu_regs.v
@@ -175,6 +172,9 @@ VERILOG_FILES:
 - dir::../hdl/riscboy/hdl/graphics/ppu/riscboy_ppu_cproc.v
 - dir::../hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny.v
 - dir::../hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny_regs.v
+
+- dir::../hdl/dispctrl/riscboy_ppu_dispctrl_spi.v
+- dir::../hdl/dispctrl/regs/ppu_dispctrl_spi_regs.v
 
 VERILOG_INCLUDE_DIRS:
 - dir::../hdl/hazard3/hdl
