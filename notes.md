@@ -2,11 +2,13 @@
 
 ## RTL
 
-* Clocking
-	* Create DCO
-		* Hard macro?
-	* Create clock muxes and dividers
-	* Create control registers and hook everything up
+* SRAM controller:
+	* Implement 8-bit writes as RMW so UBn/LBn can be removed
+* RISCBoy display controller:
+	* Support 8 bits per clock (for use with 8080 instead of SPI)
+	* Support VGA output
+* APU:
+	* Go to mono output only
 * Review resettable flops and see if they can be made non-reset for better density/routing
 
 ## "Verification"
@@ -23,17 +25,28 @@
 
 ## Implementation
 
-* Investigate 9-track cell library
 * Finalise SRAM IO constraints
 * Report all IO paths and review
 * Report all cross-domain paths and review
 * Report all false-path constraints inserted by RTL buffers and check their endpoints
-* Check macro PDN connections
 
 ## Submission
 
 * Run wafer space pre-check
 * Check VDD and VSS pad locations are compatible
+
+## Post-tapeout
+
+* File on OpenROAD:
+	* DRT crash on MacOS on some designs
+* File somewhere:
+	* KLayout vs Magic DRC XOR on MacOS
+* File on Yosys:
+	* Correctly attribute flops to their Q nets (could also be done in librelane)
+* File on GF180MCU repo:
+	* Fix RAM simulation model to correctly initialise its internal variables and not need an extra edge on CSn before the first access
+	* Fix RAM simulation model to capture inputs directly on the clock so it is usable for RTL sims
+
 
 # Blog Material and Work Log
 
@@ -812,7 +825,7 @@ module chip_top #(
 );
 ```
 
-I'm pretty sure I can tie the RD (for an 8080 mode display) and just pulse CSn. So LCD_CLK and LCD_DAT would both disappear, and I would need to find 6 more signals from somewhere to make up my 8-bit parallel bus.
+I'm pretty sure I can tie the RD and WR (for an 8080 mode display) and just pulse CSn. So LCD_CLK and LCD_DAT would both disappear, and I would need to find 6 more signals from somewhere to make up my 8-bit parallel bus.
 
 GPIO has a minimum of 4 if I want to do SPI flash for boot and games storage. So, that's 2 I can steal.
 
@@ -823,4 +836,116 @@ I could sacrifice one audio pin. That would also free up a bit of logic.
 I could drop an address pin on the RAM. It would be a shame but survivable.
 
 Still two to find. Debug is not negotiable. SRAM data bus is not negotiable. SRAM_CSn could go, but it wastes a shit ton of power; I think the specimen part I looked at used 70 mA while selected and < 1 mA otherwise. I _could_ get rid of the byte strobes, if I implemented byte writes as read-modify-write.
+
+### Day 11: THREE DAYS REMAIN
+
+Actually I think my day count might be off by one. Not sure what happened there.
+
+I made one more attempt to constrain clocks in a sensible way, going back to my old primary clocks and blocking the propagation of other clocks through those points:
+
+```tcl
+# Prevent all other clocks from propagating through the point we define as the
+# origin of clock generator outputs
+proc block_pregen_clocks {dst} {
+    set_sense -stop_propagation [get_pins $dst] -clock [get_clocks {
+        padin_clk
+        padin_clk_div_2
+        padin_clk_div_3over2
+        dck
+    }]
+}
+
+block_pregen_clocks i_chip_core.clocks_u.clkroot_sys_u.magic_clkroot_anchor_u/Z
+block_pregen_clocks i_chip_core.clocks_u.clkroot_lcd_u.magic_clkroot_anchor_u/Z
+block_pregen_clocks i_chip_core.clocks_u.clkroot_audio_u.magic_clkroot_anchor_u/Z
+```
+
+Setup: -37 ns WNS. Someone somewhere is doing something dumb and I've run out of time to debug it.
+
+Looking at parallel displays. Taking ST7796S as an example:
+
+* Write cycle time tWC 66 ns
+* Write data setup tDST 10 ns
+* Write data hold time tDHT 10 ns
+* Write pulse high/low duration tWRH/tWRL 15 ns each
+
+Setup and hold are both referenced from the rising edge of WRX.
+
+At 25 MHz my clock period is 41.67 ns. So I can't write every cycle, but I can use the same clock gate used for serial clocking and just write on alternate cycles. There is a cute 3.9" 320 x 320 display with ST7796S here:
+
+https://www.buydisplay.com/square-3-92-inch-320x320-ips-tft-lcd-display-spi-interface
+
+Another one, 240 x 320 2.8" with ILI9341:
+
+https://www.buydisplay.com/2-8-inch-240x320-ips-tft-lcd-display-panel-optional-touch-panel-wide-view
+
+ILI9341 also registers write data on the rising edge of WRX.
+
+For ILI9341 the timings for 8080 (-I and -II) are:
+
+* tWC 66 ns
+* tWRH tWRL 15 ns each (pulse)
+* tDST tDHT 10 ns each (referenced to WRX rising edge)
+
+So essentially the same.
+
+
+New chip top level:
+
+```
+module chip_top #(
+    parameter N_DVDD    = 8,
+    parameter N_DVSS    = 10,
+    parameter N_SRAM_DQ = 16,
+    parameter N_SRAM_A  = 17,
+    parameter N_GPIO    = 4
+) (
+    // Power supply pads
+    inout  wire                 VDD,
+    inout  wire                 VSS,
+
+    // Root clock and global reset
+    inout  wire                 CLK,
+    inout  wire                 RSTn,
+
+    // Debug (clock/data)
+    inout  wire                 DCK,
+    inout  wire                 DIO,
+
+    // Parallel async SRAM
+    inout  wire [N_SRAM_DQ-1:0] SRAM_DQ,
+    inout  wire [N_SRAM_A-1:0]  SRAM_A,
+    inout  wire                 SRAM_OEn,
+    inout  wire                 SRAM_CSn,
+    inout  wire                 SRAM_WEn,
+
+    // Audio PWM, or software GPIO
+    inout  wire                 AUDIO,
+
+    // LCD data bus and backlight PWM.
+    // LCD_DAT[7:6] are available as GPIO if LCD is serial.
+    inout  wire                 LCD_CLK,
+    inout  wire [7:0]           LCD_DAT,
+    inout  wire                 LCD_DC,
+    inout  wire                 LCD_BL,
+
+    // Software GPIO or boot flash
+    inout  wire [N_GPIO-1:0]    GPIO
+);
+```
+
+There is no dedicated LCD chip select pin. Both ILI9341 and ST7796S say the chip select can be held low for these devices. DAT[1] can be a chip select for serial mode. So the LCD interface pin count has increased by 6. (As an aside, the LCD reset is assumed tied to the same board-level reset as the chip itself).
+
+Those 6 additional pins came from:
+
+* Removed SRAM_UBn and SRAM_LBn (2)
+* Replaced AUDIO_L and AUDIO_R with AUDIO (1)
+* Removed two GPIOs (2)
+* Removed one SRAM address line (1)
+
+All 8x LCD_DAT will also be available as software-controlled GPIO. In serial mode this means we have 11x GPIO total (SPI x4, AUDIO x1, LCD_DAT x6).
+
+Maximum external RAM is now 256 kB (17 address bits, 128k x 16). I'll also take this opportunity to shrink the processor address space to 19 bits (512 kB total) because this slightly improves address-phase timing.
+
+Also worth noting serial LCD at 24 Mbps gives 26 FPS on a 240 x 240 serial LCD (like ST7789) so it's not completely useless.
 
