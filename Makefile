@@ -27,6 +27,10 @@ librelane: ## Run LibreLane flow (synthesis, PnR, verification)
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk
 .PHONY: librelane
 
+librelane-skipsynth: ## Re-run from previous synthesis
+	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --from OpenRoad.CheckSDCFiles --last-run
+.PHONY: librelane-skipsynth
+
 librelane-nodrc: ## Run LibreLane flow without DRC checks
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --skip KLayout.DRC --skip Magic.DRC
 .PHONY: librelane-nodrc

@@ -876,7 +876,7 @@ wire spi_mosi;
 wire spi_miso;
 
 audio_processor #(
-    .RAM_DEPTH (512)
+    .RAM_DEPTH (1024)
 ) apu_u (
     .clk_sys                    (clk_sys),
     .rst_n_sys                  (rst_n_sys),
