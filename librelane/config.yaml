@@ -51,7 +51,7 @@ SYNTH_STRATEGY: "AREA 3"
 # TODO also try: SYNTH_ABC_BUFFERING (docs imply this is mutually exclusive with sizing ???)
 # SYNTH_ABC_BUFFERING: True
 SYNTH_SIZING: True
-SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_dffe_map.v
+SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
 
 
 # ICG inference; the CTS still inexplicably puts a clock root after each gate
