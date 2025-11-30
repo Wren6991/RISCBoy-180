@@ -58,10 +58,11 @@ module async_sram_phy_gf180mcu #(
 );
 
 `ifdef UGH_CANT_DO_THIS
+// Negedge: data valid around start of WEn pulse and holds through the end
 (* keep *) gf180mcu_fd_sc_mcu9t5v0__dffnq_4 reg_out_u_sram_dq_out [N_SRAM_DQ-1:0] (
-	.CLK (clk),
-	.D   (ctrl_dq_out),
-	.Q   (padout_sram_dq)
+	.CLKN (clk),
+	.D    (ctrl_dq_out),
+	.Q    (padout_sram_dq)
 );
 `else
 // The above is functionally correct but is difficult to constrain in OpenSTA
