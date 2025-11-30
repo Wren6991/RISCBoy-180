@@ -49,7 +49,10 @@ SYNTH_STRATEGY: "AREA 3"
 
 # Why is this not the default???
 # TODO also try: SYNTH_ABC_BUFFERING (docs imply this is mutually exclusive with sizing ???)
+# SYNTH_ABC_BUFFERING: True
 SYNTH_SIZING: True
+SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_dffe_map.v
+
 
 # ICG inference; the CTS still inexplicably puts a clock root after each gate
 # but this doesn't affect the skew too much for the small gate groups inferred
