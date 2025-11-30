@@ -118,31 +118,31 @@ set SRAM_IO_DELAY [expr 0.50 * ($CLK_SYS_PERIOD + $SRAM_A_TO_Q)]
 
 set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
     SRAM_A[*]
+    SRAM_DQ[*]
     SRAM_OEn
     SRAM_CSn
 }]
 
-# The SRAM D paths are longer than others as they go through (a small amount
-# of) logic in the processor instead of coming straight from flops. It's also
-# desirable for them to remain valid a little longer for hold time against the
-# release (rise) of WEn; quite common for async RAMs to have a hold
-# requirement of 0 on this edge.
+# The SRAM D data (pad /A) paths launch on a negedge and are aligned to the
+# falling edge of WEn, half a cycle after the SRAM_A outputs. Therefore allow
+# 1.5 clock periods because (I think usually you would use `set_sense` here
+# but OpenSTA doesn't support this for datapath). We launch on a negedge
+# because we need a little extra time here for some muxing on the write data
+# (which may come from the previous cycle's SRAM_Q as byte writes are
+# read-modify-write).
 #
-# Cannot relax the OE paths of the same pads in this way because it would
-# create drive contention with the next read cycle.
+# The SRAM has two requirements on its D inputs: tDW is a setup on the
+# deassertion of WEn and tWR is a hold on the deassertion of WEn. These are
+# both on the second edge of WEn so launching the data with the first edge and
+# holding stable across the second edge is sufficient to meet them. Note this
+# is only for the path through the /A on the pad, not the /OE (which is
+# address-aligned and must stay that way to avoid drive contention).
 #
-# OpenSTA does not support -through on set_output_delay (!) so can't specify
-# different output delays through the OE (out enable) and A (out value) pins
-# to the pad. Instead constrain both paths with relaxed timing and then apply
-# additional delay to OEn.
-set SRAM_D_DERATE 10
-set_output_delay [expr $SRAM_IO_DELAY - $SRAM_D_DERATE] \
-    -clock [get_clock clk_sys] [get_ports {SRAM_DQ[*]}]
-
-# The check point is actually ahead of the clock by the output delay, so this
-# *adds* delay, doesn't set it:
-set_max_delay [expr $CLK_SYS_PERIOD - $SRAM_D_DERATE] -ignore_clock_latency \
-    -through [get_pins {pad_SRAM_DQ*/OE} ] -to [get_ports {SRAM_DQ*} ]
+# The check point is ahead of the clock by the output delay, so this
+# constraint gives +50% slack over the OE path, still taking output delay from
+# the previous `set_output_delay` into account:
+set_max_delay [expr $CLK_SYS_PERIOD * 1.5] \
+    -from [get_pins {i_chip_core.sram_phy_u.reg_out_u_sram_dq_out*/Q} ] -to [get_ports {SRAM_DQ*} ]
 
 # Delay on WEn is measured to negedge because it's from an ICGTN. The virtual
 # start of its write cycle is still at the posedge (where the A is asserted),

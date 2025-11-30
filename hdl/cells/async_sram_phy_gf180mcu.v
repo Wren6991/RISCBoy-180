@@ -57,19 +57,12 @@ module async_sram_phy_gf180mcu #(
 	.Q   (padoe_sram_dq)
 );
 
-`ifdef UGH_CANT_DO_THIS
 // Negedge: data valid around start of WEn pulse and holds through the end
 (* keep *) gf180mcu_fd_sc_mcu9t5v0__dffnq_4 reg_out_u_sram_dq_out [N_SRAM_DQ-1:0] (
 	.CLKN (clk),
 	.D    (ctrl_dq_out),
 	.Q    (padout_sram_dq)
 );
-`else
-// The above is functionally correct but is difficult to constrain in OpenSTA
-// because it only lets you specify output delays *to* a pad, not *from*
-// specific sources. So, behold:
-assign padout_sram_dq = ctrl_dq_out;
-`endif
 
 (* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_4 reg_in_u_sram_dq_in [N_SRAM_DQ-1:0] (
 	.CLK (clk),
