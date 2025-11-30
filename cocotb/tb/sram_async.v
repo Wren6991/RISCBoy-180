@@ -92,7 +92,9 @@ for (g = 0; g < W_DATA; g = g + 1) begin: obuf
 end
 endgenerate
 
-always @ (negedge we_n) begin: writeport
+// Write data has a specified setup and hold time relative to the *release* of
+// WEn, so we capture data here on the posedge.
+always @ (posedge we_n) begin: writeport
 	integer i;
 	for (i = 0; i < W_BYTES; i = i + 1) begin
 		if (!ce_n && !ben_n[i])
