@@ -26,10 +26,9 @@
 #define PADCTRL_BASE        (PERI_BASE + 0x1000)
 #define PPU_BASE            (PERI_BASE + 0x2000)
 #define DISP_BASE           (PERI_BASE + 0x3000)
-#define PWM_BASE            (PERI_BASE + 0x4000)
-#define VUART_DEV_BASE      (PERI_BASE + 0x5000)
-#define GPIO_BASE           (PERI_BASE + 0x6000)
-#define UART_BASE           (PERI_BASE + 0x7000)
+#define VUART_DEV_BASE      (PERI_BASE + 0x4000)
+#define GPIO_BASE           (PERI_BASE + 0x5000)
+#define UART_BASE           (PERI_BASE + 0x6000)
 
 #ifndef __ASSEMBLER__
 

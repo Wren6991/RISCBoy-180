@@ -57,7 +57,7 @@ set_input_delay  -min 0                             -clock [get_clock clk_sys] [
 # Reasonably tight on audio paths so we get the final flop and buffers fairly
 # close to the quiet supply pins. Note this is just the audio path; the GPIO
 # controls from clk_sys are false-pathed as they're not really important.
-set_output_delay      [expr 0.70 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {AUDIO_L AUDIO_R}]
+set_output_delay      [expr 0.70 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {AUDIO}]
 
 # LCD_SCK has the same consideration as SRAM_WEn as it's generated using an
 # ICGTN. Other than that just keep the SPI output paths rather tight as a way
@@ -65,7 +65,6 @@ set_output_delay      [expr 0.70 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [
 set LCD_SPI_OUTDELAY [expr 0.70 * $CLK_SYS_PERIOD]
 set_output_delay $LCD_SPI_OUTDELAY -clock [get_clock clk_sys] [get_ports {
     LCD_DAT
-    LCD_CSn
     LCD_DC
 }]
 
@@ -121,8 +120,6 @@ set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
     SRAM_A[*]
     SRAM_OEn
     SRAM_CSn
-    SRAM_UBn
-    SRAM_LBn
 }]
 
 # The SRAM D paths are longer than others as they go through (a small amount

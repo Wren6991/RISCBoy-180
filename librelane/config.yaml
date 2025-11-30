@@ -173,8 +173,8 @@ VERILOG_FILES:
 - dir::../hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny.v
 - dir::../hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny_regs.v
 
-- dir::../hdl/dispctrl/riscboy_ppu_dispctrl_spi.v
-- dir::../hdl/dispctrl/regs/ppu_dispctrl_spi_regs.v
+- dir::../hdl/dispctrl/riscboy_ppu_dispctrl_rb180.v
+- dir::../hdl/dispctrl/regs/ppu_dispctrl_rb180_regs.v
 
 VERILOG_INCLUDE_DIRS:
 - dir::../hdl/hazard3/hdl

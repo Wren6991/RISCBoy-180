@@ -4,12 +4,12 @@
 *          Edit the source file (or regblock utility) and regenerate.          *
 *******************************************************************************/
 
-// Block name           : dispctrl_spi
+// Block name           : dispctrl_rb180
 // Bus type             : apb
 // Bus data width       : 32
 // Bus address width    : 16
 
-module dispctrl_spi_regs (
+module dispctrl_rb180_regs (
 	input wire         clk,
 	input wire         rst_n,
 	
@@ -24,15 +24,22 @@ module dispctrl_spi_regs (
 	output wire        apbs_pslverr,
 	
 	// Register interfaces
+	output reg         csr_scan_en_o,
 	input  wire        csr_pxfifo_empty_i,
 	input  wire        csr_pxfifo_full_i,
 	output reg         csr_lcd_cs_o,
 	output reg         csr_lcd_dc_o,
 	input  wire        csr_tx_busy_i,
 	output reg         csr_lcd_shiftcnt_o,
-	output reg  [8:0]  dispsize_w_o,
+	output reg         csr_lcd_buswidth_o,
+	output reg         csr_lcd_halfrate_o,
+	output reg         csr_xdouble_o,
+	output reg         csr_ydouble_o,
+	output reg  [8:0]  scanbuf_size_o,
 	output reg  [15:0] pxfifo_o,
-	output reg         pxfifo_wen
+	output reg         pxfifo_wen,
+	output reg  [7:0]  bl_pwm_div_o,
+	output reg  [7:0]  bl_pwm_level_o
 );
 
 // APB adapter
@@ -47,19 +54,24 @@ assign apbs_pready = 1'b1;
 assign apbs_pslverr = 1'b0;
 
 localparam ADDR_CSR = 0;
-localparam ADDR_DISPSIZE = 4;
+localparam ADDR_SCANBUF_SIZE = 4;
 localparam ADDR_PXFIFO = 8;
+localparam ADDR_BL_PWM = 12;
 
 wire __csr_wen = wen && addr == ADDR_CSR;
 wire __csr_ren = ren && addr == ADDR_CSR;
-wire __dispsize_wen = wen && addr == ADDR_DISPSIZE;
-wire __dispsize_ren = ren && addr == ADDR_DISPSIZE;
+wire __scanbuf_size_wen = wen && addr == ADDR_SCANBUF_SIZE;
+wire __scanbuf_size_ren = ren && addr == ADDR_SCANBUF_SIZE;
 wire __pxfifo_wen = wen && addr == ADDR_PXFIFO;
 wire __pxfifo_ren = ren && addr == ADDR_PXFIFO;
+wire __bl_pwm_wen = wen && addr == ADDR_BL_PWM;
+wire __bl_pwm_ren = ren && addr == ADDR_BL_PWM;
 
-wire        csr_pxfifo_empty_wdata = wdata[0];
+wire        csr_scan_en_wdata = wdata[0];
+wire        csr_scan_en_rdata;
+wire        csr_pxfifo_empty_wdata = wdata[2];
 wire        csr_pxfifo_empty_rdata;
-wire        csr_pxfifo_full_wdata = wdata[1];
+wire        csr_pxfifo_full_wdata = wdata[3];
 wire        csr_pxfifo_full_rdata;
 wire        csr_lcd_cs_wdata = wdata[8];
 wire        csr_lcd_cs_rdata;
@@ -69,32 +81,54 @@ wire        csr_tx_busy_wdata = wdata[10];
 wire        csr_tx_busy_rdata;
 wire        csr_lcd_shiftcnt_wdata = wdata[16];
 wire        csr_lcd_shiftcnt_rdata;
+wire        csr_lcd_buswidth_wdata = wdata[17];
+wire        csr_lcd_buswidth_rdata;
+wire        csr_lcd_halfrate_wdata = wdata[18];
+wire        csr_lcd_halfrate_rdata;
+wire        csr_xdouble_wdata = wdata[20];
+wire        csr_xdouble_rdata;
+wire        csr_ydouble_wdata = wdata[21];
+wire        csr_ydouble_rdata;
 wire [3:0]  csr_disptype_wdata = wdata[31:28];
 wire [3:0]  csr_disptype_rdata;
-wire [31:0] __csr_rdata = {csr_disptype_rdata, 11'h0, csr_lcd_shiftcnt_rdata, 5'h0, csr_tx_busy_rdata, csr_lcd_dc_rdata, csr_lcd_cs_rdata, 6'h0, csr_pxfifo_full_rdata, csr_pxfifo_empty_rdata};
+wire [31:0] __csr_rdata = {csr_disptype_rdata, 6'h0, csr_ydouble_rdata, csr_xdouble_rdata, 1'h0, csr_lcd_halfrate_rdata, csr_lcd_buswidth_rdata, csr_lcd_shiftcnt_rdata, 5'h0, csr_tx_busy_rdata, csr_lcd_dc_rdata, csr_lcd_cs_rdata, 4'h0, csr_pxfifo_full_rdata, csr_pxfifo_empty_rdata, 1'h0, csr_scan_en_rdata};
+assign csr_scan_en_rdata = csr_scan_en_o;
 assign csr_pxfifo_empty_rdata = csr_pxfifo_empty_i;
 assign csr_pxfifo_full_rdata = csr_pxfifo_full_i;
 assign csr_lcd_cs_rdata = csr_lcd_cs_o;
 assign csr_lcd_dc_rdata = csr_lcd_dc_o;
 assign csr_tx_busy_rdata = csr_tx_busy_i;
 assign csr_lcd_shiftcnt_rdata = csr_lcd_shiftcnt_o;
-assign csr_disptype_rdata = 4'h0;
+assign csr_lcd_buswidth_rdata = csr_lcd_buswidth_o;
+assign csr_lcd_halfrate_rdata = csr_lcd_halfrate_o;
+assign csr_xdouble_rdata = csr_xdouble_o;
+assign csr_ydouble_rdata = csr_ydouble_o;
+assign csr_disptype_rdata = 4'h2;
 
-wire [8:0]  dispsize_w_wdata = wdata[8:0];
-wire [8:0]  dispsize_w_rdata;
-wire [31:0] __dispsize_rdata = {23'h0, dispsize_w_rdata};
-assign dispsize_w_rdata = 9'h13f;
+wire [8:0]  scanbuf_size_wdata = wdata[8:0];
+wire [8:0]  scanbuf_size_rdata;
+wire [31:0] __scanbuf_size_rdata = {23'h0, scanbuf_size_rdata};
+assign scanbuf_size_rdata = scanbuf_size_o;
 
 wire [15:0] pxfifo_wdata = wdata[15:0];
 wire [15:0] pxfifo_rdata;
 wire [31:0] __pxfifo_rdata = {16'h0, pxfifo_rdata};
 assign pxfifo_rdata = 16'h0;
 
+wire [7:0]  bl_pwm_div_wdata = wdata[23:16];
+wire [7:0]  bl_pwm_div_rdata;
+wire [7:0]  bl_pwm_level_wdata = wdata[7:0];
+wire [7:0]  bl_pwm_level_rdata;
+wire [31:0] __bl_pwm_rdata = {8'h0, bl_pwm_div_rdata, 8'h0, bl_pwm_level_rdata};
+assign bl_pwm_div_rdata = bl_pwm_div_o;
+assign bl_pwm_level_rdata = bl_pwm_level_o;
+
 always @ (*) begin
 	case (addr)
 		ADDR_CSR: rdata = __csr_rdata;
-		ADDR_DISPSIZE: rdata = __dispsize_rdata;
+		ADDR_SCANBUF_SIZE: rdata = __scanbuf_size_rdata;
 		ADDR_PXFIFO: rdata = __pxfifo_rdata;
+		ADDR_BL_PWM: rdata = __bl_pwm_rdata;
 		default: rdata = 32'h0;
 	endcase
 	pxfifo_wen = __pxfifo_wen;
@@ -106,22 +140,43 @@ always @ (posedge clk or negedge rst_n) begin
 		wen <= 1'b0;
 		ren <= 1'b0;
 		addr <= 16'd0;
+		csr_scan_en_o <= 1'h0;
 		csr_lcd_cs_o <= 1'h1;
 		csr_lcd_dc_o <= 1'h0;
 		csr_lcd_shiftcnt_o <= 1'h0;
-		dispsize_w_o <= 9'h13f;
+		csr_lcd_buswidth_o <= 1'h0;
+		csr_lcd_halfrate_o <= 1'h0;
+		csr_xdouble_o <= 1'h0;
+		csr_ydouble_o <= 1'h0;
+		scanbuf_size_o <= 9'h13f;
+		bl_pwm_div_o <= 8'h5e;
+		bl_pwm_level_o <= 8'h0;
 	end else begin
 		wen <= apbs_psel && !apbs_penable &&  apbs_pwrite;
 		ren <= apbs_psel && !apbs_penable && !apbs_pwrite;
 		if (apbs_psel && !apbs_penable) addr <= apbs_paddr & 16'hc;
+		if (__csr_wen)
+			csr_scan_en_o <= csr_scan_en_wdata;
 		if (__csr_wen)
 			csr_lcd_cs_o <= csr_lcd_cs_wdata;
 		if (__csr_wen)
 			csr_lcd_dc_o <= csr_lcd_dc_wdata;
 		if (__csr_wen)
 			csr_lcd_shiftcnt_o <= csr_lcd_shiftcnt_wdata;
-		if (__dispsize_wen)
-			dispsize_w_o <= dispsize_w_wdata;
+		if (__csr_wen)
+			csr_lcd_buswidth_o <= csr_lcd_buswidth_wdata;
+		if (__csr_wen)
+			csr_lcd_halfrate_o <= csr_lcd_halfrate_wdata;
+		if (__csr_wen)
+			csr_xdouble_o <= csr_xdouble_wdata;
+		if (__csr_wen)
+			csr_ydouble_o <= csr_ydouble_wdata;
+		if (__scanbuf_size_wen)
+			scanbuf_size_o <= scanbuf_size_wdata;
+		if (__bl_pwm_wen)
+			bl_pwm_div_o <= bl_pwm_div_wdata;
+		if (__bl_pwm_wen)
+			bl_pwm_level_o <= bl_pwm_level_wdata;
 	end
 end
 

@@ -45,7 +45,6 @@ localparam SYS_FALSEPATH_MASK = 13'h1ff0;
 // ----------------------------------------------------------------------------
 // Connect alternate functions
 
-// TODO UART TX? Maybe wants muxing onto LCD pins but only one mux control bit.
 wire [N_GPIO-1:0] alt_out = {
 	audio,
 	dispctrl_dat,
@@ -61,7 +60,10 @@ wire [N_GPIO-1:0] alt_oen  = {
 	4'h7   // all but miso
 };
 
-assign uart_rx = padin_gpio[4]; // TODO wrong
+// Note UART_TX appears on LCD_DAT3 when the display controller is in serial
+// mode. It's controlled by the display controller's bus width and not part of
+// this muxing.
+assign uart_rx = padin_gpio[6]; // same as LCD_DAT2
 assign spi_miso = padin_gpio[3];
 
 // ----------------------------------------------------------------------------

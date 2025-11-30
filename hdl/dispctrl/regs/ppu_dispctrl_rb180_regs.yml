@@ -1,0 +1,38 @@
+name: dispctrl_rb180
+bus: apb
+addr: 16
+data: 32
+regs:
+  - name: csr
+    info: Control and status register for the SPI LCD interface
+    bits:
+      - {b: 0,        name: scan_en,      access: rw, info: "Enable reading of scanbuffers presented by the PPU into the pixel FIFO."}
+      - {b: 2,        name: pxfifo_empty, access: rov}
+      - {b: 3,        name: pxfifo_full,  access: rov}
+      - {b: 8,        name: lcd_cs,       access: rw, rst: 0x1}
+      - {b: 9,        name: lcd_dc,       access: rw}
+      - {b: 10,       name: tx_busy,      access: rov}
+      - {b: 16,       name: lcd_shiftcnt, access: rw, info: "If 1, shift out 16 bits from each pixel FIFO entry. If 0, shift out 8 bits (e.g. commands)."}
+      - {b: 17,       name: lcd_buswidth, access: rw, info: "1 for 8-bit, 0 for serial. LCD_DAT[1] is used as CSn in serial mode."}
+      - {b: 18,       name: lcd_halfrate, access: rw, info: "If 1, only write to the LCD every other cycle (to meet minimum write cycle times)."}
+      - {b: 20,       name: xdouble,      access: rw, info: "Send each pixel
+        read from the scanbuffer to the LCD twice. The number of pixels read
+        from the scan buffer does not change. This effectively halves the
+        horizontal resolution of the display."}
+      - {b: 21,       name: ydouble,      access: rw, info: "Read each scan buffer twice before releasing it back to the PPU."}
+      - {b: [31, 28], name: disptype,     access: ro, rst: 0x2,
+          info: "Encodes the type of display controller. All RISCBoy display
+          controllers have this field. 0x2 means RISCBoy 180 controller."}
+  - name: scanbuf_size
+    info: Set the number of pixels to be read from one scan buffer before releasing it back to the PPU. On RB180 the scan buffers are 512 pixels in size.
+    bits:
+      - {b: [8, 0], access: rw, rst: 319}
+  - name: pxfifo
+    info: Direct write access to the pixel FIFO. Must only be used when the PPU is idle.
+    bits:
+      - {b: [15, 0], access: wf}
+  - name: bl_pwm
+    info: Control backlight PWM pin
+    bits:
+      - {b: [23, 16], name: div, access: rw, rst: 94, info: "PWM period is 255 x DIV. Value of 0 is interpreted as divisor of 256."}
+      - {b: [ 7,  0], name: level, access: rw, info: "Value of 0 means 0%. Value of 255 means 100%. Varies linearly in between."}

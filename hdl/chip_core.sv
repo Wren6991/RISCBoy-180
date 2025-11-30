@@ -769,15 +769,6 @@ wire        dispctrl_pready;
 wire [31:0] dispctrl_prdata;
 wire        dispctrl_pslverr;
 
-wire [19:0] lcd_pwm_paddr;
-wire        lcd_pwm_psel;
-wire        lcd_pwm_penable;
-wire        lcd_pwm_pwrite;
-wire [31:0] lcd_pwm_pwdata;
-wire        lcd_pwm_pready;
-wire [31:0] lcd_pwm_prdata;
-wire        lcd_pwm_pslverr;
-
 wire [19:0] vuart_dev_paddr;
 wire        vuart_dev_psel;
 wire        vuart_dev_penable;
@@ -808,9 +799,9 @@ wire        uart_pslverr;
 apb_splitter #(
     .W_ADDR    (20),
     .W_DATA    (32),
-    .N_SLAVES  (8),
-    .ADDR_MAP  ({20'h07000, 20'h06000, 20'h05000, 20'h04000, 20'h03000, 20'h02000, 20'h01000, 20'h00000}),
-    .ADDR_MASK ({20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000})
+    .N_SLAVES  (7),
+    .ADDR_MAP  ({20'h06000, 20'h05000, 20'h04000, 20'h03000, 20'h02000, 20'h01000, 20'h00000}),
+    .ADDR_MASK ({20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000})
 ) apb_splitter_u (
     .apbs_paddr   (peri_paddr),
     .apbs_psel    (peri_psel),
@@ -821,14 +812,14 @@ apb_splitter #(
     .apbs_prdata  (peri_prdata),
     .apbs_pslverr (peri_pslverr),
 
-    .apbm_paddr   ({uart_paddr   , gpio_paddr   , vuart_dev_paddr   , lcd_pwm_paddr   , dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
-    .apbm_psel    ({uart_psel    , gpio_psel    , vuart_dev_psel    , lcd_pwm_psel    , dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
-    .apbm_penable ({uart_penable , gpio_penable , vuart_dev_penable , lcd_pwm_penable , dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
-    .apbm_pwrite  ({uart_pwrite  , gpio_pwrite  , vuart_dev_pwrite  , lcd_pwm_pwrite  , dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
-    .apbm_pwdata  ({uart_pwdata  , gpio_pwdata  , vuart_dev_pwdata  , lcd_pwm_pwdata  , dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
-    .apbm_pready  ({uart_pready  , gpio_pready  , vuart_dev_pready  , lcd_pwm_pready  , dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
-    .apbm_prdata  ({uart_prdata  , gpio_prdata  , vuart_dev_prdata  , lcd_pwm_prdata  , dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
-    .apbm_pslverr ({uart_pslverr , gpio_pslverr , vuart_dev_pslverr , lcd_pwm_pslverr , dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
+    .apbm_paddr   ({uart_paddr   , gpio_paddr   , vuart_dev_paddr   , dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
+    .apbm_psel    ({uart_psel    , gpio_psel    , vuart_dev_psel    , dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
+    .apbm_penable ({uart_penable , gpio_penable , vuart_dev_penable , dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
+    .apbm_pwrite  ({uart_pwrite  , gpio_pwrite  , vuart_dev_pwrite  , dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
+    .apbm_pwdata  ({uart_pwdata  , gpio_pwdata  , vuart_dev_pwdata  , dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
+    .apbm_pready  ({uart_pready  , gpio_pready  , vuart_dev_pready  , dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
+    .apbm_prdata  ({uart_prdata  , gpio_prdata  , vuart_dev_prdata  , dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
+    .apbm_pslverr ({uart_pslverr , gpio_pslverr , vuart_dev_pslverr , dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
 );
 
 // ------------------------------------------------------------------------
@@ -984,8 +975,9 @@ riscboy_ppu #(
 
 wire [7:0] dispctrl_lcd_dat;
 
-riscboy_ppu_dispctrl_spi #(
-    .PXFIFO_DEPTH (8)
+wire uart_tx;
+riscboy_ppu_dispctrl_rb180 #(
+    .PXFIFO_DEPTH (4)
 ) ppu_dispctrl_spi_u (
     .clk_sys             (clk_sys),
     .rst_n_sys           (rst_n_sys),
@@ -1008,6 +1000,10 @@ riscboy_ppu_dispctrl_spi #(
     .scanout_buf_rdy     (ppu_scanout_buf_rdy),
     .scanout_buf_release (ppu_scanout_buf_release),
 
+    .lcd_bl              (padout_lcd_bl),
+
+    .spare_dat7_to_2     ({4'd0, uart_tx, 1'b0}),
+
     .lcd_dc              (padout_lcd_dc),
     .lcd_sck             (padout_lcd_clk),
     .lcd_dat             (dispctrl_lcd_dat)
@@ -1015,22 +1011,6 @@ riscboy_ppu_dispctrl_spi #(
 
 // ------------------------------------------------------------------------
 // APB peripherals and control registers
-
-pwm_tiny lcd_bl_pwm_u (
-    .clk          (clk_sys),
-    .rst_n        (rst_n_sys),
-
-    .apbs_psel    (lcd_pwm_psel),
-    .apbs_penable (lcd_pwm_penable),
-    .apbs_pwrite  (lcd_pwm_pwrite),
-    .apbs_paddr   (lcd_pwm_paddr[15:0]),
-    .apbs_pwdata  (lcd_pwm_pwdata),
-    .apbs_prdata  (lcd_pwm_prdata),
-    .apbs_pready  (lcd_pwm_pready),
-    .apbs_pslverr (lcd_pwm_pslverr),
-
-    .padout       (padout_lcd_bl)
-);
 
 hazard3_riscv_timer #(
     .TICK_IS_NRZ (0) // TODO
@@ -1083,7 +1063,6 @@ vuart #(
     .dev_pslverr  (vuart_dev_pslverr)
 );
 
-wire uart_tx;
 wire uart_rx;
 uart_mini #(
     .FIFO_DEPTH (4),
