@@ -135,7 +135,7 @@ set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
 # different output delays through the OE (out enable) and A (out value) pins
 # to the pad. Instead constrain both paths with relaxed timing and then apply
 # additional delay to OEn.
-set SRAM_D_DERATE 6
+set SRAM_D_DERATE 10
 set_output_delay [expr $SRAM_IO_DELAY - $SRAM_D_DERATE] \
     -clock [get_clock clk_sys] [get_ports {SRAM_DQ[*]}]
 
