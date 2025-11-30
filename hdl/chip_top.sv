@@ -73,8 +73,6 @@ wire [N_SRAM_A-1:0]  padout_sram_a;
 wire                 padout_sram_oe_n;
 wire                 padout_sram_cs_n;
 wire                 padout_sram_we_n;
-wire                 padout_sram_ub_n;
-wire                 padout_sram_lb_n;
 
 // Audio PWM signals (bidirectional as they have GPIO alternates):
 wire                 padout_audio;
@@ -533,8 +531,6 @@ chip_core #(
     .padout_sram_oe_n      (padout_sram_oe_n),
     .padout_sram_cs_n      (padout_sram_cs_n),
     .padout_sram_we_n      (padout_sram_we_n),
-    .padout_sram_ub_n      (padout_sram_ub_n),
-    .padout_sram_lb_n      (padout_sram_lb_n),
     .padout_audio          (padout_audio),
     .padoe_audio           (padoe_audio),
     .padin_audio           (padin_audio),

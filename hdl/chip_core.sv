@@ -37,8 +37,6 @@ module chip_core #(
     output wire                 padout_sram_oe_n,
     output wire                 padout_sram_cs_n,
     output wire                 padout_sram_we_n,
-    output wire                 padout_sram_ub_n,
-    output wire                 padout_sram_lb_n,
 
     // Audio PWM signals (output only)
     output wire                 padout_audio,
@@ -1180,7 +1178,6 @@ wire [W_SRAM_DATA-1:0]   sram_ctrl_dq_in;
 wire                     sram_ctrl_ce_n;
 wire                     sram_ctrl_we_n;
 wire                     sram_ctrl_oe_n;
-wire [W_SRAM_DATA/8-1:0] sram_ctrl_byte_n;
 
 riscboy_sram_ctrl #(
     .W_HADDR     (20),
@@ -1214,8 +1211,7 @@ riscboy_sram_ctrl #(
     .sram_dq_in        (sram_ctrl_dq_in),
     .sram_ce_n         (sram_ctrl_ce_n),
     .sram_we_n         (sram_ctrl_we_n),
-    .sram_oe_n         (sram_ctrl_oe_n),
-    .sram_byte_n       (sram_ctrl_byte_n)
+    .sram_oe_n         (sram_ctrl_oe_n)
 );
 
 async_sram_phy_gf180mcu #(
@@ -1232,7 +1228,6 @@ async_sram_phy_gf180mcu #(
     .ctrl_ce_n        (sram_ctrl_ce_n),
     .ctrl_we_n        (sram_ctrl_we_n),
     .ctrl_oe_n        (sram_ctrl_oe_n),
-    .ctrl_byte_n      (sram_ctrl_byte_n),
 
     .padin_sram_dq    (padin_sram_dq),
     .padoe_sram_dq    (padoe_sram_dq),
@@ -1240,9 +1235,7 @@ async_sram_phy_gf180mcu #(
     .padout_sram_a    (padout_sram_a),
     .padout_sram_oe_n (padout_sram_oe_n),
     .padout_sram_cs_n (padout_sram_cs_n),
-    .padout_sram_we_n (padout_sram_we_n),
-    .padout_sram_ub_n (padout_sram_ub_n),
-    .padout_sram_lb_n (padout_sram_lb_n)
+    .padout_sram_we_n (padout_sram_we_n)
 );
 
 endmodule
