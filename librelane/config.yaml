@@ -58,7 +58,7 @@ SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
 # but this doesn't affect the skew too much for the small gate groups inferred
 # by this pass (unlike explicit top-level ICGs which are catastrophic). Clock
 # skew is a little worse but we get better DFFE mapping.
-USE_LIGHTER: True
+# USE_LIGHTER: True
 
 DESIGN_NAME: chip_top
 VERILOG_FILES:

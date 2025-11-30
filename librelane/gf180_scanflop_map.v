@@ -5,9 +5,18 @@
 
 // Tech mapping file for gf180mcuD 9-track library. Use scan flops to make up
 // for other deficiencies in the flop library.
-
+//
 // You should also be able to use this with 7-track, just run:
 //   sed -i 's/9t5v0/7t5v0/' gf180_scanflop_map.v
+//
+// There is one big issue with this approach, which is: STA sees a hold check
+// on the Q -> D paths even though this is a false path as Q is stable on CLK
+// edges which select D. I have some really awful TCL for scraping these flops
+// out of the netlist to add the hold exceptions, see chip_top.sdc
+//
+// Also note I set all these flops to size 4 by default because the tools
+// generally make bad choices with resizes, and these flops have at least a
+// fanout of 2.
 
 // ----------------------------------------------------------------------------
 // DFFEs with positive enable
@@ -19,7 +28,7 @@ module \$_DFFE_PP_ (
 	input  E,
 	output Q
 );
-	gf180mcu_fd_sc_mcu9t5v0__sdffq_1 _TECHMAP_REPLACE_ (
+	gf180mcu_fd_sc_mcu9t5v0__sdffq_4 _TECHMAP_REPLACE_ (
 		.CLK (C),
 		.SI  (D),
 		.SE  (E),
@@ -37,7 +46,7 @@ module \$_DFFE_PN0P_ (
 	input  E,
 	output Q
 );
-	gf180mcu_fd_sc_mcu9t5v0__sdffrnq_1 _TECHMAP_REPLACE_ (
+	gf180mcu_fd_sc_mcu9t5v0__sdffrnq_4 _TECHMAP_REPLACE_ (
 		.CLK (C),
 		.RN  (R),
 		.SI  (D),
@@ -56,7 +65,7 @@ module \$_DFFE_PN1P_ (
 	input  E,
 	output Q
 );
-	gf180mcu_fd_sc_mcu9t5v0__sdffsnq_1 _TECHMAP_REPLACE_ (
+	gf180mcu_fd_sc_mcu9t5v0__sdffsnq_4 _TECHMAP_REPLACE_ (
 		.CLK  (C),
 		.SETN (R),
 		.SI   (D),
@@ -77,7 +86,7 @@ module \$_DFFE_PN_ (
 	input  E,
 	output Q
 );
-	gf180mcu_fd_sc_mcu9t5v0__sdffq_1 _TECHMAP_REPLACE_ (
+	gf180mcu_fd_sc_mcu9t5v0__sdffq_4 _TECHMAP_REPLACE_ (
 		.CLK (C),
 		.SI  (Q),
 		.SE  (E),
@@ -95,7 +104,7 @@ module \$_DFFE_PN0N_ (
 	input  E,
 	output Q
 );
-	gf180mcu_fd_sc_mcu9t5v0__sdffrnq_1 _TECHMAP_REPLACE_ (
+	gf180mcu_fd_sc_mcu9t5v0__sdffrnq_4 _TECHMAP_REPLACE_ (
 		.CLK (C),
 		.RN  (R),
 		.SI  (Q),
@@ -114,7 +123,7 @@ module \$_DFFE_PN1N_ (
 	input  E,
 	output Q
 );
-	gf180mcu_fd_sc_mcu9t5v0__sdffsnq_1 _TECHMAP_REPLACE_ (
+	gf180mcu_fd_sc_mcu9t5v0__sdffsnq_4 _TECHMAP_REPLACE_ (
 		.CLK  (C),
 		.SETN (R),
 		.SI   (Q),
@@ -135,7 +144,7 @@ module \$_SDFF_PP0_ (
 	input  R,
 	output Q
 );
-	gf180mcu_fd_sc_mcu9t5v0__sdffq_1 _TECHMAP_REPLACE_ (
+	gf180mcu_fd_sc_mcu9t5v0__sdffq_4 _TECHMAP_REPLACE_ (
 		.CLK  (C),
 		.SI   (1'b0),
 		.SE   (R),
@@ -152,7 +161,7 @@ module \$_SDFF_PP1_ (
 	input  R,
 	output Q
 );
-	gf180mcu_fd_sc_mcu9t5v0__sdffq_1 _TECHMAP_REPLACE_ (
+	gf180mcu_fd_sc_mcu9t5v0__sdffq_4 _TECHMAP_REPLACE_ (
 		.CLK  (C),
 		.SI   (1'b1),
 		.SE   (R),
@@ -169,7 +178,7 @@ module \$_SDFF_PN0_ (
 	input  R,
 	output Q
 );
-	gf180mcu_fd_sc_mcu9t5v0__sdffq_1 _TECHMAP_REPLACE_ (
+	gf180mcu_fd_sc_mcu9t5v0__sdffq_4 _TECHMAP_REPLACE_ (
 		.CLK  (C),
 		.SI   (D),
 		.SE   (R),
@@ -186,7 +195,7 @@ module \$_SDFF_PN1_ (
 	input  R,
 	output Q
 );
-	gf180mcu_fd_sc_mcu9t5v0__sdffq_1 _TECHMAP_REPLACE_ (
+	gf180mcu_fd_sc_mcu9t5v0__sdffq_4 _TECHMAP_REPLACE_ (
 		.CLK  (C),
 		.SI   (D),
 		.SE   (R),
