@@ -528,7 +528,7 @@ async def test_riscv_soft_irq(dut):
 
 
 ###############################################################################
-# Execution-driven tests
+# Test signatures
 
 expected_outputs = {
     "hellow": "Hello, world!",
@@ -663,12 +663,64 @@ expected_outputs = {
     ]),
 }
 
+# Bit 8 is D/C (0 for command)
+expected_lcd_cmds_st7789 = [
+    0x001,
+    0x011,
+    0x03a,
+    0x155,
+    0x036,
+    0x100,
+    0x02a,
+    0x100,
+    0x100,
+    0x100,
+    0x1f0,
+    0x02b,
+    0x100,
+    0x100,
+    0x100,
+    0x1f0,
+    0x021,
+    0x013,
+    0x029,
+]
+
+def rgb565_to_displaydata(l):
+    for x in l:
+        yield 0x800 | ((x >> 8) & 0xff)
+        yield 0x800 | ((x >> 0) & 0xff)
+
+def rgb555_to_displaydata(l):
+    for x in l:
+        y = ((x & 0x7fe0) << 1) | (x & 0x1f)
+        yield 0x800 | ((y >> 8) & 0xff)
+        yield 0x800 | ((y >> 0) & 0xff)
+
+unique_pixels_two_scanlines = list(rgb555_to_displaydata(range(2 * 512)))
+
+expected_lcd_capture = {
+    "display_init_parallel": expected_lcd_cmds_st7789,
+    "display_init_parallel_halfrate": expected_lcd_cmds_st7789,
+    "display_init_serial": expected_lcd_cmds_st7789,
+    "display_init_serial_halfrate": expected_lcd_cmds_st7789,
+    "display_parallel_ppu_scanbuf_width": unique_pixels_two_scanlines,
+}
+
+###############################################################################
+# Execution-driven tests
+
 @cocotb.test()
 @cocotb.parametrize(app=[
     "hellow",
     "start_apu",
     "byte_strobe",
     "byte_strobe_cproc_contention",
+    "display_init_parallel",
+    "display_init_parallel_halfrate",
+    "display_init_serial",
+    "display_init_serial_halfrate",
+    # "ppu_parallel_scanbuf_width",
     "iram_addr_width",
     "aram_addr_width",
     "spi_stream_clkdiv",
@@ -676,7 +728,8 @@ expected_outputs = {
 ])
 async def test_execute_eram(dut, app="hellow"):
     """Execute code from ERAM"""
-    assert app in expected_outputs
+    assert app in expected_outputs or app in expected_lcd_capture, f"Missing test signature for {app}"
+
     swtest_dir = Path(__file__).resolve().parent.parent / "software/tests/eram"
     rc = subprocess.run(["make", "-C", swtest_dir, f"APP={app}"])
     assert rc.returncode == 0
@@ -693,8 +746,16 @@ async def test_execute_eram(dut, app="hellow"):
         dut.flash_u.mem[i].value = i
         dut.flash_u.mem[i].value = Release()
 
+    dut.lcd_bus_width.value = 1
+    dut.lcd_capture_enable.value = 0
+
     await start_up(dut)
     await twd_connect(dut)
+
+    capture_lcd = app in expected_lcd_capture
+    if capture_lcd:
+        dut.lcd_capture_enable.value = 1
+        dut.lcd_bus_width.value = "parallel" in app
 
     await rvdebug_init(dut)
     await rvdebug_halt(dut)
@@ -727,7 +788,15 @@ async def test_execute_eram(dut, app="hellow"):
     vuart_stdout = vuart_stdout[:-6]
 
     cocotb.log.info(f"Processor standard output:\n\n{vuart_stdout}\n")
-    assert vuart_stdout.strip() == expected_outputs[app], f"Did not match expected output:\n{expected_outputs[app]}"
+    if app in expected_outputs:
+        assert vuart_stdout.strip() == expected_outputs[app], f"Did not match expected output:\n{expected_outputs[app]}"
+
+    if capture_lcd:
+        lcd_capture_len = dut.lcd_byte_count.value
+        cocotb.log.info(f"Captured {lcd_capture_len} bytes from LCD output.")
+        lcd_capture = list(int(dut.lcd_capture_buffer[i].value) for i in range(lcd_capture_len))
+        # for b in lcd_capture: print(f"{b:03x}")
+        assert lcd_capture == expected_lcd_capture[app]
 
 @cocotb.test()
 @cocotb.parametrize(app=[

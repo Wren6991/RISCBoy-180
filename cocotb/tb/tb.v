@@ -82,4 +82,31 @@ sram_async #(
 	.ben_n (2'b00)
 );
 
+// LCD capture
+reg lcd_capture_enable = 1'b0;
+reg lcd_bus_width = 1'b0;
+integer lcd_bit_count = 0;
+integer lcd_byte_count = 0;
+reg [7:0] sreg;
+reg [8:0] lcd_capture_buffer [0:65535];
+
+always @ (posedge LCD_CLK or negedge lcd_capture_enable) begin
+	if (!lcd_capture_enable) begin
+		lcd_bit_count = 0;
+		lcd_byte_count = 0;
+		sreg = 0;
+	end else if (lcd_bus_width) begin
+		lcd_capture_buffer[lcd_byte_count] = {LCD_DC, LCD_DAT};
+		lcd_byte_count = lcd_byte_count + 1;
+	end else begin
+		sreg = {sreg[6:0], LCD_DAT[0]};
+		lcd_bit_count = lcd_bit_count + 1;
+		if (lcd_bit_count == 8) begin
+			lcd_capture_buffer[lcd_byte_count] = {LCD_DC, sreg};
+			lcd_bit_count = 0;
+			lcd_byte_count = lcd_byte_count + 1;
+		end
+	end
+end
+
 endmodule

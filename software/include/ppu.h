@@ -73,6 +73,10 @@ static inline void ppu_start(bool halt_at_vsync) {
 		(halt_at_vsync ? PPU_CSR_HALT_VSYNC_MASK : 0);
 }
 
+static inline bool ppu_is_running(void) {
+	return ppu_hw->csr & PPU_CSR_RUNNING_MASK;
+}
+
 // ----------------------------------------------------------------------------
 // Rendering instructions
 

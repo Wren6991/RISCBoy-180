@@ -33,13 +33,21 @@ static inline void dispctrl_set_shift_width(int width) {
 
 }
 
+static inline void dispctrl_set_half_rate(bool half) {
+	if (half) {
+		dispctrl_hw->csr |= DISPCTRL_RB180_CSR_LCD_HALFRATE_MASK;
+	} else {
+		dispctrl_hw->csr &= ~DISPCTRL_RB180_CSR_LCD_HALFRATE_MASK;
+	}
+}
+
 // Once enabled, the display controller will start to read pixels from
 // scanline buffers presented by the PPU.
 static inline void dispctrl_set_scan_enabled(bool en) {
 	if (en) {
-		dispctrl_hw->csr |= DISPCTRL_RB180_CSR_LCD_SCAN_EN_MASK;
+		dispctrl_hw->csr |= DISPCTRL_RB180_CSR_SCAN_EN_MASK;
 	} else {
-		dispctrl_hw->csr &= ~DISPCTRL_RB180_CSR_LCD_SCAN_EN_MASK;
+		dispctrl_hw->csr &= ~DISPCTRL_RB180_CSR_SCAN_EN_MASK;
 	}
 }
 
@@ -123,8 +131,8 @@ static inline void dispctrl_write_cmd(const uint8_t *cmd, size_t count) {
 	dispctrl_set_shift_width(8);
 	dispctrl_force_dc_cs(0, 0);
 	dispctrl_put_byte(*cmd++);
-	if (count >= 2)
-	{
+	if (count >= 2) {
+		dispctrl_wait_idle();
 		dispctrl_force_dc_cs(1, 0);
 		for (size_t i = 0; i < count - 1; ++i)
 			dispctrl_put_byte(*cmd++);
@@ -136,8 +144,7 @@ static inline void dispctrl_write_cmd(const uint8_t *cmd, size_t count) {
 
 static inline void dispctrl_init(const uint8_t *init_seq) {
 	const uint8_t *cmd = init_seq;
-	while (*cmd)
-	{
+	while (*cmd) {
 		dispctrl_write_cmd(cmd + 2, *cmd);
 #ifndef DISPCTRL_NO_DELAY
 		delay_ms(*(cmd + 1) * 5);
