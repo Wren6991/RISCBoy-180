@@ -31,7 +31,6 @@ int main() {
 		vuart_puthex32(buf32[i]);
 		vuart_putc('\n');
 	}
-
 	vuart_puts("Halfword write\n");
 	for (int i = 0; i < 8; ++i) {
 		buf16[i] = 0xb1b0 + 2 * i * 0x0101;

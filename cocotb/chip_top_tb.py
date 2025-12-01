@@ -1,13 +1,16 @@
 # SPDX-FileCopyrightText: © 2025 Project Template Contributors
 # SPDX-License-Identifier: Apache-2.0
 
+import argparse
+import inspect
+import logging
 import os
 import random
-import logging
-import yaml
+import re
 import struct
 import subprocess
 import sys
+import yaml
 from pathlib import Path
 
 import cocotb
@@ -21,6 +24,28 @@ pdk_root = "../gf180mcu"
 pdk = os.getenv("PDK", "gf180mcuD")
 scl = os.getenv("SCL", "gf180mcu_fd_sc_mcu9t5v0")
 gl = os.getenv("GL", False)
+
+# Helpers for skipping tests when re-running failures:
+global_test_regex = None
+global_sw_regex = None
+
+def filtered_test(f):
+    global global_test_regex
+    if inspect.isfunction(f):
+        fname = f.__name__
+    else:
+        # Handle @parametrize invoked on function before @cocotb.test()
+        fname = f.test_template.name
+    print(f"Filtering {fname} against {global_test_regex}")
+    if global_test_regex is None:
+        return cocotb.test()(f)
+    elif re.match(global_test_regex, fname):
+        return cocotb.test()(f)
+    else:
+        print(f"Skipping test {fname}")
+        return f
+
+
 
 ###############################################################################
 # System address map
@@ -388,7 +413,7 @@ async def start_up(dut):
     dut.RSTn.value = 1
 
 ###############################################################################
-# Testcases
+# Debug-driven tests
 
 @cocotb.test()
 async def test_twd_idcode(dut):
@@ -523,17 +548,128 @@ async def test_riscv_soft_irq(dut):
         cocotb.log.info(f"APU mip = {mip:08x}")
         assert ((mip >> 3) & 0x1) == irq_apu
 
+
+###############################################################################
+# Execution-driven tests
+
+expected_outputs = {
+    "hellow": "Hello, world!",
+    "start_apu": "\r\n".join([
+        "Starting APU",
+        "Received IRQ"
+    ]),
+    "byte_strobe": "\r\n".join([
+        "Zero init",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "Byte write",
+        "a3a2a1a0",
+        "a7a6a5a4",
+        "abaaa9a8",
+        "afaeadac",
+        "Byte write, one per word",
+        "000000e0",
+        "0000e100",
+        "00e20000",
+        "e3000000",
+        "Halfword write",
+        "b3b2b1b0",
+        "b7b6b5b4",
+        "bbbab9b8",
+        "bfbebdbc",
+        "Word write",
+        "c3c2c1c0",
+        "c7c6c5c4",
+        "cbcac9c8",
+        "cfcecdcc",
+    ]),
+    "iram_addr_width": "\r\n".join([
+        "Writing",
+        "Reading",
+        "21",
+        "42",
+        "63",
+        "84",
+        "a5",
+        "c6",
+        "e7",
+        "08",
+        "29",
+        "4a",
+        "6b",
+        "8c",
+        "ad",
+    ]),
+    "aram_addr_width": "\r\n".join([
+        "Writing",
+        "Reading",
+        "21",
+        "42",
+        "63",
+        "84",
+        "a5",
+        "c6",
+        "e7",
+        "08",
+        "29",
+        "4a",
+        "6b",
+    ]),
+    "spi_stream_clkdiv": "\r\n".join([
+        "Trying clkdiv: 02",
+        "07060504",
+        "Trying clkdiv: 04",
+        "0b0a0908",
+        "Trying clkdiv: 06",
+        "0f0e0d0c",
+        "Trying clkdiv: 08",
+        "13121110",
+        "Trying clkdiv: 0a",
+        "17161514",
+        "Trying clkdiv: 0c",
+        "1b1a1918",
+        "Trying clkdiv: 0e",
+        "1f1e1d1c",
+        "Trying clkdiv: 10",
+        "23222120",
+    ]),
+    "spi_stream_pause": "\r\n".join([
+        "Trying clkdiv: 02",
+        "03020100",
+        "07060504",
+        "0b0a0908",
+        "0f0e0d0c",
+        "13121110",
+        "17161514",
+        "1b1a1918",
+        "1f1e1d1c",
+        "Trying clkdiv: 08",
+        "03020100",
+        "07060504",
+        "0b0a0908",
+        "0f0e0d0c",
+        "13121110",
+        "17161514",
+        "1b1a1918",
+        "1f1e1d1c",
+    ]),
+}
+
 @cocotb.test()
 @cocotb.parametrize(app=[
     "hellow",
     "start_apu",
     "byte_strobe",
     "iram_addr_width",
+    "aram_addr_width",
     "spi_stream_clkdiv",
     "spi_stream_pause",
 ])
 async def test_execute_eram(dut, app="hellow"):
     """Execute code from ERAM"""
+    assert app in expected_outputs
     swtest_dir = Path(__file__).resolve().parent.parent / "software/tests/eram"
     rc = subprocess.run(["make", "-C", swtest_dir, f"APP={app}"])
     assert rc.returncode == 0
@@ -584,97 +720,7 @@ async def test_execute_eram(dut, app="hellow"):
     vuart_stdout = vuart_stdout[:-6]
 
     cocotb.log.info(f"Processor standard output:\n\n{vuart_stdout}\n")
-    if app == "hellow":
-        assert vuart_stdout == "Hello, world!\r\n"
-    elif app == "start_apu":
-        assert vuart_stdout == "Starting APU\r\n" + "Received IRQ\r\n"
-    elif app == "byte_strobe":
-        assert vuart_stdout.strip() == "\r\n".join([
-            "Zero init",
-            "00000000",
-            "00000000",
-            "00000000",
-            "00000000",
-            "Byte write",
-            "a3a2a1a0",
-            "a7a6a5a4",
-            "abaaa9a8",
-            "afaeadac",
-            "Byte write, one per word",
-            "000000e0",
-            "0000e100",
-            "00e20000",
-            "e3000000",
-            "Halfword write",
-            "b3b2b1b0",
-            "b7b6b5b4",
-            "bbbab9b8",
-            "bfbebdbc",
-            "Word write",
-            "c3c2c1c0",
-            "c7c6c5c4",
-            "cbcac9c8",
-            "cfcecdcc",
-        ])
-    elif app == "iram_addr_width":
-        assert vuart_stdout.strip() == "\r\n".join([
-            "Writing",
-            "Reading",
-            "21",
-            "42",
-            "63",
-            "84",
-            "a5",
-            "c6",
-            "e7",
-            "08",
-            "29",
-            "4a",
-            "6b",
-            "8c",
-            "ad",
-        ])
-    elif app == "spi_stream_clkdiv":
-        assert vuart_stdout.strip() == "\r\n".join([
-            "Trying clkdiv: 02",
-            "07060504",
-            "Trying clkdiv: 04",
-            "0b0a0908",
-            "Trying clkdiv: 06",
-            "0f0e0d0c",
-            "Trying clkdiv: 08",
-            "13121110",
-            "Trying clkdiv: 0a",
-            "17161514",
-            "Trying clkdiv: 0c",
-            "1b1a1918",
-            "Trying clkdiv: 0e",
-            "1f1e1d1c",
-            "Trying clkdiv: 10",
-            "23222120",
-        ])
-    elif app == "spi_stream_pause":
-        assert vuart_stdout.strip() == "\r\n".join([
-            "Trying clkdiv: 02",
-            "03020100",
-            "07060504",
-            "0b0a0908",
-            "0f0e0d0c",
-            "13121110",
-            "17161514",
-            "1b1a1918",
-            "1f1e1d1c",
-            "Trying clkdiv: 08",
-            "03020100",
-            "07060504",
-            "0b0a0908",
-            "0f0e0d0c",
-            "13121110",
-            "17161514",
-            "1b1a1918",
-            "1f1e1d1c",
-        ])
-
+    assert vuart_stdout.strip() == expected_outputs[app], f"Did not match expected output:\n{expected_outputs[app]}"
 
 @cocotb.test()
 @cocotb.parametrize(app=[
@@ -684,6 +730,7 @@ async def test_execute_eram(dut, app="hellow"):
 ])
 async def test_execute_iram(dut, app="hellow"):
     """Execute code from IRAM"""
+    assert app in expected_outputs
     swtest_dir = Path(__file__).resolve().parent.parent / "software/tests/iram"
     rc = subprocess.run(["make", "-C", swtest_dir, f"APP={app}"])
     assert rc.returncode == 0
@@ -729,34 +776,9 @@ async def test_execute_iram(dut, app="hellow"):
     vuart_stdout = vuart_stdout[:-6]
 
     cocotb.log.info(f"Processor standard output:\n\n{vuart_stdout}\n")
-    if app == "hellow":
-        assert vuart_stdout == "Hello, world!\r\n"
-    elif app == "start_apu":
-        assert vuart_stdout == "Starting APU\r\n" + "Received IRQ\r\n"
-    elif app == "byte_strobe":
-        assert vuart_stdout.strip() == "\r\n".join([
-            "Zero init",
-            "00000000",
-            "00000000",
-            "00000000",
-            "00000000",
-            "Byte write",
-            "a3a2a1a0",
-            "a7a6a5a4",
-            "abaaa9a8",
-            "afaeadac",
-            "Halfword write",
-            "b3b2b1b0",
-            "b7b6b5b4",
-            "bbbab9b8",
-            "bfbebdbc",
-            "Word write",
-            "c3c2c1c0",
-            "c7c6c5c4",
-            "cbcac9c8",
-            "cfcecdcc",
-        ])
+    assert vuart_stdout.strip() == expected_outputs[app], f"Did not match expected output:\n{expected_outputs[app]}"
 
+# Just one of these because after the bootrom runs it's just IRAM execution.
 @cocotb.test()
 @cocotb.parametrize(app=[
     "hellow"
@@ -857,7 +879,16 @@ def get_sources_defines_includes():
 
     return (sources, defines, includes)
 
-def chip_top_runner():
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--filter-test", help="Optional regex to filter testcases")
+    parser.add_argument("--filter-sw", help="Optional regex to filter software binaries in execution tests")
+    args = parser.parse_args()
+    global_test_regex = args.filter_test
+    global_sw_regex = args.filter_sw
+
     sources, defines, includes = get_sources_defines_includes()
 
     build_args = []
@@ -888,8 +919,5 @@ def chip_top_runner():
         test_module="chip_top_tb,",
         plusargs=plusargs,
         waves=True,
+        test_filter=global_test_regex
     )
-
-
-if __name__ == "__main__":
-    chip_top_runner()
