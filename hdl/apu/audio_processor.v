@@ -441,9 +441,16 @@ ahb_sync_sram #(
 // ----------------------------------------------------------------------------
 // Peripheral registers
 
+wire rst_n_ipc;
+reset_sync sync_rst_n_ipc (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_ipc)
+);
+
 apu_ipc ipc_u (
     .clk               (clk_sys),
-    .rst_n             (rst_n_sys),
+    .rst_n             (rst_n_ipc),
 
     .ahbls_haddr       (ipc_haddr),
     .ahbls_htrans      (ipc_htrans),
@@ -461,9 +468,16 @@ apu_ipc ipc_u (
     .riscv_softirq     ({soft_irq, irq_cpu_softirq})
 );
 
+wire rst_n_timer;
+reset_sync sync_rst_n_timer (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_timer)
+);
+
 apu_timer timer_u (
     .clk               (clk_sys),
-    .rst_n             (rst_n_sys),
+    .rst_n             (rst_n_timer),
 
     .ahbls_haddr       (timer_haddr),
     .ahbls_htrans      (timer_htrans),
@@ -478,9 +492,16 @@ apu_timer timer_u (
     .irq               (timer_irq)
 );
 
+wire rst_n_spi;
+reset_sync sync_rst_n_spi (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_spi)
+);
+
 spi_stream spi_stream_u (
     .clk               (clk_sys),
-    .rst_n             (rst_n_sys),
+    .rst_n             (rst_n_spi),
 
     .irq               (irq[IRQ_SPI]),
 

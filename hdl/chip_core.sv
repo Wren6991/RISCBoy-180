@@ -264,6 +264,13 @@ wire [31:0] dmi_prdata;
 wire        dmi_pready;
 wire        dmi_pslverr;
 
+wire rst_n_sys_dbg;
+reset_sync sync_rst_n_sys_dbg (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_sys_dbg)
+);
+
 // This is a Hazard3 component normally hidden inside the JTAG-DTM, but we can
 // use it standalone.
 hazard3_apb_async_bridge #(
@@ -275,7 +282,7 @@ hazard3_apb_async_bridge #(
     .rst_n_src   (drst_n),
 
     .clk_dst     (clk_sys),
-    .rst_n_dst   (rst_n_sys),
+    .rst_n_dst   (rst_n_sys_dbg),
 
     .src_psel    (dtm_to_bridge_psel),
     .src_penable (dtm_to_bridge_penable),
@@ -345,7 +352,7 @@ hazard3_dm #(
     .HAVE_SBA (0)
 ) dm_u (
     .clk                         (clk_sys),
-    .rst_n                       (rst_n_sys),
+    .rst_n                       (rst_n_sys_dbg),
 
     .dmi_psel                    (dmi_psel),
     .dmi_penable                 (dmi_penable),
@@ -938,11 +945,18 @@ wire [15:0]         ppu_scanout_rdata;
 wire                ppu_scanout_buf_rdy;
 wire                ppu_scanout_buf_release;
 
+wire rst_n_ppu;
+reset_sync sync_rst_n_ppu (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_ppu)
+);
+
 riscboy_ppu #(
     .W_MEM_ADDR (N_SRAM_A)
 ) ppu_u (
     .clk                 (clk_sys),
-    .rst_n               (rst_n_sys),
+    .rst_n               (rst_n_ppu),
 
     .VDD                 (VDD),
     .VSS                 (VSS),
@@ -978,7 +992,7 @@ riscboy_ppu_dispctrl_rb180 #(
     .PXFIFO_DEPTH (4)
 ) ppu_dispctrl_spi_u (
     .clk_sys             (clk_sys),
-    .rst_n_sys           (rst_n_sys),
+    .rst_n_sys           (rst_n_ppu),
 
     .clk_tx              (clk_sys),
     .rst_n_tx            (rst_n_sys),
@@ -1010,11 +1024,18 @@ riscboy_ppu_dispctrl_rb180 #(
 // ------------------------------------------------------------------------
 // APB peripherals and control registers
 
+wire rst_n_timer;
+reset_sync sync_rst_n_timer (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_timer)
+);
+
 hazard3_riscv_timer #(
     .TICK_IS_NRZ (0) // TODO
 ) riscv_timer_u (
     .clk       (clk_sys),
-    .rst_n     (rst_n_sys),
+    .rst_n     (rst_n_timer),
     .paddr     (timer_paddr[15:0]),
     .psel      (timer_psel),
     .penable   (timer_penable),
@@ -1028,6 +1049,13 @@ hazard3_riscv_timer #(
     .timer_irq (timer_irq)
 );
 
+wire rst_n_sys_vuart;
+reset_sync sync_rst_n_sys_vuart (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_sys_vuart)
+);
+
 vuart #(
     .DEV_TX_DEPTH (16),
     .DEV_RX_DEPTH (8)
@@ -1036,7 +1064,7 @@ vuart #(
     .drst_n       (drst_n),
 
     .clk          (clk_sys),
-    .rst_n        (rst_n_sys),
+    .rst_n        (rst_n_sys_vuart),
 
     .irq          (irq[IRQ_VUART]),
 
@@ -1061,6 +1089,7 @@ vuart #(
     .dev_pslverr  (vuart_dev_pslverr)
 );
 
+// Has internal reset synchroniser.
 wire uart_rx;
 uart_mini #(
     .FIFO_DEPTH (4),
@@ -1085,12 +1114,19 @@ uart_mini #(
     .irq          (irq[IRQ_UART])
 );
 
+wire rst_n_padctrl;
+reset_sync sync_rst_n_padctrl (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_padctrl)
+);
+
 localparam W_GPIO_CTRL = 1 + 8 + 4;
 padctrl #(
     .N_GPIO (W_GPIO_CTRL)
 ) padctrl_u (
     .clk               (clk_sys),
-    .rst_n             (rst_n_sys),
+    .rst_n             (rst_n_padctrl),
 
     .apbs_psel         (padctrl_psel),
     .apbs_penable      (padctrl_penable),
@@ -1130,12 +1166,18 @@ padctrl #(
     .gpio_pd           ({audio_pd, lcd_dat_pd, gpio_pd})
 );
 
+wire rst_n_gpio;
+reset_sync sync_rst_n_gpio (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_gpio)
+);
 
 gpio #(
     .N_GPIO (W_GPIO_CTRL)
 ) gpio_u (
     .clk          (clk_sys),
-    .rst_n        (rst_n_sys),
+    .rst_n        (rst_n_gpio),
 
     .apbs_psel    (gpio_psel),
     .apbs_penable (gpio_penable),
@@ -1179,12 +1221,19 @@ wire                     sram_ctrl_ce_n;
 wire                     sram_ctrl_we_n;
 wire                     sram_ctrl_oe_n;
 
+wire rst_n_sramctrl;
+reset_sync sync_rst_n_sramctrl (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_sramctrl)
+);
+
 riscboy_sram_ctrl #(
     .W_HADDR     (20),
     .W_SRAM_ADDR (N_SRAM_A)
 ) eram_ctrl_u (
     .clk               (clk_sys),
-    .rst_n             (rst_n_sys),
+    .rst_n             (rst_n_sramctrl),
 
     .ahbls_haddr       (eram_haddr),
     .ahbls_htrans      (eram_htrans),
@@ -1214,12 +1263,14 @@ riscboy_sram_ctrl #(
     .sram_oe_n         (sram_ctrl_oe_n)
 );
 
+// These flops end up at the edges of the chip so share the reset with
+// padctrl. Not many of these flops are reset anyway.
 async_sram_phy_gf180mcu #(
     .N_SRAM_A  (N_SRAM_A),
     .N_SRAM_DQ (N_SRAM_DQ)
 ) sram_phy_u (
     .clk              (clk_sys),
-    .rst_n            (rst_n_sys),
+    .rst_n            (rst_n_padctrl),
 
     .ctrl_addr        (sram_ctrl_addr),
     .ctrl_dq_out      (sram_ctrl_dq_out),
