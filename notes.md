@@ -1043,3 +1043,31 @@ I'm close but in my worst reg2reg path I see that there are high-fanout scan flo
 After fixing up some overly tight IO constraints on the SRAM D outputs I'm at -1.1 ns WNS on the reg2reg paths, which seems in reach of my goal. After then finally re-instating the negedge flops on the SRAM_D outputs which I couldn't figure out how to constrain sensibly before (since there are some posedge flops going to the same pad and (editor removed long rant about OpenSTA)), which relaxes the tough paths from the processor even further, I'm at... -4.1 ns. The critical reg2reg path through the processor is in the same place it was before, and there are a ton of unit-drive cells on that path.
 
 
+Ok so things randomly go up and down. None of the buffers on my critical path are being resized, possibly because the resizer doesn't have space to resize them, as *all* of the resizing is done after detailed placement. I think I need to revisit something I've ignored for a long time: early (pre-CTS) STA.
+
+I thought I was seeing crazy setup violations due to clock slew, but on closer examination the slew is on the reset. I probably thought it was the clock because that was a separate problem I had when LibreLane decided to just not run the CTS pass because I didn't tell it about any clocks in my YAML.
+
+Usually in `.sdc` you'd use a command called `set_ideal_network` to mark high-fanout zero-logic paths like resets as having zero rise/fall/propagation. OpenSTA "supports" this command by ignoring it. Also LibreLane fails to pass a flag to my SDC telling me whether it's being invoked pre- or post-CTS, and also uses the same SDC for both, so I settled on this hack of counting the immediate loads of `clk_sys` to decide whether CTS has run yet, and if not, case-analysing all my resets to 1. You have been warned:
+
+```tcl
+set main_clk_pin [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z]
+set rst_pins [get_pins i_chip_core.*sync*flop2/Q]
+
+set clk_pins [get_pins  -of_objects [get_net -of_objects ${main_clk_pin}]]
+set clk_loads [llength ${clk_pins}]
+puts "clk_sys has ${clk_loads} directly connected pins"
+
+if { [expr $clk_loads > 10] } {
+    puts "Setting all clocks to ideal!"
+    unset_propagated_clock [all_clocks]
+    puts "Case analysing reset nets:"
+    foreach pin ${rst_pins} {puts [sta::get_full_name ${pin}]}
+    set_case_analysis 1 ${rst_pins}
+} else {
+    puts "Setting all clocks to non-ideal"
+    set_propagated_clock [all_clocks]
+    unset_case_analysis ${rst_pins}
+}
+```
+
+With this, the critical setup path in my pre-place STA actually matches the gates in my final post-PnR (place + CTS + route) 

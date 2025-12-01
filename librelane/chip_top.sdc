@@ -204,11 +204,35 @@ puts "\[INFO] Setting timing derate to: $::env(TIME_DERATING_CONSTRAINT)%"
 set_timing_derate -early [expr 1-[expr $::env(TIME_DERATING_CONSTRAINT) / 100]]
 set_timing_derate -late [expr 1+[expr $::env(TIME_DERATING_CONSTRAINT) / 100]]
 
-if { [info exists ::env(OPENLANE_SDC_IDEAL_CLOCKS)] && $::env(OPENLANE_SDC_IDEAL_CLOCKS) } {
-    puts "Setting all clocks to ideal!"
-    unset_propagated_clock [all_clocks]
-} else {
-    puts "Setting all clocks to non-ideal"
-    set_propagated_clock [all_clocks]
-}
+# if { [info exists ::env(OPENLANE_SDC_IDEAL_CLOCKS)] && $::env(OPENLANE_SDC_IDEAL_CLOCKS) } {
+#     unset_propagated_clock [all_clocks]
+# } else {
+#     set_propagated_clock [all_clocks]
+# }
 
+# Above does not actually work. Idk why that variable is not set. I expect the
+# problem is somewhere in the million miles of python that call this file.
+# Behold my dumbass workaround:
+
+# (below does get sensible pre-CTS STA, but makes timing worse, so removed. It
+# might be useful if there was any gate resizing done prior to CTS, but there
+# is not.)
+
+# set main_clk_pin [get_pins i_chip_core.clkroot_sys_u.magic_clkroot_anchor_u/Z]
+# set rst_pins [get_pins i_chip_core.*sync*flop2/Q]
+
+# set clk_pins [get_pins  -of_objects [get_net -of_objects ${main_clk_pin}]]
+# set clk_loads [llength ${clk_pins}]
+# puts "clk_sys has ${clk_loads} directly connected pins"
+
+# if { [expr $clk_loads > 10] } {
+#     puts "Setting all clocks to ideal!"
+#     unset_propagated_clock [all_clocks]
+#     puts "Case analysing reset nets:"
+#     foreach pin ${rst_pins} {puts [sta::get_full_name ${pin}]}
+#     set_case_analysis 1 ${rst_pins}
+# } else {
+#     puts "Setting all clocks to non-ideal"
+#     set_propagated_clock [all_clocks]
+#     unset_case_analysis ${rst_pins}
+# }
