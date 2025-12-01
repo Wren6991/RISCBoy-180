@@ -3,7 +3,6 @@
 ## RTL
 
 * RISCBoy display controller:
-	* Support 8 bits per clock (for use with 8080 instead of SPI)
 	* Support VGA output
 * Review resettable flops and see if they can be made non-reset for better density/routing
 
@@ -13,10 +12,8 @@
 * Cover all address decode targets
 	* CPU
 	* APU
-	* PPU
 * Toggle every IRQ
 * Dump 4-bit 1.5 MSa/s stream from AOUT, filter it back down to 48 kHz, make sure it sounds good
-* Render a video frame on the PPU
 * Review all verilator lints
 
 ## Implementation
@@ -26,9 +23,7 @@
 * Report all cross-domain paths and review
 * Report all false-path constraints inserted by RTL buffers and check their endpoints
 * QoR:
-	* Write mapping for DFFE -> SDFF
 	* Write extraction for mux + flop -> SDFF
-	* Look at SYNTH_ABC_BUFFERING
 
 ## Submission
 
