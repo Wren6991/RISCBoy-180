@@ -141,8 +141,14 @@ set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
 # The check point is ahead of the clock by the output delay, so this
 # constraint gives +50% slack over the OE path, still taking output delay from
 # the previous `set_output_delay` into account:
+
+# set_max_delay [expr $CLK_SYS_PERIOD * 1.5] \
+#     -from [get_pins {i_chip_core.sram_phy_u.reg_out_u_sram_dq_out*/Q} ] -to [get_ports {SRAM_DQ*} ]
+
+# OpenSTA: Q iS nOT a VAliD StArT PoInT (this is what you sound like)
+
 set_max_delay [expr $CLK_SYS_PERIOD * 1.5] \
-    -from [get_pins {i_chip_core.sram_phy_u.reg_out_u_sram_dq_out*/Q} ] -to [get_ports {SRAM_DQ*} ]
+    -through [get_pins {pad_SRAM_DQ*/A}]
 
 # Delay on WEn is measured to negedge because it's from an ICGTN. The virtual
 # start of its write cycle is still at the posedge (where the A is asserted),
@@ -199,8 +205,10 @@ set_timing_derate -early [expr 1-[expr $::env(TIME_DERATING_CONSTRAINT) / 100]]
 set_timing_derate -late [expr 1+[expr $::env(TIME_DERATING_CONSTRAINT) / 100]]
 
 if { [info exists ::env(OPENLANE_SDC_IDEAL_CLOCKS)] && $::env(OPENLANE_SDC_IDEAL_CLOCKS) } {
+    puts "Setting all clocks to ideal!"
     unset_propagated_clock [all_clocks]
 } else {
+    puts "Setting all clocks to non-ideal"
     set_propagated_clock [all_clocks]
 }
 
