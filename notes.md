@@ -1070,4 +1070,4 @@ if { [expr $clk_loads > 10] } {
 }
 ```
 
-With this, the critical setup path in my pre-place STA actually matches the gates in my final post-PnR (place + CTS + route) 
+With this, the critical setup path in my pre-place STA actually matches the gates in my final post-PnR (place + CTS + route).

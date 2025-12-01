@@ -108,7 +108,7 @@ set_false_path -setup -hold -through [get_ports LCD_BL]
 #     Output disable to output in high-Z.. tOHZ -   6
 
 # Pad tRC/tWC so we can use faster RAMs or shorter clk_sys period:
-set SRAM_A_TO_Q 20
+set SRAM_A_TO_Q 15
 
 # Input paths are less challenging, so squeeze them a bit more
 set SRAM_Q_EXTRA_JUICE 5
