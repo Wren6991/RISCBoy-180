@@ -31,6 +31,13 @@ CLOCK_PORT: pad_CLK
 CLOCK_NET: pad_CLK/Y
 CLOCK_PERIOD: 20 # ns
 
+PNR_SDC_FILE: dir::chip_top.sdc
+SIGNOFF_SDC_FILE: dir::chip_top.sdc
+FALLBACK_SDC: dir::chip_top.sdc
+
+###############################################################################
+# QoR
+
 STD_CELL_LIBRARY: gf180mcu_fd_sc_mcu9t5v0
 
 # Force use of chonky bois to reduce clock skew (default list is 2, 4, 8). d20
@@ -48,15 +55,65 @@ CTS_BALANCE_LEVELS: True
 SYNTH_STRATEGY: "AREA 3"
 
 # Why is this not the default???
+# abc cmd: upsize {D};dnsize {D}
 SYNTH_SIZING: True
-SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
+# Takes precedence over previous
+# abc cmd: f"buffer -N {self.max_fanout}{max_tr_arg};upsize {{D}};dnsize {{D}}"
+# (where self.max_fanout comes from config["MAX_FANOUT_CONSTRAINT"])
+SYNTH_ABC_BUFFERING: True
+# Also try in combo with:
+# DESIGN_REPAIR_REMOVE_BUFFERS: True
 
+# default: 10
+MAX_FANOUT_CONSTRAINT: 5
+# MAX_TRANSITION_CONSTRAINT: 1
+
+# Substitute missing flop types for strapped scan flops
+SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
 
 # ICG inference; the CTS still inexplicably puts a clock root after each gate
 # but this doesn't affect the skew too much for the small gate groups inferred
 # by this pass (unlike explicit top-level ICGs which are catastrophic). Clock
 # skew is a little worse but we get better DFFE mapping.
+# Disabled to reduce clock skew (since DFFEs are now a thing via scan flops)
 # USE_LIGHTER: True
+
+PL_TARGET_DENSITY_PCT: 50
+GRT_ALLOW_CONGESTION: true
+
+# Magic incantation from Discord to make the antenna violations go away
+DRT_ANTENNA_REPAIR_ITERS: 10
+
+# Try to avoid occasional hold failures on short paths into SRAM address.
+# Original: PL 0.1 GRT 0.05
+PL_RESIZER_HOLD_SLACK_MARGIN: 0.21
+GRT_RESIZER_HOLD_SLACK_MARGIN: 0.16
+
+# Apply insane levels of slack margin because I keep seeing a bunch of drive-1
+# cells on my critical paths, just do your job dude
+# Default: 0.05
+PL_RESIZER_SETUP_SLACK_MARGIN: 10
+# Default: 0.025
+GRT_RESIZER_SETUP_SLACK_MARGIN: 10
+
+# Cmon do something
+PL_RESIZER_FIX_HOLD_FIRST: True
+GRT_RESIZER_FIX_HOLD_FIRST: True
+PL_RESIZER_SETUP_MAX_BUFFER_PCT: 100
+GRT_RESIZER_SETUP_MAX_BUFFER_PCT: 100
+
+# Cmon
+DESIGN_REPAIR_MAX_SLEW_PCT: 50
+DESIGN_REPAIR_MAX_CAP_PCT: 50
+
+# Ooh
+RUN_POST_GRT_RESIZER_TIMING: True
+
+# If you're reading this far and you think "this idiot is just trying every
+# option to see if it improves timing" then you're right
+
+###############################################################################
+# Files
 
 DESIGN_NAME: chip_top
 VERILOG_FILES:
@@ -189,6 +246,9 @@ VERILOG_DEFINES:
 # Slightly smaller file sizes
 PRIMARY_GDSII_STREAMOUT_TOOL: klayout
 
+###############################################################################
+# Padring
+
 # To remain bond-compatible with the template project, the DVDD and DVSS pads
 # must remain in the same positions (as commented below). The different IO pad
 # macros are all the same size, so these can be freely mixed and matched as
@@ -315,10 +375,8 @@ PAD_NORTH: [
     "pad_SRAM_DQ\\[0\\].u",
 ]
 
-# SDC files
-PNR_SDC_FILE: dir::chip_top.sdc
-SIGNOFF_SDC_FILE: dir::chip_top.sdc
-FALLBACK_SDC: dir::chip_top.sdc
+###############################################################################
+# Layout stuff
 
 # Power / ground nets
 VDD_NETS:
@@ -340,42 +398,6 @@ FP_SIZING: absolute
 # for the sealring on all sides
 DIE_AREA: [0, 0, 3932, 5122]
 CORE_AREA: [442, 442, 3490, 4680]
-
-# Increase for more logic
-# on your die
-PL_TARGET_DENSITY_PCT: 50
-GRT_ALLOW_CONGESTION: true
-
-# Magic incantation from Discord to make the antenna violations go away
-DRT_ANTENNA_REPAIR_ITERS: 10
-
-# Try to avoid occasional hold failures on short paths into SRAM address.
-# Original: PL 0.1 GRT 0.05
-PL_RESIZER_HOLD_SLACK_MARGIN: 0.21
-GRT_RESIZER_HOLD_SLACK_MARGIN: 0.16
-
-# Apply insane levels of slack margin because I keep seeing a bunch of drive-1
-# cells on my critical paths, just do your job dude
-# Default: 0.05
-PL_RESIZER_SETUP_SLACK_MARGIN: 10
-# Default: 0.025
-GRT_RESIZER_SETUP_SLACK_MARGIN: 10
-
-# Cmon do something
-PL_RESIZER_FIX_HOLD_FIRST: True
-GRT_RESIZER_FIX_HOLD_FIRST: True
-PL_RESIZER_SETUP_MAX_BUFFER_PCT: 100
-GRT_RESIZER_SETUP_MAX_BUFFER_PCT: 100
-
-# Cmon
-DESIGN_REPAIR_MAX_SLEW_PCT: 50
-DESIGN_REPAIR_MAX_CAP_PCT: 50
-
-# Ooh
-RUN_POST_GRT_RESIZER_TIMING: True
-
-# If you're reading this far and you think "this idiot is just trying every
-# option to see if it improves timing" then you're right
 
 # PDN - Straps
 PDN_VWIDTH: 5
