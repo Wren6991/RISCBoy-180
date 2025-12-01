@@ -1071,3 +1071,19 @@ if { [expr $clk_loads > 10] } {
 ```
 
 With this, the critical setup path in my pre-place STA actually matches the gates in my final post-PnR (place + CTS + route).
+
+### Day 12: ONE DAY REMAINS
+
+I didn't actually get it to meet timing yesterday, but I got within a nanosecond in the slow corner (out of a 41.67 ns clock period). I'll keep kicking that can down the road in the background but if I tape out with that level of violation then my design will actually run fine at 24 MHz in all but the most extreme conditions.
+
+Today I need to actually write some tests. I added a very simple harness to capture output directly from the LCD controller pads. Here is a list of bugs I found:
+
+* Shift register increment was reversed between 8-bit and 1-bit bus mode (lol)
+* PPU command processor masked off the MSB of the address, so could only jump to the lower half of RAM (historic bug from when I spent a week doing iCE40 frequency hacking a couple of years back)
+* Vertical doubling... didn't.
+* Horizontal doubling for odd scanline length skipped the first read on the next line.
+* Not a bug, but the PPU Y coordinate size was 8 bits, and I'd like to support 320 x 320 and perhaps 320 x 480 displays.
+* PPU outputs nothing when the clip region width is 1 pixel (historic bug).
+
+The basic PPU mechanics otherwise seem solid, and it can fetch instructions and data from system RAM, and read/write all locations in the scan buffer memories and the palette memories.
+

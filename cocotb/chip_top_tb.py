@@ -714,6 +714,7 @@ expected_lcd_capture = {
         list(rgb555_to_displaydata(hdouble(x + 0xab00 for x in range(128)))) +
         list(rgb555_to_displaydata(hdouble(x + 0xab00 for x in range(128, 256)))) +
         list(rgb555_to_displaydata(hdouble(x + 0xab00 for x in range(128, 256)))),
+    "ppu_parallel_frame_height": list(rgb555_to_displaydata(range(512))),
 }
 
 ###############################################################################
@@ -732,6 +733,7 @@ expected_lcd_capture = {
     "ppu_parallel_scanbuf_width",
     "ppu_parallel_pram_write",
     "ppu_parallel_pixel_double",
+    "ppu_parallel_frame_height",
     "iram_addr_width",
     "aram_addr_width",
     "spi_stream_clkdiv",
