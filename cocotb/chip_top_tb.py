@@ -25,28 +25,6 @@ pdk = os.getenv("PDK", "gf180mcuD")
 scl = os.getenv("SCL", "gf180mcu_fd_sc_mcu9t5v0")
 gl = os.getenv("GL", False)
 
-# Helpers for skipping tests when re-running failures:
-global_test_regex = None
-global_sw_regex = None
-
-def filtered_test(f):
-    global global_test_regex
-    if inspect.isfunction(f):
-        fname = f.__name__
-    else:
-        # Handle @parametrize invoked on function before @cocotb.test()
-        fname = f.test_template.name
-    print(f"Filtering {fname} against {global_test_regex}")
-    if global_test_regex is None:
-        return cocotb.test()(f)
-    elif re.match(global_test_regex, fname):
-        return cocotb.test()(f)
-    else:
-        print(f"Skipping test {fname}")
-        return f
-
-
-
 ###############################################################################
 # System address map
 
@@ -585,6 +563,34 @@ expected_outputs = {
         "cbcac9c8",
         "cfcecdcc",
     ]),
+    "byte_strobe_cproc_contention": "\r\n".join([
+        "Starting CPROC",
+        "Zero init",
+        "00000000",
+        "00000000",
+        "00000000",
+        "00000000",
+        "Byte write",
+        "a3a2a1a0",
+        "a7a6a5a4",
+        "abaaa9a8",
+        "afaeadac",
+        "Byte write, one per word",
+        "000000e0",
+        "0000e100",
+        "00e20000",
+        "e3000000",
+        "Halfword write",
+        "b3b2b1b0",
+        "b7b6b5b4",
+        "bbbab9b8",
+        "bfbebdbc",
+        "Word write",
+        "c3c2c1c0",
+        "c7c6c5c4",
+        "cbcac9c8",
+        "cfcecdcc",
+    ]),
     "iram_addr_width": "\r\n".join([
         "Writing",
         "Reading",
@@ -662,6 +668,7 @@ expected_outputs = {
     "hellow",
     "start_apu",
     "byte_strobe",
+    "byte_strobe_cproc_contention",
     "iram_addr_width",
     "aram_addr_width",
     "spi_stream_clkdiv",
@@ -883,11 +890,8 @@ def get_sources_defines_includes():
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--filter-test", help="Optional regex to filter testcases")
-    parser.add_argument("--filter-sw", help="Optional regex to filter software binaries in execution tests")
+    parser.add_argument("--filter", help="Optional regex to filter testcases")
     args = parser.parse_args()
-    global_test_regex = args.filter_test
-    global_sw_regex = args.filter_sw
 
     sources, defines, includes = get_sources_defines_includes()
 
@@ -919,5 +923,5 @@ if __name__ == "__main__":
         test_module="chip_top_tb,",
         plusargs=plusargs,
         waves=True,
-        test_filter=global_test_regex
+        test_filter=args.filter
     )
