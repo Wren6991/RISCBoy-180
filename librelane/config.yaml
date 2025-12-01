@@ -48,8 +48,6 @@ CTS_BALANCE_LEVELS: True
 SYNTH_STRATEGY: "AREA 3"
 
 # Why is this not the default???
-# TODO also try: SYNTH_ABC_BUFFERING (docs imply this is mutually exclusive with sizing ???)
-# SYNTH_ABC_BUFFERING: True
 SYNTH_SIZING: True
 SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
 
@@ -354,6 +352,19 @@ DRT_ANTENNA_REPAIR_ITERS: 10
 # Try to avoid occasional hold failures on short paths into SRAM address. Original: PL 0.1 GRT 0.05
 PL_RESIZER_HOLD_SLACK_MARGIN: 0.21
 GRT_RESIZER_HOLD_SLACK_MARGIN: 0.16
+
+# Apply insane levels of slack margin because I keep seeing a bunch of drive-1
+# cells on my critical paths, just do your job dude
+# Default: 0.05
+PL_RESIZER_SETUP_SLACK_MARGIN: 10
+# Default: 0.025
+GRT_RESIZER_SETUP_SLACK_MARGIN: 10
+
+# Cmon do something
+PL_RESIZER_FIX_HOLD_FIRST: True
+GRT_RESIZER_FIX_HOLD_FIRST: True
+PL_RESIZER_SETUP_MAX_BUFFER_PCT: 100
+GRT_RESIZER_SETUP_MAX_BUFFER_PCT: 100
 
 # PDN - Straps
 PDN_VWIDTH: 5
