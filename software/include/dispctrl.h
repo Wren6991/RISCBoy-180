@@ -51,6 +51,10 @@ static inline void dispctrl_set_scan_enabled(bool en) {
 	}
 }
 
+static inline void dispctrl_set_scanbuf_size(int w) {
+	dispctrl_hw->scanbuf_size = w - 1;
+}
+
 // CS is ignored in parallel mode, but DC functions as normal. You should only
 // call this after polling for CSR_BUSY low e.g. via dispctrl_wait_idle().
 static inline void dispctrl_force_dc_cs(bool dc, bool cs) {

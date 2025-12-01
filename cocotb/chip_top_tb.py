@@ -688,23 +688,22 @@ expected_lcd_cmds_st7789 = [
 
 def rgb565_to_displaydata(l):
     for x in l:
-        yield 0x800 | ((x >> 8) & 0xff)
-        yield 0x800 | ((x >> 0) & 0xff)
+        yield 0x100 | ((x >> 8) & 0xff)
+        yield 0x100 | ((x >> 0) & 0xff)
 
 def rgb555_to_displaydata(l):
     for x in l:
         y = ((x & 0x7fe0) << 1) | (x & 0x1f)
-        yield 0x800 | ((y >> 8) & 0xff)
-        yield 0x800 | ((y >> 0) & 0xff)
-
-unique_pixels_two_scanlines = list(rgb555_to_displaydata(range(2 * 512)))
+        yield 0x100 | ((y >> 8) & 0xff)
+        yield 0x100 | ((y >> 0) & 0xff)
 
 expected_lcd_capture = {
     "display_init_parallel": expected_lcd_cmds_st7789,
     "display_init_parallel_halfrate": expected_lcd_cmds_st7789,
     "display_init_serial": expected_lcd_cmds_st7789,
     "display_init_serial_halfrate": expected_lcd_cmds_st7789,
-    "display_parallel_ppu_scanbuf_width": unique_pixels_two_scanlines,
+    "ppu_parallel_scanbuf_width": list(rgb555_to_displaydata(range(2 * 512))),
+    "ppu_parallel_pram_write": list(rgb555_to_displaydata(x + 0xab00 for x in range(256)))
 }
 
 ###############################################################################
@@ -720,7 +719,8 @@ expected_lcd_capture = {
     "display_init_parallel_halfrate",
     "display_init_serial",
     "display_init_serial_halfrate",
-    # "ppu_parallel_scanbuf_width",
+    "ppu_parallel_scanbuf_width",
+    "ppu_parallel_pram_write",
     "iram_addr_width",
     "aram_addr_width",
     "spi_stream_clkdiv",
@@ -776,7 +776,7 @@ async def test_execute_eram(dut, app="hellow"):
         return False
 
     while not test_done():
-        c = await twd_vuart_getchar(dut, max_poll=100)
+        c = await twd_vuart_getchar(dut, max_poll=200)
         if c is None: break
         sys.stdout.write(chr(c))
         vuart_stdout.append(chr(c))
@@ -795,7 +795,11 @@ async def test_execute_eram(dut, app="hellow"):
         lcd_capture_len = dut.lcd_byte_count.value
         cocotb.log.info(f"Captured {lcd_capture_len} bytes from LCD output.")
         lcd_capture = list(int(dut.lcd_capture_buffer[i].value) for i in range(lcd_capture_len))
-        # for b in lcd_capture: print(f"{b:03x}")
+        if False:
+            print("\nActual:\n")
+            for b in lcd_capture: print(f"{b:03x}")
+            print("\nExpected:\n")
+            for b in expected_lcd_capture[app]: print(f"{b:03x}")
         assert lcd_capture == expected_lcd_capture[app]
 
 @cocotb.test()
