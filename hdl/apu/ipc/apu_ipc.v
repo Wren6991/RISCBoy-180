@@ -19,6 +19,7 @@ module apu_ipc (
 	output wire [31:0] ahbls_hrdata,
 	output wire        ahbls_hresp,
 
+	input  wire        debug_halt,
 	output wire        start_apu,
 	
 	output wire [1:0]  riscv_softirq
@@ -74,7 +75,7 @@ always @ (posedge clk or negedge rst_n) begin
 		softirq_status <= (softirq_status
 			& ~({2{softirq_clr_wen}} & softirq_clr_o)
 		) | ({2{softirq_set_wen}} & softirq_set_o);
-		start_apu_q <= start_apu_nxt;
+		start_apu_q <= start_apu_q || start_apu_nxt || debug_halt;
 	end
 end
 

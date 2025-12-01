@@ -146,7 +146,7 @@ assign irq_apu_timer_to_cpu = timer_irq;
 wire                start_apu;
 
 wire                cpu_pwrup_req;
-wire                cpu_pwrup_ack = cpu_pwrup_req || start_apu;
+wire                cpu_pwrup_ack = cpu_pwrup_req && start_apu;
 wire                cpu_clk_en;
 
 wire                unblock_out;
@@ -455,6 +455,7 @@ apu_ipc ipc_u (
     .ahbls_hrdata      (ipc_hrdata),
     .ahbls_hresp       (ipc_hresp),
 
+    .debug_halt        (dbg_halted),
     .start_apu         (start_apu),
 
     .riscv_softirq     ({soft_irq, irq_cpu_softirq})
