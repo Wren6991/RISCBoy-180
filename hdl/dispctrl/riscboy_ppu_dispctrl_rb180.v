@@ -265,13 +265,14 @@ always @ (posedge clk_tx or negedge rst_n_tx) begin
 		shift <= {W_DATA{1'b0}};
 		shift_ctr <= {W_SHAMT{1'b0}};
 	end else if (shift_clken) begin
-		shift_ctr <= shift_ctr - |shift_ctr;
-		shift <= csr_lcd_buswidth_clklcd ? shift << 1 : shift << 8;
 		if (pxfifo_pop) begin
 			shift <= pxfifo_rdata;
 			shift_ctr <=
 				{csr_lcd_shiftcnt_clklcd, !csr_lcd_shiftcnt_clklcd, 3'd0}
 				>> {2{csr_lcd_buswidth_clklcd}};
+		end else if (|shift_ctr) begin
+			shift_ctr <= shift_ctr - 5'd1;
+			shift <= csr_lcd_buswidth_clklcd ? shift << 8 : shift << 1;
 		end
 	end
 end
