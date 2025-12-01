@@ -990,7 +990,7 @@ wire [7:0] dispctrl_lcd_dat;
 wire uart_tx;
 riscboy_ppu_dispctrl_rb180 #(
     .PXFIFO_DEPTH (4)
-) ppu_dispctrl_spi_u (
+) ppu_dispctrl_u (
     .clk_sys             (clk_sys),
     .rst_n_sys           (rst_n_ppu),
 

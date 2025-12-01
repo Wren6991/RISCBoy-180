@@ -41,6 +41,16 @@ static inline void dispctrl_set_half_rate(bool half) {
 	}
 }
 
+static inline void dispctrl_set_xdouble_ydouble(bool xdouble, bool ydouble) {
+	dispctrl_hw->csr = (dispctrl_hw->csr & ~(
+		DISPCTRL_RB180_CSR_XDOUBLE_MASK |
+		DISPCTRL_RB180_CSR_YDOUBLE_MASK
+	)) | (
+		(xdouble ? DISPCTRL_RB180_CSR_XDOUBLE_MASK : 0) |
+		(ydouble ? DISPCTRL_RB180_CSR_YDOUBLE_MASK : 0)
+	);
+}
+
 // Once enabled, the display controller will start to read pixels from
 // scanline buffers presented by the PPU.
 static inline void dispctrl_set_scan_enabled(bool en) {

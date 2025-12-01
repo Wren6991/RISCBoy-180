@@ -697,13 +697,23 @@ def rgb555_to_displaydata(l):
         yield 0x100 | ((y >> 8) & 0xff)
         yield 0x100 | ((y >> 0) & 0xff)
 
+def hdouble(l):
+    for x in l:
+        yield x
+        yield x
+
 expected_lcd_capture = {
     "display_init_parallel": expected_lcd_cmds_st7789,
     "display_init_parallel_halfrate": expected_lcd_cmds_st7789,
     "display_init_serial": expected_lcd_cmds_st7789,
     "display_init_serial_halfrate": expected_lcd_cmds_st7789,
     "ppu_parallel_scanbuf_width": list(rgb555_to_displaydata(range(2 * 512))),
-    "ppu_parallel_pram_write": list(rgb555_to_displaydata(x + 0xab00 for x in range(256)))
+    "ppu_parallel_pram_write": list(rgb555_to_displaydata(x + 0xab00 for x in range(256))),
+    "ppu_parallel_pixel_double":
+        list(rgb555_to_displaydata(hdouble(x + 0xab00 for x in range(128)))) +
+        list(rgb555_to_displaydata(hdouble(x + 0xab00 for x in range(128)))) +
+        list(rgb555_to_displaydata(hdouble(x + 0xab00 for x in range(128, 256)))) +
+        list(rgb555_to_displaydata(hdouble(x + 0xab00 for x in range(128, 256)))),
 }
 
 ###############################################################################
@@ -721,6 +731,7 @@ expected_lcd_capture = {
     "display_init_serial_halfrate",
     "ppu_parallel_scanbuf_width",
     "ppu_parallel_pram_write",
+    "ppu_parallel_pixel_double",
     "iram_addr_width",
     "aram_addr_width",
     "spi_stream_clkdiv",
@@ -728,6 +739,7 @@ expected_lcd_capture = {
 ])
 async def test_execute_eram(dut, app="hellow"):
     """Execute code from ERAM"""
+    cocotb.log.info(f"Application: {app}")
     assert app in expected_outputs or app in expected_lcd_capture, f"Missing test signature for {app}"
 
     swtest_dir = Path(__file__).resolve().parent.parent / "software/tests/eram"

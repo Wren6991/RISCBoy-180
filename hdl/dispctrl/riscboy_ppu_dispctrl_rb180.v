@@ -141,8 +141,13 @@ always @ (posedge clk_sys or negedge rst_n_sys) begin
 		pxfifo_scan_wen <= 1'b1;
 		scanout_x_first_of_two <= !scanout_x_first_of_two && csr_xdouble;
 		if (!scanout_x_first_of_two) begin
-			scanout_raddr <= end_of_line ? {W_COORD_SX{1'b0}} : scanout_raddr + 1'b1;
-			scanout_y_first_of_two <= !scanout_y_first_of_two && csr_ydouble;
+			if (end_of_line) begin
+				scanout_raddr <= {W_COORD_SX{1'b0}};
+				scanout_y_first_of_two <= !scanout_y_first_of_two && csr_ydouble;
+			end else begin
+				scanout_raddr <= scanout_raddr + {{W_COORD_SX-1{1'b0}}, 1'b1};
+				scanout_x_first_of_two <= csr_xdouble;
+			end
 		end
 	end else begin
 		pxfifo_scan_wen <= 1'b0;
