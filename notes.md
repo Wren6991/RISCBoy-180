@@ -951,3 +951,95 @@ Also worth noting serial LCD at 24 Mbps gives 26 FPS on a 240 x 240 serial LCD (
 
 The modifications to the SRAM controller were mostly painless. I still don't have system-level tests with the PPU fetching from RAM so I just hooked up the "DMA" read port on the RAM controller to toggle on/off every cycle to give it a quick smoke test with CPU contending with PPU access.
 
+Lots of boring structural RTL with high chance of failure... it's fine, there are a couple days for verification lmao
+
+I rewrote the display controller to add support for 8-bit output, horizontal and vertical doubling, and half-rate output (i.e. output clock division). This is a fairly simple block but there is scope to fuck it up.
+
+With the last big RTL changes in I spent a couple of hours looking at increasing the APU RAM from 2 kB to 4 kB. This would make quite a big difference to what you can do with the APU, and also the CPU can make use of spare APU RAM at a cost of 3 cycles per access. Unfortunately no matter how much I pushed the RAMs around I was seeing a couple of ns of timing degradation from the higher utilisation and possibly also from bits of processor getting trowelled into the buffer channels between RAMs (which I haven't figured out how to put exclusions on). Also, when I started squeezing out the margins between RAMS and between RAMs and the chip edge I kept getting detailed placement failures saying it failed to place one instance which was not even an instance in my netlist (it would be called something like `wire263`) making it impossible to diagnose where the congestion was. After global placement I did see a few big flops getting put in vertical buffer channels that were narrower than the flop, so it's possible that would fail to legalise, but then I would expect the detailed placer to give me a real flop instance name in its output. Anyway, I spent as much time on this as I was willing to and it is sadly a no.
+
+### Day 12: TWO DAYS REMAIN
+
+Today the design is going to meet timing. The secret to timing closure is to know at all times that you are right and the computer is wrong. The design will meet timing if you maintain the patience to explain to the computer what a useless dumbass it is.
+
+I looked into mapping DFFEs as scan flops, like I threatened to do at the start of the project. This turns out to be mostly very easy, with some caveats. Just write some modules like so (with reference to Yosys' [internal cell library](https://yosyshq.readthedocs.io/projects/yosys/en/latest/cell_index.html)):
+
+
+```verilog
+// Posedge flop with positive enable
+module \$_DFFE_PP_ (
+	input  D,
+	input  C,
+	input  E,
+	output Q
+);
+	gf180mcu_fd_sc_mcu9t5v0__sdffq_1 _TECHMAP_REPLACE_ (
+		.CLK (C),
+		.SI  (D),
+		.SE  (E),
+		.D   (Q),
+		.Q   (Q)
+	);
+
+endmodule
+```
+
+Then pass that file to Yosys through a curious series of pipes by putting this in your LibreLane config file:
+
+```yaml
+SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
+```
+
+This tells Yosys it can implement a DFFE (aka flop with enable) using a scan flop (aka flop with an integrated mux, used for DFT scan chain insertion) by recirculating the output back to the input when the scan enable is low. A model of a scan flop is something like:
+
+```verilog
+always @ (posedge CLK) Q <= SE ? SI : D;
+```
+
+I wrote a few of these to cover the different variants of high/low enable, async reset/preset etc. I also added some mappings for flops with synchronous set/clear, which appear in a few places where I have non-reset flops.
+
+One issue with this is STA sees a hold check on the short path from Q back to D. On my first run with the above tech mapping I saw hold buffers inserted on the short path. This is actually a false path because after all we are using the feedback path to hold Q stable, therefore on clock edges where D is selected there is no transition on Q, and no potential for hold violation.
+
+It's all well and good understanding this, but translating it into constraints is difficult because there is no tracability from Yosys' early tech mapping through to the synthesised netlist. I ended up just writing some awful TCL to filter out the correct flops and disable hold checks on the correct inputs:
+
+```tcl
+puts "(SCANMAP) Adding hold waivers to pseudo-DFFE scan flops:"
+set scan_flops [get_cells -hier -filter "ref_name =~ gf180mcu_fd_sc_mcu9t5v0__sdffq_*"]
+foreach flop $scan_flops {
+    set flop_name [sta::get_full_name $flop]
+    set q [sta::get_full_name [get_nets -of_object [get_pins ${flop_name}/Q]]]
+    set d [sta::get_full_name [get_nets -of_object [get_pins ${flop_name}/D]]]
+    set si [sta::get_full_name [get_nets -of_object [get_pins ${flop_name}/SI]]]
+    if {[string equal $q $d]} {
+        puts "(SCANMAP) Disabling hold checks -> D for pseudo-DFFE $flop_name (Q = ${q})"
+        set_false_path -hold -to [get_pins ${flop_name}/D]
+    } elseif {[string equal $q $si]} {
+        puts "(SCANMAP) Disabling hold checks -> SI for pseudo-DFFE $flop_name (Q = ${q})"
+        set_false_path -hold -to [get_pins ${flop_name}/SI]
+    } else {
+        puts "(SCANMAP) Skipping scan flop ${flop_name}: D = ${d} SI = ${si} Q = ${q}"
+    }
+}
+```
+
+This has some quite verbose but useful log output:
+
+```
+(SCANMAP) Disabling hold checks -> SI for pseudo-DFFE _105324_ (Q = i_chip_core.cpu_u.core.xm_addr_align[0])
+(SCANMAP) Disabling hold checks -> SI for pseudo-DFFE _105325_ (Q = i_chip_core.cpu_u.core.xm_addr_align[1])
+(SCANMAP) Disabling hold checks -> D for pseudo-DFFE _105515_ (Q = i_chip_core.dtm_async_bridge_u.src_paddr_pwdata_pwrite[0])
+(SCANMAP) Disabling hold checks -> D for pseudo-DFFE _105516_ (Q = i_chip_core.dtm_async_bridge_u.src_paddr_pwdata_pwrite[1])
+(SCANMAP) Disabling hold checks -> D for pseudo-DFFE _105517_ (Q = i_chip_core.dtm_async_bridge_u.src_paddr_pwdata_pwrite[2])
+...
+(SCANMAP) Skipping scan flop _105811_: D = net1172 SI = _002624_ Q = i_chip_core.rom_hrdata[31]
+(SCANMAP) Skipping scan flop _105812_: D = net SI = _002623_ Q = i_chip_core.rom_hrdata[30]
+(SCANMAP) Skipping scan flop _105813_: D = net1175 SI = _002621_ Q = i_chip_core.rom_hrdata[29]
+(SCANMAP) Skipping scan flop _105814_: D = net1176 SI = _002620_ Q = i_chip_core.rom_hrdata[28]
+```
+
+With the above I can now somewhat reasonably disable clock gating (yes), which reduces my clock skew and is overall a win, at least from a timing point of view. Might run a bit warm for a GameBoy.
+
+I'm close but in my worst reg2reg path I see that there are high-fanout scan flops in my processor which are still the minimum possible size with multi-nanosecond slew times I'm a bit confused by this because I don't think there is anything stopping the tools from resizing the cells I mapped, and some of the immediate loads of these flops have been sized up. In fact in theory I have enabled resizing during _synthesis_, which is not enabled by default. As a temporary hack (...) I changed the default size by just using a different cell instance in the tech map file (for _all_ scan flops): this is just substituting `gf180mcu_fd_sc_mcu9t5v0__sdffq_1` above for `gf180mcu_fd_sc_mcu9t5v0__sdffq_4` etc.
+
+After fixing up some overly tight IO constraints on the SRAM D outputs I'm at -1.1 ns WNS on the reg2reg paths, which seems in reach of my goal. After then finally re-instating the negedge flops on the SRAM_D outputs which I couldn't figure out how to constrain sensibly before (since there are some posedge flops going to the same pad and (editor removed long rant about OpenSTA)), which relaxes the tough paths from the processor even further, I'm at... -4.1 ns. The critical reg2reg path through the processor is in the same place it was before, and there are a ton of unit-drive cells on that path.
+
+
