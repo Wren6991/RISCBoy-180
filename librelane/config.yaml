@@ -43,9 +43,9 @@ STD_CELL_LIBRARY: gf180mcu_fd_sc_mcu9t5v0
 # Force use of chonky bois to reduce clock skew (default list is 2, 4, 8). d20
 # is 9-track only I think
 CTS_CLK_BUFFERS:
-  # - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_8"
+  - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_8"
   - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_16"
-  # - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_20"
+  - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_20"
 
 # Doesn't seem to achieve much but the docs imply this should be set if you
 # have CG cells on your clock tree (or any cells inserted prior to CTS)
@@ -61,8 +61,9 @@ SYNTH_SIZING: True
 # abc cmd: f"buffer -N {self.max_fanout}{max_tr_arg};upsize {{D}};dnsize {{D}}"
 # (where self.max_fanout comes from config["MAX_FANOUT_CONSTRAINT"])
 SYNTH_ABC_BUFFERING: True
-# Also try in combo with:
-# DESIGN_REPAIR_REMOVE_BUFFERS: True
+# Strip out buffers inserted by ABC and re-buffer after global placement. The
+# synthesis buffers are just there to get a better guess for GPL.
+DESIGN_REPAIR_REMOVE_BUFFERS: True
 
 # default: 10
 MAX_FANOUT_CONSTRAINT: 5
@@ -103,7 +104,7 @@ PL_RESIZER_SETUP_MAX_BUFFER_PCT: 100
 GRT_RESIZER_SETUP_MAX_BUFFER_PCT: 100
 
 # Cmon
-DESIGN_REPAIR_MAX_SLEW_PCT: 50
+DESIGN_REPAIR_MAX_SLEW_PCT: 80
 DESIGN_REPAIR_MAX_CAP_PCT: 50
 
 # Ooh
@@ -111,6 +112,20 @@ RUN_POST_GRT_RESIZER_TIMING: True
 
 # If you're reading this far and you think "this idiot is just trying every
 # option to see if it improves timing" then you're right
+
+# Saw some multi-millimetre-long wires on the clock branch going to the SRAMs
+# (which branches from the very first clock buffer) so try to limit that. Unit
+# is um, default is 0 meaning no limit.
+
+# Disabled because it creates insane skew: seems to be done as a post-CTS
+# repair step, not as part of CTS.
+# CTS_CLK_MAX_WIRE_LENGTH: 500
+
+# This one is actually used during CTS (though curiously it's just documented
+# as "distance" not max distance) -> don't use, it also stops the normal CTS
+# algorithm from being run.
+# CTS_DISTANCE_BETWEEN_BUFFERS: 500
+
 
 ###############################################################################
 # Files

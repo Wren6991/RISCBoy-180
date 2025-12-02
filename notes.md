@@ -1082,3 +1082,15 @@ Today I need to actually write some tests. I added a very simple harness to capt
 
 The basic PPU mechanics otherwise seem solid, and it can fetch instructions and data from system RAM, and read/write all locations in the scan buffer memories and the palette memories.
 
+I'm happy the PPU and LCD controller are more or less hanging together now, so let's take another kick at the QoR. First I'll start a run with increased slew margin during repair, because I am seeing some very high (couple of ns) slews on tight paths and I want the tools to try a bit harder with buffering or (ideally) size-ups.
+
+I also think the register file needs a second look. There is not really any area benefit to the latches because CTS is giving each latch its very own personal clock inverter on its enable; note there are no active-low latches in the cell library, and when I tried explicitly inserting one chonky clock inverter I hit a CTS bug where it cloned the inverter and actually left one of the clones with its input disconnected. Another issue is the clock to the clock gates in the register file is horribly balanced; the root clock buffer sends one branch to these clock gates plus all the SRAM, and another branch to all of the other logic in the design. At this point we know CTS is a fuck so just stripping out the last remaining clock gates seems like a pragmatic thing to do. Maybe V2 can have an artisanal hand-balanced clock tree with all the clock gating of my dreams.
+
+So two changes here:
+
+* Replace transparent latches with scan-flop pseudo-DFFEs and a behavioural mux to bypass the write data (this still seems to be the right place to bring the write data in as HREADY and HRDATA are quite early signals in this system)
+
+* Size up the register read data output flops (1 -> 4) as these are quite high fanout and the tools seem to refuse to make correct sizing decisions on their own
+
+Weirdly going from latch cells to scan flop cells makes my Icarus sims several times slower. Good thing I have already written a lot of the tests I'm going to write.
+
