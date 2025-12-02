@@ -79,7 +79,7 @@ SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
 # -> Disabled to reduce clock skew (since DFFEs are now a thing via scan flops)
 # USE_LIGHTER: True
 
-PL_TARGET_DENSITY_PCT: 53
+PL_TARGET_DENSITY_PCT: 52
 GRT_ALLOW_CONGESTION: true
 
 # Magic incantation from Discord to make the antenna violations go away
@@ -93,9 +93,9 @@ GRT_RESIZER_HOLD_SLACK_MARGIN: 0.16
 # Apply insane levels of slack margin because I keep seeing a bunch of drive-1
 # cells on my critical paths, just do your job dude
 # Default: 0.05
-PL_RESIZER_SETUP_SLACK_MARGIN: 3
+PL_RESIZER_SETUP_SLACK_MARGIN: 3.5
 # Default: 0.025
-GRT_RESIZER_SETUP_SLACK_MARGIN: 3
+GRT_RESIZER_SETUP_SLACK_MARGIN: 3.5
 
 # Cmon do something
 PL_RESIZER_FIX_HOLD_FIRST: True
