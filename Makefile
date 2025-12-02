@@ -64,19 +64,19 @@ sim-view: ## View simulation waveforms in GTKWave
 .PHONY: sim-view
 
 regblocks: ## Regenerate all register blocks and their headers
-	./scripts/regblock -a hdl/apu/ipc/apu_ipc_regs.yml
-	./scripts/regblock -a hdl/apu/aout/apu_aout_regs.yml
-	./scripts/regblock -a hdl/apu/timer/apu_timer_regs.yml
-	./scripts/regblock -a hdl/spi_stream/spi_stream_regs.yml
-	./scripts/regblock -a hdl/gpio/gpio_regs.yml
-	./scripts/regblock -a hdl/padctrl/padctrl_regs.yml
-	./scripts/regblock -a hdl/dispctrl/regs/ppu_dispctrl_rb180_regs.yml
-	./scripts/regblock -a hdl/riscboy/hdl/graphics/ppu/regs/ppu_regs.yml
-	./scripts/regblock -a hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny_regs.yml
-	./scripts/regblock -a hdl/vuart/vuart_dev_regs.yml
-	./scripts/regblock -a hdl/vuart/vuart_host_regs.yml
-	./scripts/regblock -a hdl/uart/uart_regs.yml
-	./scripts/regblock -a hdl/clocks/clocks_regs.yml
+	./fpgascripts/regblock -a hdl/apu/ipc/apu_ipc_regs.yml
+	./fpgascripts/regblock -a hdl/apu/aout/apu_aout_regs.yml
+	./fpgascripts/regblock -a hdl/apu/timer/apu_timer_regs.yml
+	./fpgascripts/regblock -a hdl/spi_stream/spi_stream_regs.yml
+	./fpgascripts/regblock -a hdl/gpio/gpio_regs.yml
+	./fpgascripts/regblock -a hdl/padctrl/padctrl_regs.yml
+	./fpgascripts/regblock -a hdl/dispctrl/regs/ppu_dispctrl_rb180_regs.yml
+	./fpgascripts/regblock -a hdl/riscboy/hdl/graphics/ppu/regs/ppu_regs.yml
+	./fpgascripts/regblock -a hdl/riscboy/hdl/peris/pwm_tiny/pwm_tiny_regs.yml
+	./fpgascripts/regblock -a hdl/vuart/vuart_dev_regs.yml
+	./fpgascripts/regblock -a hdl/vuart/vuart_host_regs.yml
+	./fpgascripts/regblock -a hdl/uart/uart_regs.yml
+	./fpgascripts/regblock -a hdl/clocks/clocks_regs.yml
 .PHONY: sim-view
 
 copy-final: ## Copy final output files from the last run

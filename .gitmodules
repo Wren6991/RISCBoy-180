@@ -11,5 +11,5 @@
 	path = hdl/riscboy
 	url = https://github.com/Wren6991/RISCBoy.git
 [submodule "scripts"]
-	path = scripts
+	path = fpgascripts
 	url = https://github.com/Wren6991/fpgascripts.git
