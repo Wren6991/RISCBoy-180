@@ -28,12 +28,12 @@ SECTIONS {
 		__global_pointer$ = . + 2K;
 		*(.srodata*)
 		*(.sdata*)
-		*(.sbss*)
 		. = ALIGN(4);
 	} > ERAM
 
 	.bss : {
 		PROVIDE(__sbss = .);
+		*(.sbss*)
 		*(.bss .bss.*)
 		. = ALIGN(4);
 		PROVIDE(__ebss = .);

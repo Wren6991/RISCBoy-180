@@ -1094,3 +1094,8 @@ So two changes here:
 
 Weirdly going from latch cells to scan flop cells makes my Icarus sims several times slower. Good thing I have already written a lot of the tests I'm going to write.
 
+With the new scan flop register file I'm timing clean, phew. I can enable Zilsd/Zclsd extensions on the core and it's still clean. Interestingly I now have around 7 or 8 ns of setup slack on the reg2reg paths, with 10 ns slack margin set in PL/GRT resizers. Backing this off to around 2.5 ns the standard cell area shrinks and it just meets timing. I can't quite explain the sudden improvement, but I see all the register file flops there in the layout (it's larger than the latch-based register file) and the sims seem fine.
+
+I wrote some basic smoke tests for the APU timer. One irritation I hit, and I'm not sure whether this is an Icarus, cocotb or Surfer issue, is it doesn't trace memories, including when you just have a few regs in an array. This makes it quite frustrating to debug the timer tests in the waveform view. Anyway the timer seems to work exactly as intended, which I'm quite pleased with given it received no testing before now.
+
+

@@ -661,6 +661,64 @@ expected_outputs = {
         "1b1a1918",
         "1f1e1d1c",
     ]),
+    "apu_timer_smoke": "\r\n".join([
+        "Starting timer",
+        "Stopped timer",
+        # Intervals are 10, 15, 20 us. Simultaneous are reported in order 0, 1, 2.
+        # t = 10
+        "00",
+        # t = 15
+        "01",
+        # t = 20
+        "00",
+        "02",
+        # t = 30
+        "00",
+        "01",
+        # t = 40
+        "00",
+        "02",
+        # t = 45
+        "01",
+        # t = 50
+        "00",
+        # t = 60
+        "00",
+        "01",
+        "02",
+        # Now repeats until there are 32 total
+        # t = 10
+        "00",
+        # t = 15
+        "01",
+        # t = 20
+        "00",
+        "02",
+        # t = 30
+        "00",
+        "01",
+        # t = 40
+        "00",
+        "02",
+        # t = 45
+        "01",
+        # t = 50
+        "00",
+        # t = 60
+        "00",
+        "01",
+        "02",
+        # t = 10
+        "00",
+        # t = 15
+        "01",
+        # t = 20
+        "00",
+        "02",
+        # t = 30
+        "00",
+        "01",
+    ])
 }
 
 # Bit 8 is D/C (0 for command)
@@ -740,6 +798,7 @@ expected_lcd_capture = {
     "aram_addr_width",
     "spi_stream_clkdiv",
     "spi_stream_pause",
+    "apu_timer_smoke",
 ])
 async def test_execute_eram(dut, app="hellow"):
     """Execute code from ERAM"""
