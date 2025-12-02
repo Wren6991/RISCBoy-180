@@ -102,6 +102,12 @@ isr_machine_external:
 #endif
 	sw ra,  0(sp)
 	sw t0,  4(sp)
+#if __riscv_zilsd
+	sd t1,  8(sp)
+	sd a0, 16(sp)
+	sd a2, 24(sp)
+	sd a4, 32(sp)
+#else
 	sw t1,  8(sp)
 	sw t2, 12(sp)
 	sw a0, 16(sp)
@@ -110,13 +116,20 @@ isr_machine_external:
 	sw a3, 28(sp)
 	sw a4, 32(sp)
 	sw a5, 36(sp)
+#endif
 #if __riscv_i
+#if __riscv_zilsd
+	sd a6, 40(sp)
+	sd t3, 48(sp)
+	sd t5, 56(sp)
+#else
 	sw a6, 40(sp)
 	sw a7, 44(sp)
 	sw t3, 48(sp)
 	sw t4, 52(sp)
 	sw t5, 56(sp)
 	sw t6, 60(sp)
+#endif
 #endif
 
 	// No preemption, just handle the IRQs in ascending order. Try not to take
@@ -142,6 +155,12 @@ get_next_irq:
 no_more_irqs:
 	lw ra,  0(sp)
 	lw t0,  4(sp)
+#if __riscv_zilsd
+	ld t1,  8(sp)
+	ld a0, 16(sp)
+	ld a2, 24(sp)
+	ld a4, 32(sp)
+#else
 	lw t1,  8(sp)
 	lw t2, 12(sp)
 	lw a0, 16(sp)
@@ -150,7 +169,13 @@ no_more_irqs:
 	lw a3, 28(sp)
 	lw a4, 32(sp)
 	lw a5, 36(sp)
+#endif
 #if __riscv_i
+#if __riscv_zilsd
+	ld a6, 40(sp)
+	ld t3, 48(sp)
+	ld t5, 56(sp)
+#else
 	lw a6, 40(sp)
 	lw a7, 44(sp)
 	lw t3, 48(sp)
@@ -158,11 +183,13 @@ no_more_irqs:
 	lw t5, 56(sp)
 	lw t6, 60(sp)
 #endif
+#endif
 #if __riscv_i
-	addi sp, sp, 64
+	addi sp, sp, -64
 #else
-	addi sp, sp, 40
-#endif	
+	addi sp, sp, -40
+#endif
+
 	mret
 
 .section .data
