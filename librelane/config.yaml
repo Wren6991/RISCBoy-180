@@ -79,7 +79,7 @@ SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
 # -> Disabled to reduce clock skew (since DFFEs are now a thing via scan flops)
 # USE_LIGHTER: True
 
-PL_TARGET_DENSITY_PCT: 50
+PL_TARGET_DENSITY_PCT: 53
 GRT_ALLOW_CONGESTION: true
 
 # Magic incantation from Discord to make the antenna violations go away
