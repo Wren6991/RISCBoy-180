@@ -227,7 +227,7 @@ hazard3_cpu_1port #(
     .MULH_FAST           (0),
     .FAST_BRANCHCMP      (1),
     .RESET_REGFILE       (0),
-    .BRANCH_PREDICTOR    (0),
+    .BRANCH_PREDICTOR    (1),
     .MTVEC_WMASK         (32'h000ffffd)
 ) cpu_u (
     .clk                        (clk_gated_cpu),
