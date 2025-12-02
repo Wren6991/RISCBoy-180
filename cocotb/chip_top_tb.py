@@ -381,8 +381,8 @@ async def rvdebug_read_mem32(dut, addr):
 
 async def start_up(dut):
     if gl:
-        dut.VDD.value = 1
-        dut.VSS.value = 0
+        dut.chip_u.VDD.value = 1
+        dut.chip_u.VSS.value = 0
     dut.RSTn.value = 0
     dut.clk_running.value = 0
     await Timer(1, "us")
@@ -1002,7 +1002,7 @@ def get_sources_defines_includes():
     ])
 
     defines["GF180MCU"]       = True # Use inserted cells
-    defines["BEHAV_SRAM_1RW"] = True # Don't use vendor models (TODO)
+    # defines["BEHAV_SRAM_1RW"] = True # Don't use vendor models
 
     # SCL models: included even for RTL sims, as RTL may instantiate cells in some rare cases
     sources.append(Path(pdk_root) / pdk / "libs.ref" / scl / "verilog" / f"{scl}.v")
@@ -1010,7 +1010,7 @@ def get_sources_defines_includes():
 
     if gl:
         # We use the powered netlist
-        sources.append(proj_path / f"../final/pnl/{"tb"}.pnl.v")
+        sources.append(proj_path / f"../final/pnl/chip_top.pnl.v")
         defines["FUNCTIONAL"] = True
         defines["USE_POWER_PINS"] = True
     else:
@@ -1023,9 +1023,13 @@ def get_sources_defines_includes():
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_io/verilog/gf180mcu_fd_io.v",
         Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_io/verilog/gf180mcu_ws_io.v",
         
-        # SRAM macros
-        Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
-        Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram256x8m8wm1.v",
+        # SRAM macros (replaced with a simple model without behavioural delays)
+
+        # TODO it would be good to fully understand the issues with the vendor
+        # models but running out of time pre-tapeout. There are at least two
+        # definite bugs.
+        "tb/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
+        "tb/gf180mcu_fd_ip_sram__sram256x8m8wm1.v",
         
         # Custom IP
         proj_path / "../ip/gf180mcu_ws_ip__id/vh/gf180mcu_ws_ip__id.v",
