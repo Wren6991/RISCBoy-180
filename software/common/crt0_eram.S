@@ -1,5 +1,9 @@
 #include "hazard3_csr.h"
 
+// GAS supports Zilsd but GCC does not, so the preprocessor macro isn't set.
+// FIXME this will break non-Zilsd builds.
+#define __riscv_zilsd 1
+
 .section .init, "ax"
 
 .global _start
