@@ -497,7 +497,7 @@ hazard3_cpu_1port #(
 ) cpu_u (
     .clk                        (clk_sys_gated_cpu),
     .clk_always_on              (clk_sys),
-    .rst_n                      (rst_n_sys),
+    .rst_n                      (rst_n_cpu),
 
     .pwrup_req                  (cpu_pwrup_req),
     .pwrup_ack                  (cpu_pwrup_ack),

@@ -1114,3 +1114,14 @@ Gate sims are critical because I have some custom tech mapping for pseudo-DFFEs 
 Other than that, I need to press on with system-level tests and _maybe_ sneak in display controller VGA mode and/or second-order modulation in the audio SDM.
 
 Oh and I should go through my Verilator lint log and make sure there is nothing suspicous. Ok let's go.
+
+Debugging foundry RAMs immediately hit an issue which is Icarus won't trace down into the generate loops that instantiate the RAMs. I have no idea why. Looks like cocotb just generates a verilog file with a `$dumpvars(0, tb);` and Icarus does (or in this case doesn't do) the rest. I knew it didn't trace the RAM contents but this is a new one. Slightly shocked I'm saying this but it might be easier to debug the RAMs in gate sim than in RTL sim.
+
+I started debugging gate sims, starting with reading the chip IDCODE over TWD. I immediately get an X back on DIO because my DCK was initially Z. Weird, there should be a pulldown on that. I went to pull the pad instance out of the waveform view and realised surfer doesn't let you search instances, just signals (or at least I couldn't find it). The entire chip is one flat module with hundreds of thousands of instances so this is not going to work. Back to GTKWave. Oh that doesn't have it either. Ok back to surfer.
+
+I realised the instance hierarchy is alphabetical so I can find the pads if I scroll down to the bottom (everything machine-inserted is either upper-case or starts with an underscore). The pad has its PD=1 PU=0, yet the pad net is Z. This turns out to be a bug in the model for the pad (they just... forgot to model PU/PD). I fixed it locally and filed an issue.
+
+I got to the point where the tests which access RAM through the debugger all pass. All tests which execute code on the core fail. The ones running from IRAM are unsurprising as the code to preload that RAM from the testbench only works for my behavioural RAM model. The fact the bootrom fails is much more concerning.
+
+Looking into it, my processor is taking an instruction fault immediately after `rst_n_cpu` is released. After much confused poking around I realised this is not actually hooked up to the processor, and it's just running off the system reset. Oops! That doesn't explain all of the weirdness but it is definitely a bug, so back to synthesis we go.
+
