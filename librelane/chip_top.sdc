@@ -57,7 +57,7 @@ set_input_delay  -min 0                             -clock [get_clock clk_sys] [
 # Reasonably tight on audio paths so we get the final flop and buffers fairly
 # close to the quiet supply pins. Note this is just the audio path; the GPIO
 # controls from clk_sys are false-pathed as they're not really important.
-set_output_delay      [expr 0.70 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {AUDIO}]
+set_output_delay      [expr 0.65 * $CLK_SYS_PERIOD] -clock [get_clock clk_sys] [get_ports {AUDIO}]
 
 # LCD_SCK has the same consideration as SRAM_WEn as it's generated using an
 # ICGTN. Other than that just keep the SPI output paths rather tight as a way
@@ -108,15 +108,22 @@ set_false_path -setup -hold -through [get_ports LCD_BL]
 #     Output disable to output in high-Z.. tOHZ -   6
 
 # Pad tRC/tWC so we can use faster RAMs or shorter clk_sys period:
-set SRAM_A_TO_Q 15
+set SRAM_A_TO_Q 25
 
-# Input paths are less challenging, so squeeze them a bit more
-set SRAM_Q_EXTRA_JUICE 5
+# Put more delay on the Q -> pad paths than on the harder pad -> D paths
+# (partly harder because we're timing from the clock origin but oh well):
+set SRAM_A_TO_Q_INPUT_FRACTION 0.6
 
-# Put A-to-Q delay in middle of cycle:
-set SRAM_IO_DELAY [expr 0.50 * ($CLK_SYS_PERIOD + $SRAM_A_TO_Q)]
+# Put A-to-Q delay roughly in middle of cycle:
+set SRAM_OUT_DELAY [expr 0.50 * $CLK_SYS_PERIOD + $SRAM_A_TO_Q * (1 - $SRAM_A_TO_Q_INPUT_FRACTION)]
+set SRAM_IN_DELAY  [expr 0.50 * $CLK_SYS_PERIOD + $SRAM_A_TO_Q *      $SRAM_A_TO_Q_INPUT_FRACTION ]
 
-set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
+# Recovery time requirement tWR is 0, so WEn deassertion must be no later than
+# next rising edge. Add a little padding between WEn deassertion and A
+# arrival:
+set SRAM_WE_TO_A_MARGIN 2
+
+set_output_delay $SRAM_OUT_DELAY -clock [get_clock clk_sys] [get_ports {
     SRAM_A[*]
     SRAM_DQ[*]
     SRAM_OEn
@@ -125,10 +132,10 @@ set_output_delay $SRAM_IO_DELAY -clock [get_clock clk_sys] [get_ports {
 
 # The SRAM D data (pad /A) paths launch on a negedge and are aligned to the
 # falling edge of WEn, half a cycle after the SRAM_A outputs. Therefore allow
-# 1.5 clock periods because (I think usually you would use `set_sense` here
-# but OpenSTA doesn't support this for datapath). We launch on a negedge
-# because we need a little extra time here for some muxing on the write data
-# (which may come from the previous cycle's SRAM_Q as byte writes are
+# 1.5 clock periods (I think usually you would use `set_sense` here but
+# OpenSTA doesn't support this for datapath). We launch on a negedge because
+# we need a little extra time here for some muxing on the write data (which
+# may come from the previous cycle's SRAM_Q as byte writes are
 # read-modify-write).
 #
 # The SRAM has two requirements on its D inputs: tDW is a setup on the
@@ -156,10 +163,10 @@ set_max_delay [expr $CLK_SYS_PERIOD * 1.5] \
 # OpenSTA (it says the default source edge is posedge but 1. no specified way
 # to change it 2. it's clearly timing from negedge) so just add a half-period
 # of slack (which is a subtraction of delay).
-set_output_delay [expr $SRAM_IO_DELAY - 0.50 * $CLK_SYS_PERIOD] \
+set_output_delay [expr $SRAM_OUT_DELAY - 0.50 * $CLK_SYS_PERIOD + $SRAM_WE_TO_A_MARGIN] \
     -clock [get_clock clk_sys] [get_ports {SRAM_WEn}]
 
-set_input_delay [expr $SRAM_IO_DELAY + $SRAM_Q_EXTRA_JUICE] -clock [get_clock clk_sys] [get_ports {
+set_input_delay [expr $SRAM_IN_DELAY] -clock [get_clock clk_sys] [get_ports {
     SRAM_DQ[*]
 }]
 

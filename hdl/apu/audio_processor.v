@@ -195,10 +195,10 @@ hazard3_cpu_1port #(
     .EXTENSION_ZBKX      (0),
     .EXTENSION_ZBS       (1),
     .EXTENSION_ZCB       (1),
-    .EXTENSION_ZCLSD     (0),
+    .EXTENSION_ZCLSD     (1),
     .EXTENSION_ZCMP      (0),
     .EXTENSION_ZIFENCEI  (0),
-    .EXTENSION_ZILSD     (0),
+    .EXTENSION_ZILSD     (1),
 
     .EXTENSION_XH3BEXTM  (0),
     .EXTENSION_XH3IRQ    (1),

@@ -76,7 +76,7 @@ SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
 # but this doesn't affect the skew too much for the small gate groups inferred
 # by this pass (unlike explicit top-level ICGs which are catastrophic). Clock
 # skew is a little worse but we get better DFFE mapping.
-# Disabled to reduce clock skew (since DFFEs are now a thing via scan flops)
+# -> Disabled to reduce clock skew (since DFFEs are now a thing via scan flops)
 # USE_LIGHTER: True
 
 PL_TARGET_DENSITY_PCT: 50
@@ -93,9 +93,9 @@ GRT_RESIZER_HOLD_SLACK_MARGIN: 0.16
 # Apply insane levels of slack margin because I keep seeing a bunch of drive-1
 # cells on my critical paths, just do your job dude
 # Default: 0.05
-PL_RESIZER_SETUP_SLACK_MARGIN: 10
+PL_RESIZER_SETUP_SLACK_MARGIN: 2.5
 # Default: 0.025
-GRT_RESIZER_SETUP_SLACK_MARGIN: 10
+GRT_RESIZER_SETUP_SLACK_MARGIN: 2.5
 
 # Cmon do something
 PL_RESIZER_FIX_HOLD_FIRST: True
@@ -103,12 +103,17 @@ GRT_RESIZER_FIX_HOLD_FIRST: True
 PL_RESIZER_SETUP_MAX_BUFFER_PCT: 100
 GRT_RESIZER_SETUP_MAX_BUFFER_PCT: 100
 
-# Cmon
-DESIGN_REPAIR_MAX_SLEW_PCT: 80
-DESIGN_REPAIR_MAX_CAP_PCT: 50
-
-# Ooh
+# Second pass through the resizer (so CTS -> resize -> GRT -> resize) seems to
+# give a bit of oomph. I imagine part of this is just because we do hold fix,
+# then setup fix, then hold fix again, then setup fix again
 RUN_POST_GRT_RESIZER_TIMING: True
+
+# Slew margin seems to be the key to getting some size-ups done before
+# detailed placement
+# default 20:
+DESIGN_REPAIR_MAX_SLEW_PCT: 80 # <- this guy right here
+# default 20:
+DESIGN_REPAIR_MAX_CAP_PCT: 50
 
 # If you're reading this far and you think "this idiot is just trying every
 # option to see if it improves timing" then you're right
@@ -561,52 +566,52 @@ MACROS:
     instances:
       # Make sure to specify the SRAMs in pdn_cfg.tcl
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[0].ram_u:
-        location: [3000, 725]
+        location: [3000, 500]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[1].ram_u:
-        location: [3000, 1250]
+        location: [3000, 1025]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[2].ram_u:
-        location: [3000, 1775]
+        location: [3000, 1550]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[0].g_width[3].ram_u:
-        location: [3000, 2300]
+        location: [3000, 2075]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[0].ram_u:
-        location: [2500, 725]
+        location: [2500, 500]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[1].ram_u:
-        location: [2500, 1250]
+        location: [2500, 1025]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[2].ram_u:
-        location: [2500, 1775]
+        location: [2500, 1550]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[1].g_width[3].ram_u:
-        location: [2500, 2300]
+        location: [2500, 2075]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[0].ram_u:
-        location: [1000, 725]
+        location: [1000, 500]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[1].ram_u:
-        location: [1000, 1250]
+        location: [1000, 1025]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[2].ram_u:
-        location: [1000, 1775]
+        location: [1000, 1550]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[2].g_width[3].ram_u:
-        location: [1000, 2300]
+        location: [1000, 2075]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[0].ram_u:
-        location: [500, 725]
+        location: [500, 500]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[1].ram_u:
-        location: [500, 1250]
+        location: [500, 1025]
         orientation: "S"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[2].ram_u:
-        location: [500, 1775]
+        location: [500, 1550]
         orientation: "N"
       i_chip_core.iram_u.sram.g_dg512.g_depth[3].g_width[3].ram_u:
-        location: [500, 2300]
+        location: [500, 2075]
         orientation: "N"
 
       i_chip_core.apu_u.ram_u.sram.g_d512.g_width[0].ram_u:
