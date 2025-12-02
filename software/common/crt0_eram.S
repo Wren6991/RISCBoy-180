@@ -189,9 +189,9 @@ no_more_irqs:
 #endif
 #endif
 #if __riscv_i
-	addi sp, sp, -64
+	addi sp, sp, 64
 #else
-	addi sp, sp, -40
+	addi sp, sp, 40
 #endif
 
 	mret

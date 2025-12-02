@@ -1125,3 +1125,105 @@ I got to the point where the tests which access RAM through the debugger all pas
 
 Looking into it, my processor is taking an instruction fault immediately after `rst_n_cpu` is released. After much confused poking around I realised this is not actually hooked up to the processor, and it's just running off the system reset. Oops! That doesn't explain all of the weirdness but it is definitely a bug, so back to synthesis we go.
 
+Ok that was a little annoying to debug but I just had the synthesis equivalent of a near-death experience.
+
+```
+commit ddfa018d0691bdef98b86cdf3d4b537ad155ac64 (HEAD -> main)
+Author: Luke Wren <wren6991@gmail.com>
+Date:   Tue Dec 2 20:32:53 2025 +0000
+
+    fuck fuck fuck fuck FUCK
+
+diff --git a/librelane/gf180_scanflop_map.v b/librelane/gf180_scanflop_map.v
+index 934ab78..7bf44e0 100644
+--- a/librelane/gf180_scanflop_map.v
++++ b/librelane/gf180_scanflop_map.v
+@@ -199,7 +199,7 @@ module \$_SDFF_PN1_ (
+                .CLK  (C),
+                .SI   (D),
+                .SE   (R),
+-               .D    (1'b0),
++               .D    (1'b1),
+                .Q    (Q)
+        );
+ 
+```
+
+I was incorrectly mapping flops with synchronous active-low sets as flops with synchronous active-low clears. This manifested in my ROM returning incorrect values, probably with some other bugs I didn't know about.
+
+For some reason this experience made me scroll through Yosys' flop library again and see if there were any more mapping opportunities, but no. That's for V2.
+
+With this I can happily simulate code executing from external RAM (with stack in internal RAM) and PPU rendering some scanlines and capturing them at the pins. Crisis averted. For some reason the next run fails detailed placement (just changing a tie cell from 0 to 1 shouldn't really have any area impact, but it's chaotic) so I bump the density down and the setup margin up.
+
+There's one ERAM execution test which still fails in gate sim: the APU timer IRQ test I added yesterday. It runs correctly up til printing the 29th of 32 results and then program counter goes to X. Oof. Last valid PC was 0x270 which is the return at the end of main. Before that it was 0x26e so this seems like a valid PC. Pulling `ra` out of the register file and indeed it is X; it got this value when stage 2 PC was 262, and the instruction before that is a stack load.
+
+```
+ 25a:	29400513          	li	a0,660
+ 25e:	3dd5                	jal	152 <vuart_puts>
+ 260:	40f2                	lw	ra,28(sp)
+ 262:	4462                	lw	s0,24(sp)
+ 264:	44d2                	lw	s1,20(sp)
+ 266:	4942                	lw	s2,16(sp)
+ 268:	49b2                	lw	s3,12(sp)
+ 26a:	4a22                	lw	s4,8(sp)
+ 26c:	4501                	li	a0,0
+ 26e:	6105                	addi	sp,sp,32
+ 270:	8082                	ret
+	...
+```
+
+When we load ra, the stack pointer is 0x41ae0, which is quite far below the original top-of-stack at 0x42000 (top of ERAM). I suspect my IRQ dispatch, and lo and behold:
+
+```
+
+000000ac <isr_machine_external>:
+  ac:   7139                    addi    sp,sp,-64
+  ae:   c006                    sw      ra,0(sp)
+  b0:   c216                    sw      t0,4(sp)
+  b2:   e41a                    sd      t1,8(sp)
+  b4:   e82a                    sd      a0,16(sp)
+  b6:   ec32                    sd      a2,24(sp)
+  b8:   f03a                    sd      a4,32(sp)
+  ba:   f442                    sd      a6,40(sp)
+  bc:   f872                    sd      t3,48(sp)
+  be:   fc7a                    sd      t5,56(sp)
+  c0:   be40e573                csrrsi  a0,0xbe4,1
+  c4:   00054e63                bltz    a0,e0 <no_more_irqs>
+
+000000c8 <dispatch_irq>:
+  c8:   30046073                csrsi   mstatus,8
+  cc:   2ac00593                li      a1,684
+  d0:   95aa                    add     a1,a1,a0
+  d2:   418c                    lw      a1,0(a1)
+  d4:   000580e7                jalr    a1
+
+000000d8 <get_next_irq>:
+  d8:   be40e573                csrrsi  a0,0xbe4,1
+  dc:   fe0556e3                bgez    a0,c8 <dispatch_irq>
+
+000000e0 <no_more_irqs>:
+  e0:   4082                    lw      ra,0(sp)
+  e2:   4292                    lw      t0,4(sp)
+  e4:   6322                    ld      t1,8(sp)
+  e6:   6542                    ld      a0,16(sp)
+  e8:   6662                    ld      a2,24(sp)
+  ea:   7702                    ld      a4,32(sp)
+  ec:   7822                    ld      a6,40(sp)
+  ee:   7e42                    ld      t3,48(sp)
+  f0:   7f62                    ld      t5,56(sp)
+  f2:   7139                    addi    sp,sp,-64
+  f4:   30200073                mret
+  f8:   00000013                nop
+  fc:   00000013                nop
+ 100:   00000013                nop
+ 104:   00000013                nop
+ 108:   00000013                nop
+ 10c:   00000013                nop
+ 110:   00000013                nop
+ 114:   00000013                nop
+```
+
+It subtracts twice. This is an editing mistake from when I was messing around with this code earlier to add Zclsd support.
+
+I re-ran the tests and my processor is making happy processor noises in gate sim, so I think we've worked through all the issues we're going to work through. I expect this was broken in RTL sim too, but the blast radius of the X propagation was smaller so it didn't take out the VUART when it returned from main.
+
