@@ -199,7 +199,7 @@ module \$_SDFF_PN1_ (
 		.CLK  (C),
 		.SI   (D),
 		.SE   (R),
-		.D    (1'b0),
+		.D    (1'b1),
 		.Q    (Q)
 	);
 
