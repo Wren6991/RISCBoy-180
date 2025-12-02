@@ -174,9 +174,9 @@ async def twd_vuart_getchar(dut, max_poll=10):
     # The status flags are also present in the FIFO register, but still use
     # STAT because the FIFO storage flops are Xs initially.
     for i in range(max_poll):
-        fifo_stat = await twd_read_bus(dut, VUART_STAT)
+        fifo_stat = await twd_read_bus(dut, VUART_FIFO)
         if fifo_stat & VUART_STAT_RXVLD:
-            return (await twd_read_bus(dut, VUART_FIFO)) & 0xff
+            return fifo_stat & 0xff
     return None
 
 ###############################################################################

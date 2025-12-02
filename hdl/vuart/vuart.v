@@ -151,7 +151,7 @@ vuart_host_regs vuart_host_regs_u (
 	.fifo_rxvld_i          (!dev2host_rempty),
 	.fifo_txrdy_i          (!host2dev_wfull),
 
-	.fifo_txrx_i           (dev2host_rdata),
+	.fifo_txrx_i           (dev2host_rdata & {8{!dev2host_rempty}}),
 	.fifo_txrx_o           (host2dev_wdata),
 	.fifo_txrx_wen         (host2dev_wpush),
 	.fifo_txrx_ren         (dev2host_rpop)
@@ -176,7 +176,7 @@ async_fifo #(
 	.wlevel (host2dev_wlevel),
 
 	.rdata  (host2dev_rdata),
-	.rpop   (host2dev_rpop),
+	.rpop   (host2dev_rpop && !host2dev_rempty),
 	.rfull  (host2dev_rfull),
 	.rempty (host2dev_rempty),
 	.rlevel (host2dev_rlevel)
@@ -198,7 +198,7 @@ async_fifo #(
 	.wlevel (dev2host_wlevel),
 
 	.rdata  (dev2host_rdata),
-	.rpop   (dev2host_rpop),
+	.rpop   (dev2host_rpop && !dev2host_rempty),
 	.rfull  (dev2host_rfull),
 	.rempty (dev2host_rempty),
 	.rlevel (dev2host_rlevel)
