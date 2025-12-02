@@ -112,7 +112,7 @@ set SRAM_A_TO_Q 25
 
 # Put more delay on the Q -> pad paths than on the harder pad -> D paths
 # (partly harder because we're timing from the clock origin but oh well):
-set SRAM_A_TO_Q_INPUT_FRACTION 0.6
+set SRAM_A_TO_Q_INPUT_FRACTION 0.65
 
 # Put A-to-Q delay roughly in middle of cycle:
 set SRAM_OUT_DELAY [expr 0.50 * $CLK_SYS_PERIOD + $SRAM_A_TO_Q * (1 - $SRAM_A_TO_Q_INPUT_FRACTION)]
@@ -121,7 +121,7 @@ set SRAM_IN_DELAY  [expr 0.50 * $CLK_SYS_PERIOD + $SRAM_A_TO_Q *      $SRAM_A_TO
 # Recovery time requirement tWR is 0, so WEn deassertion must be no later than
 # next rising edge. Add a little padding between WEn deassertion and A
 # arrival:
-set SRAM_WE_TO_A_MARGIN 2
+set SRAM_WE_TO_A_MARGIN 2.5
 
 set_output_delay $SRAM_OUT_DELAY -clock [get_clock clk_sys] [get_ports {
     SRAM_A[*]
