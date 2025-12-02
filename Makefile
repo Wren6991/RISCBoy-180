@@ -28,6 +28,10 @@ librelane: ## Run LibreLane flow (synthesis, PnR, verification)
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk
 .PHONY: librelane
 
+librelane-yolo: ## Run full flow, including DRC, but don't quit after DRC errors
+	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --skip Checker.MagicDRC --skip Checker.KLayoutDRC
+.PHONY: librelane-yolo
+
 librelane-nodrc: ## Run LibreLane flow without DRC checks
 	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --skip KLayout.DRC --skip Magic.DRC
 .PHONY: librelane-nodrc
