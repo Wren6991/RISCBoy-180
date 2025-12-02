@@ -1067,7 +1067,7 @@ if { [expr $clk_loads > 10] } {
 
 With this, the critical setup path in my pre-place STA actually matches the gates in my final post-PnR (place + CTS + route).
 
-### Day 12: ONE DAY REMAINS
+### Day 13: ONE DAY REMAINS
 
 I didn't actually get it to meet timing yesterday, but I got within a nanosecond in the slow corner (out of a 41.67 ns clock period). I'll keep kicking that can down the road in the background but if I tape out with that level of violation then my design will actually run fine at 24 MHz in all but the most extreme conditions.
 
@@ -1098,4 +1098,19 @@ With the new scan flop register file I'm timing clean, phew. I can enable Zilsd/
 
 I wrote some basic smoke tests for the APU timer. One irritation I hit, and I'm not sure whether this is an Icarus, cocotb or Surfer issue, is it doesn't trace memories, including when you just have a few regs in an array. This makes it quite frustrating to debug the timer tests in the waveform view. Anyway the timer seems to work exactly as intended, which I'm quite pleased with given it received no testing before now.
 
+I've gone mad with power now that I meet timing, so I went ahead and squeezed in the extra 2k of APU RAM. I found a sensible layout where the right hand side of the chip is filled by 2 x 8 x 512-byte blocks, with the upper 2 x 4 being the APU RAM and the lower 2 x 4 being one half of the CPU RAM. This met timing surprisingly ok. I then enabled the processor branch predictors, and this is... just about ok, but it results in a few bits of processor being trowelled into the channels between the memory. Still, if it meets timing, I think this is a good use of gates, certainly for the CPU as the ability to keep your instruction fetch pipelined is useful what with the AHB stalled address phase sampling thing in the SRAM controller.
 
+### Day 14: ZERO DAYS REMAIN
+
+I really am awful at counting. Today is December 2nd. The deadline is 23.59pm on December 3rd, in AoE time, which is actually midday on the 4th December in UK time. Anyway, I have all day today and then after work tomorrow to get this chip done.
+
+I'm in an ok place, because I have basic functional tests for the important hardware, and everything fits and meets timing with my chosen feature set. I have some DRCs which are all in the foundry cell library (plus one bonus DRC that comes from a particular relative placement of `sdffrnq_4` and `nand3_4`) which I believe can all be waived. There's no automated waiver process but I think Leo is going to manually push my GDS through subject to reviewing the DRCs. The most critical things to get done today are:
+
+* Bring up RTL sims with foundry RAM models
+* Bring up gate sims
+
+Gate sims are critical because I have some custom tech mapping for pseudo-DFFEs and pseudo-sync-set/clear flops using scan flops, so there is potential for me to break synthesis. I don't think there are any good options for doing delay-annotated sims (there is CVC which seems unmaintained) but it still seems worth doing to make sure my netlist is functionally correct.
+
+Other than that, I need to press on with system-level tests and _maybe_ sneak in display controller VGA mode and/or second-order modulation in the audio SDM.
+
+Oh and I should go through my Verilator lint log and make sure there is nothing suspicous. Ok let's go.
