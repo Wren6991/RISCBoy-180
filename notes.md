@@ -8,13 +8,11 @@
 
 ## "Verification"
 
-* Gate sims
 * Cover all address decode targets
 	* CPU
 	* APU
 * Toggle every IRQ
 * Dump 4-bit 1.5 MSa/s stream from AOUT, filter it back down to 48 kHz, make sure it sounds good
-* Review all verilator lints
 
 ## Implementation
 
@@ -1244,4 +1242,4 @@ Verilator lint was mostly fussiness. I did find a width issue in the streaming S
 
 I noticed the new Hazard3 register file was not gating writeback with the final stage-3 stall, which I _think_ is ok as in this case it will always be rewritten with the correct value when the instruction graduates from stage 3, and younger instructions in the pipeline will get that value. Still I'll fix it up if I can afford the timing.
 
-
+Adding the SRAM chicken bit felt... dumb. This is not how SRAM works. I guess it's better to have it and not need it, as long as it doesn't mess up the timing too much. One consequence of the new chicken bit is the GWEN is now a function of the per-RAM-blcok address decode, because I can't rely on CEN to deselect RAMs any more.

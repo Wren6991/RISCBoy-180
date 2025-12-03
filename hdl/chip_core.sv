@@ -992,6 +992,8 @@ riscboy_ppu #(
     .VDD                 (VDD),
     .VSS                 (VSS),
 
+    .chicken_cen_force   (sram_chicken_ppuram),
+
     .irq                 (irq[IRQ_PPU]),
 
     .mem_addr            (ppu_mem_addr),
