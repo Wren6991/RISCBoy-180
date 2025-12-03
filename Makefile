@@ -82,6 +82,7 @@ regblocks: ## Regenerate all register blocks and their headers
 	./fpgascripts/regblock -a hdl/vuart/vuart_host_regs.yml
 	./fpgascripts/regblock -a hdl/uart/uart_regs.yml
 	./fpgascripts/regblock -a hdl/clocks/clocks_regs.yml
+	./fpgascripts/regblock -a hdl/syscfg/syscfg_regs.yml
 .PHONY: sim-view
 
 copy-final: ## Copy final output files from the last run

@@ -813,14 +813,23 @@ wire [31:0] uart_pwdata;
 wire        uart_pready;
 wire [31:0] uart_prdata;
 wire        uart_pslverr;
+
+wire [19:0] syscfg_paddr;
+wire        syscfg_psel;
+wire        syscfg_penable;
+wire        syscfg_pwrite;
+wire [31:0] syscfg_pwdata;
+wire        syscfg_pready;
+wire [31:0] syscfg_prdata;
+wire        syscfg_pslverr;
 /* verilator lint_on UNUSEDSIGNAL */
 
 apb_splitter #(
     .W_ADDR    (20),
     .W_DATA    (32),
-    .N_SLAVES  (7),
-    .ADDR_MAP  ({20'h06000, 20'h05000, 20'h04000, 20'h03000, 20'h02000, 20'h01000, 20'h00000}),
-    .ADDR_MASK ({20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000})
+    .N_SLAVES  (8),
+    .ADDR_MAP  ({20'h07000, 20'h06000, 20'h05000, 20'h04000, 20'h03000, 20'h02000, 20'h01000, 20'h00000}),
+    .ADDR_MASK ({20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000, 20'h0f000})
 ) apb_splitter_u (
     .apbs_paddr   (peri_paddr),
     .apbs_psel    (peri_psel),
@@ -831,18 +840,22 @@ apb_splitter #(
     .apbs_prdata  (peri_prdata),
     .apbs_pslverr (peri_pslverr),
 
-    .apbm_paddr   ({uart_paddr   , gpio_paddr   , vuart_dev_paddr   , dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
-    .apbm_psel    ({uart_psel    , gpio_psel    , vuart_dev_psel    , dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
-    .apbm_penable ({uart_penable , gpio_penable , vuart_dev_penable , dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
-    .apbm_pwrite  ({uart_pwrite  , gpio_pwrite  , vuart_dev_pwrite  , dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
-    .apbm_pwdata  ({uart_pwdata  , gpio_pwdata  , vuart_dev_pwdata  , dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
-    .apbm_pready  ({uart_pready  , gpio_pready  , vuart_dev_pready  , dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
-    .apbm_prdata  ({uart_prdata  , gpio_prdata  , vuart_dev_prdata  , dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
-    .apbm_pslverr ({uart_pslverr , gpio_pslverr , vuart_dev_pslverr , dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
+    .apbm_paddr   ({syscfg_paddr   , uart_paddr   , gpio_paddr   , vuart_dev_paddr   , dispctrl_paddr   , ppu_paddr   , padctrl_paddr   , timer_paddr  }),
+    .apbm_psel    ({syscfg_psel    , uart_psel    , gpio_psel    , vuart_dev_psel    , dispctrl_psel    , ppu_psel    , padctrl_psel    , timer_psel   }),
+    .apbm_penable ({syscfg_penable , uart_penable , gpio_penable , vuart_dev_penable , dispctrl_penable , ppu_penable , padctrl_penable , timer_penable}),
+    .apbm_pwrite  ({syscfg_pwrite  , uart_pwrite  , gpio_pwrite  , vuart_dev_pwrite  , dispctrl_pwrite  , ppu_pwrite  , padctrl_pwrite  , timer_pwrite }),
+    .apbm_pwdata  ({syscfg_pwdata  , uart_pwdata  , gpio_pwdata  , vuart_dev_pwdata  , dispctrl_pwdata  , ppu_pwdata  , padctrl_pwdata  , timer_pwdata }),
+    .apbm_pready  ({syscfg_pready  , uart_pready  , gpio_pready  , vuart_dev_pready  , dispctrl_pready  , ppu_pready  , padctrl_pready  , timer_pready }),
+    .apbm_prdata  ({syscfg_prdata  , uart_prdata  , gpio_prdata  , vuart_dev_prdata  , dispctrl_prdata  , ppu_prdata  , padctrl_prdata  , timer_prdata }),
+    .apbm_pslverr ({syscfg_pslverr , uart_pslverr , gpio_pslverr , vuart_dev_pslverr , dispctrl_pslverr , ppu_pslverr , padctrl_pslverr , timer_pslverr})
 );
 
 // ------------------------------------------------------------------------
 // Memories
+
+wire        sram_chicken_cpuram;
+wire        sram_chicken_apuram;
+wire        sram_chicken_ppuram;
 
 ahb_sync_sram #(
     .W_DATA (32),
@@ -854,6 +867,8 @@ ahb_sync_sram #(
 
     .clk               (clk_sys),
     .rst_n             (rst_n_sys),
+
+    .chicken_cen_force (sram_chicken_cpuram),
 
     .ahbls_hready_resp (iram_hready_resp),
     .ahbls_hready      (iram_hready),
@@ -906,6 +921,8 @@ audio_processor #(
 
     .VDD                        (VDD),
     .VSS                        (VSS),
+
+    .chicken_cen_force          (sram_chicken_apuram),
 
     .dbg_req_halt               (dbg_req_halt[1]),
     .dbg_req_halt_on_reset      (dbg_req_halt_on_reset[1]),
@@ -1045,8 +1062,9 @@ reset_sync sync_rst_n_timer (
     .rst_n_out (rst_n_timer)
 );
 
+wire mtime_tick_nrz;
 hazard3_riscv_timer #(
-    .TICK_IS_NRZ (0) // TODO
+    .TICK_IS_NRZ (1)
 ) riscv_timer_u (
     .clk       (clk_sys),
     .rst_n     (rst_n_timer),
@@ -1059,7 +1077,7 @@ hazard3_riscv_timer #(
     .pready    (timer_pready),
     .pslverr   (timer_pslverr),
     .dbg_halt  (dbg_halted[0]),
-    .tick      (1'b1),
+    .tick      (mtime_tick_nrz),
     .timer_irq (timer_irq)
 );
 
@@ -1217,6 +1235,27 @@ gpio #(
     .padout_gpio  ({padout_audio, padout_lcd_dat, padout_gpio}),
     .padoe_gpio   ({padoe_audio,  padoe_lcd_dat,  padoe_gpio }),
     .padin_gpio   ({padin_audio,  padin_lcd_dat,  padin_gpio })
+);
+
+
+syscfg syscfg_u (
+    .clk                 (clk_sys),
+    .rst_n               (rst_n_sys),
+
+    .apbs_psel           (syscfg_psel),
+    .apbs_penable        (syscfg_penable),
+    .apbs_pwrite         (syscfg_pwrite),
+    .apbs_paddr          (syscfg_paddr),
+    .apbs_pwdata         (syscfg_pwdata),
+    .apbs_prdata         (syscfg_prdata),
+    .apbs_pready         (syscfg_pready),
+    .apbs_pslverr        (syscfg_pslverr),
+
+    .mtime_tick_nrz      (mtime_tick_nrz),
+
+    .sram_chicken_cpuram (sram_chicken_cpuram),
+    .sram_chicken_apuram (sram_chicken_apuram),
+    .sram_chicken_ppuram (sram_chicken_ppuram)
 );
 
 

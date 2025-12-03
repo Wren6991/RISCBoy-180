@@ -2,6 +2,7 @@
 #include "gpio.h"
 #include "dispctrl.h"
 #include "ppu.h"
+#include "hw/syscfg_regs.h"
 
 // Write out a 128 x 2 pixel frame with horizontal and vertical doubling.
 // Result should be 256 x 4 pixels.
@@ -40,6 +41,9 @@ int main() {
 	dispctrl_set_xdouble_ydouble(true, true);
 	dispctrl_force_dc_cs(1, 0);
 	dispctrl_set_scan_enabled(true);
+
+	// Need to clear SRAM chicken bit for pixel doubling to function correctly
+	*(volatile uint32_t*)(SYSCFG_BASE + SYSCFG_SRAM_CHICKEN_OFFS) = 0;
 
 	vuart_puts("Initialising palette RAM\n");
 	for (int i = 0; i < 256; ++i) {

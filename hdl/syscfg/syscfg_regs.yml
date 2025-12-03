@@ -1,0 +1,19 @@
+name: syscfg
+bus: apb
+addr: 20
+data: 32
+info: Register block for controls I had nowhere better to put
+regs:
+  - name: mtime_tick 
+    info: "The counter in MTIME increments once per MTIME_TICK cycles. This is
+    intended to be a microsecond timebase, so set this register to the system
+    clock frequency in MHz."
+    bits:
+      - {b: [5, 0], access: rw, rst: 24}
+  - name: sram_chicken
+    info: "The foundry SRAM models return incorrect data if
+    chip select transitions on a clock edge. 99% sure this is just an issue
+    with the model, but just in case, this register forces all SRAMs to be
+    permanently enabled. You should clear this bit to avoid wasting power."
+    bits:
+      - {b: 0, access: rw, rst: 0x1}

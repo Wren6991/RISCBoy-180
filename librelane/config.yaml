@@ -150,8 +150,8 @@ VERILOG_FILES:
 - dir::../hdl/apu/timer/apu_timer.v
 - dir::../hdl/apu/timer/apu_timer_regs.v
 
-- dir::../hdl/clocks/clocks.v
-- dir::../hdl/clocks/clocks_regs.v
+- dir::../hdl/syscfg/syscfg.v
+- dir::../hdl/syscfg/syscfg_regs.v
 
 - dir::../hdl/vuart/vuart.v
 - dir::../hdl/vuart/vuart_host_regs.v

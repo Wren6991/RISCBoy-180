@@ -21,6 +21,8 @@ module audio_processor #(
 	inout  wire        VDD,
 	inout  wire        VSS,
 
+    input  wire        chicken_cen_force,
+
 	input  wire        dbg_req_halt,
 	input  wire        dbg_req_halt_on_reset,
 	input  wire        dbg_req_resume,
@@ -431,8 +433,11 @@ ahb_sync_sram #(
 ) ram_u (
     .VDD               (VDD),
     .VSS               (VSS),
+
     .clk               (clk_sys),
     .rst_n             (rst_n_sys),
+
+    .chicken_cen_force (chicken_cen_force),
 
     .ahbls_hready_resp (ram_hready_resp),
     .ahbls_hready      (ram_hready),

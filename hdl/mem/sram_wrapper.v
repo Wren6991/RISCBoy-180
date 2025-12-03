@@ -17,6 +17,11 @@ module sram_wrapper #(
 	inout  wire                     VDD,
 	inout  wire                     VSS,
 	input  wire                     clk,
+
+	// Foundry RAM models read incorrect data if CEN transitions on rising
+	// edge. Probably a model issue but just in case it's not:
+	input  wire                     chicken_cen_force,
+
 	input  wire                     cs_n, // Active-low chip select
 	input  wire                     we_n, // Active-low write enable
 	input  wire [WIDTH/8-1:0]       be_n, // Active-low byte enable (for writes)
@@ -29,6 +34,9 @@ module sram_wrapper #(
 `define BEHAV_SRAM_1RW
 `endif
 
+// Active-high force signal. When asserted, it forces CEN permanently low.
+wire cs_n_forced = cs_n && !chicken_cen_force;
+
 `ifdef BEHAV_SRAM_1RW
 // ----------------------------------------------------------------------------
 // Behavioural model
@@ -39,10 +47,10 @@ reg [WIDTH-1:0] rdata_q;
 assign rdata = rdata_q;
 always @ (posedge clk) begin: update
 	integer i;
-	if (!cs_n && we_n) begin
+	if (!cs_n_forced && we_n) begin
 		rdata_q <= mem[addr];
 	end
-	if (!cs_n && !we_n) begin
+	if (!cs_n_forced && !we_n) begin
 		for (i = 0; i < WIDTH / 8; i = i + 1) begin
 			if (!be_n[i]) begin
 				mem[addr][i * 8 +: 8] <= wdata[i * 8 +: 8];
@@ -76,7 +84,7 @@ if (DEPTH == 128) begin: g_d128
 			.VDD  (VDD),
 			.VSS  (VSS),
 			.CLK  (clk),
-			.CEN  (cs_n),
+			.CEN  (cs_n_forced),
 			.GWEN (we_n || be_n[x]),
 			.WEN  (8'h00),
 			.A    (addr),
@@ -94,7 +102,7 @@ if (DEPTH == 256) begin: g_d256
 			.VDD  (VDD),
 			.VSS  (VSS),
 			.CLK  (clk),
-			.CEN  (cs_n),
+			.CEN  (cs_n_forced),
 			.GWEN (we_n || be_n[x]),
 			.WEN  (8'h00),
 			.A    (addr),
@@ -112,7 +120,7 @@ if (DEPTH == 512) begin: g_d512
 			.VDD  (VDD),
 			.VSS  (VSS),
 			.CLK  (clk),
-			.CEN  (cs_n),
+			.CEN  (cs_n_forced),
 			.GWEN (we_n || be_n[x]),
 			.WEN  (8'h00),
 			.A    (addr),
@@ -156,8 +164,8 @@ if (DEPTH > 512) begin: g_dg512
 				.VDD  (VDD),
 				.VSS  (VSS),
 				.CLK  (clk),
-				.CEN  (cs_n || !ramsel_aph[y]),
-				.GWEN (we_n || be_n[x]),
+				.CEN  ((cs_n || !ramsel_aph[y]) && !chicken_cen_force),
+				.GWEN (we_n || be_n[x] || !ramsel_aph[y]),
 				.WEN  (8'h00),
 				.A    (addr[8:0]),
 				.D    (wdata[x * 8 +: 8]),

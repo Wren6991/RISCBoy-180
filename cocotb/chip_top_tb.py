@@ -1025,12 +1025,12 @@ def get_sources_defines_includes():
         
         # SRAM macros (replaced with a simple model without behavioural delays)
 
-        # TODO it would be good to fully understand the issues with the vendor
-        # models but running out of time pre-tapeout. There are at least two
-        # definite bugs.
+        # Use either my simple model or the foundry model:
         "tb/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
         "tb/gf180mcu_fd_ip_sram__sram256x8m8wm1.v",
-        
+        # Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1.v",
+        # Path(pdk_root) / pdk / "libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram256x8m8wm1.v",
+
         # Custom IP
         proj_path / "../ip/gf180mcu_ws_ip__id/vh/gf180mcu_ws_ip__id.v",
         proj_path / "../ip/gf180mcu_ws_ip__logo/vh/gf180mcu_ws_ip__logo.v",

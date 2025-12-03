@@ -23,6 +23,10 @@ module ahb_sync_sram #(
 	inout  wire               VDD,
 	inout  wire               VSS,
 
+	// Foundry RAM models read incorrect data if CEN transitions on rising
+	// edge. Probably a model issue but just in case it's not:
+	input  wire               chicken_cen_force,
+
 	// AHB subordinate interface
 	/* verilator lint_off UNUSEDSIGNAL */
 	output wire               ahbls_hready_resp,
@@ -115,6 +119,7 @@ sram_wrapper #(
 	.VDD    (VDD),
 	.VSS    (VSS),
 	.clk    (clk),
+	.chicken_cen_force (chicken_cen_force),
 	.cs_n   (~|{ahb_read_aphase, sram_wen}),
 	.we_n   (~|sram_wen),
 	.be_n   (~sram_wen),
