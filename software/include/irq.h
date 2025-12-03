@@ -92,6 +92,17 @@ static inline void timer_irq_enable(bool en) {
 		clear_csr(mie, 0x080);
 	}
 }
+
+static inline void soft_irq_enable(bool en) {
+	// mie.msie
+	if (en) {
+		set_csr(mie, 0x008);
+	}
+	else {
+		clear_csr(mie, 0x008);
+	}
+}
+
 #endif // !__ASSEMBLER__
 
 #endif

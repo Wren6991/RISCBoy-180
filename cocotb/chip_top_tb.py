@@ -718,7 +718,22 @@ expected_outputs = {
         # t = 30
         "00",
         "01",
-    ])
+    ]),
+    "riscv_mtime_smoke": "\r\n".join([
+        "Starting timer",
+        ".",
+        ".",
+        ".",
+        ".",
+        ".",
+        ".",
+        ".",
+        ".",
+        ".",
+        ".",
+        "Stopped timer",
+        "000003e8",
+    ]),
 }
 
 # Bit 8 is D/C (0 for command)
@@ -799,6 +814,7 @@ expected_lcd_capture = {
     "spi_stream_clkdiv",
     "spi_stream_pause",
     "apu_timer_smoke",
+    "riscv_mtime_smoke",
 ])
 async def test_execute_eram(dut, app="hellow"):
     """Execute code from ERAM"""
@@ -1037,6 +1053,7 @@ def get_sources_defines_includes():
         # Custom IP
         proj_path / "../ip/gf180mcu_ws_ip__id/vh/gf180mcu_ws_ip__id.v",
         proj_path / "../ip/gf180mcu_ws_ip__logo/vh/gf180mcu_ws_ip__logo.v",
+        proj_path / "../ip/gf180mcu_name_plate/vh/gf180mcu_name_plate.v",
     ]
 
     return (sources, defines, includes)
