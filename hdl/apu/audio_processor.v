@@ -426,6 +426,22 @@ ahbl_splitter #(
 // ------------------------------------------------------------------------
 // Memories
 
+wire rst_n_sram;
+reset_sync sync_rst_n_sram (
+    .clk       (clk_sys),
+    .rst_n_in  (rst_n_sys),
+    .rst_n_out (rst_n_sram)
+);
+
+reg chicken_cen_force_q;
+always @ (posedge clk_sys or negedge rst_n_sram) begin
+    if (!rst_n_sram) begin
+        chicken_cen_force_q <= 1'b0;
+    end else begin
+        chicken_cen_force_q <= chicken_cen_force;
+    end
+end
+
 ahb_sync_sram #(
     .W_DATA (32),
     .W_ADDR (16),
@@ -435,9 +451,9 @@ ahb_sync_sram #(
     .VSS               (VSS),
 
     .clk               (clk_sys),
-    .rst_n             (rst_n_sys),
+    .rst_n             (rst_n_sram),
 
-    .chicken_cen_force (chicken_cen_force),
+    .chicken_cen_force (chicken_cen_force_q),
 
     .ahbls_hready_resp (ram_hready_resp),
     .ahbls_hready      (ram_hready),
