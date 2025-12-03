@@ -24,6 +24,7 @@ module ahb_sync_sram #(
 	inout  wire               VSS,
 
 	// AHB subordinate interface
+	/* verilator lint_off UNUSEDSIGNAL */
 	output wire               ahbls_hready_resp,
 	input  wire               ahbls_hready,
 	output wire               ahbls_hresp,
@@ -36,6 +37,7 @@ module ahb_sync_sram #(
 	input  wire               ahbls_hmastlock,
 	input  wire [W_DATA-1:0]  ahbls_hwdata,
 	output wire [W_DATA-1:0]  ahbls_hrdata
+	/* verilator lint_on UNUSEDSIGNAL */
 );
 
 localparam W_SRAM_ADDR = $clog2(DEPTH);

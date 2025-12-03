@@ -47,6 +47,7 @@ module spi_stream_regs (
 	input  wire        pause_ack_i
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // AHB-Lite adapter
 wire [31:0] wdata = ahbls_hwdata;
 reg         wen;
@@ -143,6 +144,7 @@ wire        pause_ack_rdata;
 wire [31:0] __pause_rdata = {30'h0, pause_ack_rdata, pause_req_rdata};
 assign pause_req_rdata = pause_req_o;
 assign pause_ack_rdata = pause_ack_i;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)

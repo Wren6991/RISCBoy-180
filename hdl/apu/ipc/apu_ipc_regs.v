@@ -34,6 +34,7 @@ module apu_ipc_regs (
 	output reg         softirq_clr_wen
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // AHB-Lite adapter
 wire [31:0] wdata = ahbls_hwdata;
 reg         wen;
@@ -81,6 +82,7 @@ wire [1:0]  softirq_clr_wdata = wdata[1:0];
 wire [1:0]  softirq_clr_rdata;
 wire [31:0] __softirq_clr_rdata = {30'h0, softirq_clr_rdata};
 assign softirq_clr_rdata = softirq_clr_i;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)

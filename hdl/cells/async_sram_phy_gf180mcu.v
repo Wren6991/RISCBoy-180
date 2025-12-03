@@ -5,6 +5,9 @@
 
 // Based on async_sram_phy.v from libfpga. Instantiates flops, but not pads.
 
+/* verilator lint_off PINMISSING */
+// waiver: VDD/VSS not connected on cell instance (handled in backend)
+
 `default_nettype none
 
 module async_sram_phy_gf180mcu #(
@@ -23,7 +26,6 @@ module async_sram_phy_gf180mcu #(
 	input  wire                   ctrl_ce_n,
 	input  wire                   ctrl_we_n,
 	input  wire                   ctrl_oe_n,
-	input  wire [N_SRAM_DQ/8-1:0] ctrl_byte_n,
 
 	// To external SRAM
     input  wire [N_SRAM_DQ-1:0]   padin_sram_dq,
@@ -32,9 +34,7 @@ module async_sram_phy_gf180mcu #(
     output wire [N_SRAM_A-1:0]    padout_sram_a,
     output wire                   padout_sram_oe_n,
     output wire                   padout_sram_cs_n,
-    output wire                   padout_sram_we_n,
-    output wire                   padout_sram_ub_n,
-    output wire                   padout_sram_lb_n
+    output wire                   padout_sram_we_n
 );
 
 // Use manually instantiated flops so they have fixed instance names
@@ -70,18 +70,15 @@ module async_sram_phy_gf180mcu #(
 	.Q   (ctrl_dq_in)
 );
 
-(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_4 reg_out_u_sram_strobe [3:0] (
+(* keep *) gf180mcu_fd_sc_mcu9t5v0__dffq_4 reg_out_u_sram_strobe [1:0] (
 	.CLK  (clk),
 	.D    ({
 		ctrl_ce_n,
-		ctrl_oe_n,
-		ctrl_byte_n
+		ctrl_oe_n
 	}),
 	.Q    ({
 		padout_sram_cs_n,
-		padout_sram_oe_n,
-		padout_sram_ub_n,
-		padout_sram_lb_n
+		padout_sram_oe_n
 	})
 );
 

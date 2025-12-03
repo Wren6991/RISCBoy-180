@@ -41,7 +41,7 @@ always @ (posedge clk or negedge rst_n) begin
 		stuff_ctr <= 4'd0;
 	end else if (!en) begin
 		lsb_toggle <= 2'd0;
-		repeat_ctr <= 8'd0;
+		repeat_ctr <= 7'd0;
 		ctr_wrap <= 1'b0;
 		stuff_ctr <= 4'd0;
 	end else if (~|repeat_ctr) begin
@@ -50,7 +50,7 @@ always @ (posedge clk or negedge rst_n) begin
 		ctr_wrap <= 1'b1;
 		stuff_ctr <= stuff_ctr + 4'd1;
 	end else begin
-		repeat_ctr <= repeat_ctr - 8'd1;
+		repeat_ctr <= repeat_ctr - 7'd1;
 		ctr_wrap <= 1'b0;
 	end
 end

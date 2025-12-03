@@ -85,7 +85,7 @@ always @ (posedge clk or negedge rst_n) begin
 		q_r <= 16'h8000;
 	end else if (en) begin
 		if (en_shift) begin
-			blank_ctr <= blank_ctr - |blank_ctr;
+			blank_ctr <= blank_ctr - {2'd0, |blank_ctr};
 		end
 		if (~|blank_ctr) begin
 			q_r <= sum[W_COEFF - 1 +: W_SAMPLE];

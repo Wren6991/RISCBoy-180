@@ -33,9 +33,15 @@ localparam N_CYCLES = 3;
 wire [2:0] delay;
 
 // Named instances just for convenience
+/* verilator lint_off PINMISSING */
+// waiver: VDD/VSS not connected on cell instance (handled in backend)
+/* verilator lint_off SYNCASYNCNET */
+// waiver: it's expected that the first flop in a synchroniser has potential async violations.
 gf180mcu_fd_sc_mcu9t5v0__dffrnq_1 flop0 (.CLK (clk), .RN (rst_n_in_fp), .D (1'b1),     .Q (delay[0]));
 gf180mcu_fd_sc_mcu9t5v0__dffrnq_1 flop1 (.CLK (clk), .RN (rst_n_in_fp), .D (delay[0]), .Q (delay[1]));
 gf180mcu_fd_sc_mcu9t5v0__dffrnq_1 flop2 (.CLK (clk), .RN (rst_n_in_fp), .D (delay[1]), .Q (delay[2]));
+/* verilator lint_on SYNCASYNCNET */
+/* verilator lint_on PINMISSING */
 
 `else
 

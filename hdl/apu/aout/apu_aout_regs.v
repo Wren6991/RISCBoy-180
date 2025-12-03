@@ -36,6 +36,7 @@ module apu_aout_regs (
 	output reg         fifo_wen
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // AHB-Lite adapter
 wire [31:0] wdata = ahbls_hwdata;
 reg         wen;
@@ -93,6 +94,7 @@ wire [15:0] fifo_wdata = wdata[15:0];
 wire [15:0] fifo_rdata;
 wire [31:0] __fifo_rdata = {16'h0, fifo_rdata};
 assign fifo_rdata = 16'h0;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)

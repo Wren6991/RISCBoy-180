@@ -59,6 +59,7 @@ module uart_regs (
 	output reg         ir_invert_rx_o
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
 reg  [31:0] rdata;
@@ -186,6 +187,7 @@ assign ir_en_rdata = ir_en_o;
 assign ir_preinvert_tx_rdata = ir_preinvert_tx_o;
 assign ir_postinvert_tx_rdata = ir_postinvert_tx_o;
 assign ir_invert_rx_rdata = ir_invert_rx_o;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)

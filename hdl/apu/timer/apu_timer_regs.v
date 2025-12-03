@@ -44,6 +44,7 @@ module apu_timer_regs (
 	output reg         ctr2_wen
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // AHB-Lite adapter
 wire [31:0] wdata = ahbls_hwdata;
 reg         wen;
@@ -138,6 +139,7 @@ wire [19:0] ctr2_wdata = wdata[19:0];
 wire [19:0] ctr2_rdata;
 wire [31:0] __ctr2_rdata = {12'h0, ctr2_rdata};
 assign ctr2_rdata = ctr2_i;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)

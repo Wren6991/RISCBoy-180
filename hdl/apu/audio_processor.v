@@ -152,7 +152,10 @@ wire                cpu_clk_en;
 wire                unblock_out;
 wire                unblock_in = unblock_out;
 
+/* verilator lint_off UNUSEDSIGNAL */
+// waiver: not all address bits are required
 wire [31:0]         cpu_haddr;
+/* verilator lint_on UNUSEDSIGNAL */
 wire                cpu_hwrite;
 wire [1:0]          cpu_htrans;
 wire [2:0]          cpu_hsize;
@@ -167,8 +170,11 @@ wire                cpu_hexokay;
 wire [31:0]         cpu_hwdata;
 wire [31:0]         cpu_hrdata;
 
+/* verilator lint_off UNUSEDSIGNAL */
+// waiver: no special handling of fences is required
 wire                fence_i_vld;
 wire                fence_d_vld;
+/* verilator lint_on UNUSEDSIGNAL */
 wire                fence_rdy = 1'b1;
 
 wire                clk_gated_cpu;
@@ -197,7 +203,7 @@ hazard3_cpu_1port #(
     .EXTENSION_ZCB       (1),
     .EXTENSION_ZCLSD     (1),
     .EXTENSION_ZCMP      (0),
-    .EXTENSION_ZIFENCEI  (0),
+    .EXTENSION_ZIFENCEI  (1),
     .EXTENSION_ZILSD     (1),
 
     .EXTENSION_XH3BEXTM  (0),
@@ -298,6 +304,9 @@ hazard3_cpu_1port #(
 // system address space. We actually just decode the 16 LSBs: RAM in the lower
 // 32k and up to 8 x 4k peripherals in the upper 32k.
 
+/* verilator lint_off UNUSEDSIGNAL */
+// waiver: standard signals are included for uniformity but not all are used
+// by all destinations.
 wire [15:0] ram_haddr;
 wire        ram_hwrite;
 wire [1:0]  ram_htrans;
@@ -367,6 +376,7 @@ wire        spi_stream_hready_resp;
 wire        spi_stream_hresp;
 wire [31:0] spi_stream_hwdata;
 wire [31:0] spi_stream_hrdata;
+/* verilator lint_on UNUSEDSIGNAL */
 
 ahbl_splitter #(
     .N_PORTS   (5),

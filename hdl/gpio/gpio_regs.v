@@ -63,6 +63,7 @@ module gpio_regs (
 	input  wire [12:0] in_i
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
 reg  [31:0] rdata;
@@ -179,6 +180,7 @@ wire [12:0] in_wdata = wdata[12:0];
 wire [12:0] in_rdata;
 wire [31:0] __in_rdata = {19'h0, in_rdata};
 assign in_rdata = in_i;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)

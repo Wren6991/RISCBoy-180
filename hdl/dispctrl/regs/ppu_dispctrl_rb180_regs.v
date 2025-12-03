@@ -42,6 +42,7 @@ module dispctrl_rb180_regs (
 	output reg  [7:0]  bl_pwm_level_o
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
 reg  [31:0] rdata;
@@ -122,6 +123,7 @@ wire [7:0]  bl_pwm_level_rdata;
 wire [31:0] __bl_pwm_rdata = {8'h0, bl_pwm_div_rdata, 8'h0, bl_pwm_level_rdata};
 assign bl_pwm_div_rdata = bl_pwm_div_o;
 assign bl_pwm_level_rdata = bl_pwm_level_o;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)

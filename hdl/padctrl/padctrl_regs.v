@@ -53,6 +53,7 @@ module padctrl_regs (
 	output reg         lcd_bl_slew_o
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
 reg  [31:0] rdata;
@@ -206,6 +207,7 @@ wire        lcd_bl_slew_rdata;
 wire [31:0] __lcd_bl_rdata = {29'h0, lcd_bl_slew_rdata, lcd_bl_drive_rdata};
 assign lcd_bl_drive_rdata = lcd_bl_drive_o;
 assign lcd_bl_slew_rdata = lcd_bl_slew_o;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)

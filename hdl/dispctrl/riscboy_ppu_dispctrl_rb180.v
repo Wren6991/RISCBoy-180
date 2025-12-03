@@ -13,6 +13,9 @@
 
 `default_nettype none
 
+// useless:
+/* verilator lint_off PINCONNECTEMPTY */
+
 module riscboy_ppu_dispctrl_rb180 #(
 	parameter PXFIFO_DEPTH = 4,
 	parameter W_COORD_SX = 9,
@@ -290,12 +293,15 @@ always @ (posedge clk_tx) begin
 end
 
 wire sck_n;
+/* verilator lint_off PINMISSING */
+// waiver: VDD/VSS not connected on cell instance (handled in backend)
 gf180mcu_fd_sc_mcu9t5v0__icgtn_4 clkgate_sck_u (
 	.TE   (1'b0),
 	.E    (lcd_clk_en),
 	.CLKN (clk_tx),
 	.Q    (sck_n)
 );
+/* verilator lint_on PINMISSING */
 assign lcd_sck = !sck_n;
 assign lcd_dat = lcd_dat_q;
 

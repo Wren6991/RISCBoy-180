@@ -413,7 +413,10 @@ wire                cpu_clk_en;
 wire                unblock_out;
 wire                unblock_in = unblock_out;
 
+/* verilator lint_off UNUSEDSIGNAL */
+// waiver: address is not decoded up to bit 31, for performance reasons
 wire [31:0]         cpu_haddr;
+/* verilator lint_on UNUSEDSIGNAL */
 wire                cpu_hwrite;
 wire [1:0]          cpu_htrans;
 wire [2:0]          cpu_hsize;
@@ -432,8 +435,11 @@ wire [NUM_IRQS-1:0] irq;
 wire                soft_irq;
 wire                timer_irq;
 
+/* verilator lint_off UNUSEDSIGNAL */
+// waiver: no special handling of fences is required
 wire                fence_i_vld;
 wire                fence_d_vld;
+/* verilator lint_on UNUSEDSIGNAL */
 wire                fence_rdy = 1'b1;
 
 wire                clk_sys_gated_cpu;
@@ -462,7 +468,7 @@ hazard3_cpu_1port #(
     .EXTENSION_ZCB       (1),
     .EXTENSION_ZCLSD     (1),
     .EXTENSION_ZCMP      (0),
-    .EXTENSION_ZIFENCEI  (0),
+    .EXTENSION_ZIFENCEI  (1),
     .EXTENSION_ZILSD     (1),
 
     .EXTENSION_XH3BEXTM  (0),
@@ -497,7 +503,7 @@ hazard3_cpu_1port #(
 ) cpu_u (
     .clk                        (clk_sys_gated_cpu),
     .clk_always_on              (clk_sys),
-    .rst_n                      (rst_n_cpu),
+    .rst_n                      (rst_n_sys),
 
     .pwrup_req                  (cpu_pwrup_req),
     .pwrup_ack                  (cpu_pwrup_ack),
@@ -567,6 +573,9 @@ hazard3_cpu_1port #(
 // 60000 to 6ffff: APU address space (64 kB aperture)
 // 70000 to 7ffff: APB peripherals   (64 kB address space, ~4 kB each)
 
+/* verilator lint_off UNUSEDSIGNAL */
+// waiver: standard signals are included for uniformity but not all are used
+// by all destinations.
 wire [19:0]         eram_haddr;
 wire                eram_hwrite;
 wire [1:0]          eram_htrans;
@@ -646,6 +655,7 @@ wire                apb_hresp;
 wire                apb_hexokay;
 wire [31:0]         apb_hwdata;
 wire [31:0]         apb_hrdata;
+/* verilator lint_on UNUSEDSIGNAL */
 
 // Tie off exclusive responses (harmless if A extension is deselected).
 // Exclusives always fail on APU memory and always pass elsewhere.
@@ -738,6 +748,9 @@ ahbl_to_apb #(
     .apbm_pslverr      (peri_pslverr)
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
+// waiver: standard signals are included for uniformity but not all are used
+// by all destinations. Also addresses may be partially used.
 wire [19:0] timer_paddr;
 wire        timer_psel;
 wire        timer_penable;
@@ -800,6 +813,7 @@ wire [31:0] uart_pwdata;
 wire        uart_pready;
 wire [31:0] uart_prdata;
 wire        uart_pslverr;
+/* verilator lint_on UNUSEDSIGNAL */
 
 apb_splitter #(
     .W_ADDR    (20),

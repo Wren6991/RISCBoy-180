@@ -1227,3 +1227,21 @@ It subtracts twice. This is an editing mistake from when I was messing around wi
 
 I re-ran the tests and my processor is making happy processor noises in gate sim, so I think we've worked through all the issues we're going to work through. I expect this was broken in RTL sim too, but the blast radius of the X propagation was smaller so it didn't take out the VUART when it returned from main.
 
+### DAY ???: WHAT IS TIME
+
+I fell asleep after debugging the gate sims. DRC finished -- I have exactly one KLayout DRC between two foundry cells, and around 4000 identical Magic DRCs which are in the scan flops. I uploaded the first candidate GDS to GitHub and wafer.space.
+
+Tasks for this morning before work:
+
+* Go through the Verilator lint log
+* Add system control registers for:
+	* MTIME tick count
+	* Chicken bit to force all SRAM enables permanently low
+
+There has been discussion on whether the simulation races in the foundry RAM models are accidental or deliberate features of the models, so I'm going to add a chicken bit to make them all permanently enabled. This is functionally correct for my design except for pixel doubling in the display controller, which will just shift part of the line forward by one pixel.
+
+Verilator lint was mostly fussiness. I did find a width issue in the streaming SPI where I'd failed to increase some variable widths to match a width increase in the register file, so the max stream length was 4k instead of 64k words. Oops, fixed. I realised the PPU still has a config register for display width which is completely unused; this might not be trimmed due to the DFFE connecting both the Q and D of the flops, so I removed it in RTL. UART RX was not putting the false-pathed version of RX input into its synchroniser; not the end of the world, but fixed.
+
+I noticed the new Hazard3 register file was not gating writeback with the final stage-3 stall, which I _think_ is ok as in this case it will always be rewritten with the correct value when the instruction graduates from stage 3, and younger instructions in the pipeline will get that value. Still I'll fix it up if I can afford the timing.
+
+

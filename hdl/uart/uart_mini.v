@@ -6,6 +6,11 @@
 // Derived from the RISCBoy UART
 // Bonus feature: 38 kHz / 40 kHz modulation for IR :)
 
+`default_nettype none
+
+// useless:
+/* verilator lint_off PINCONNECTEMPTY */
+
 module uart_mini #(
 	parameter FIFO_DEPTH = 2, // must be power of 2, >= 2
 	parameter OVERSAMPLE = 8, // must be power of 2, >= 4
@@ -93,7 +98,7 @@ wire din_comb = (csr_loopback ? tx_q : rx_sync) ^ ir_invert_rx;
 sync_1bit rx_synchroniser (
 	.clk   (clk),
 	.rst_n (rst_n_sync),
-	.i     (rx),
+	.i     (rx_fp),
 	.o     (rx_sync)
 );
 
@@ -113,7 +118,7 @@ wire cts_en;
 wire tx_busy = tx_state != TX_IDLE || !txfifo_empty;
 wire cts_with_loop = csr_loopback ? rts : cts;
 wire hold_tx = txfifo_empty || (cts_en && cts_with_loop);
-assign txfifo_ren = clk_en && !hold_tx && !tx_over_ctr &&
+assign txfifo_ren = clk_en && !hold_tx && ~|tx_over_ctr &&
 	(tx_state == TX_IDLE || tx_state == TX_STOP);
 
 always @ (posedge clk or negedge rst_n_sync) begin
@@ -130,9 +135,9 @@ always @ (posedge clk or negedge rst_n_sync) begin
 		tx_shifter <= 8'h0;
 	end else begin
 		if (clk_en)
-			tx_over_ctr <= tx_over_ctr + 1'b1;
-		if (clk_en && !tx_over_ctr) begin
-			tx_state <= tx_state + 1'b1;
+			tx_over_ctr <= tx_over_ctr + {{W_OVER-1{1'b0}}, 1'b1};
+		if (clk_en && ~|tx_over_ctr) begin
+			tx_state <= tx_state + 4'd1;
 			case (tx_state)
 			TX_IDLE: begin
 				if (hold_tx) begin
@@ -216,7 +221,7 @@ always @ (posedge clk or negedge rst_n_sync) begin
 		rxfifo_wen <= 1'b0;
 		if (clk_en)
 			rx_over_ctr <= rx_over_ctr + 1'b1;
-		if (clk_en && !rx_over_ctr) begin
+		if (clk_en && ~|rx_over_ctr) begin
 			rx_state <= rx_state + 1'b1;
 			case (rx_state)
 			RX_IDLE: begin
@@ -352,15 +357,17 @@ uart_regs regs (
 	.div_int_o          (div_int),
 	.div_frac_o         (div_frac),
 
-	.fstat_txlevel_i    (txfifo_level | 8'h0),
+	.fstat_txlevel_i    ({{8-W_FLEVEL{1'b0}}, txfifo_level}),
 	.fstat_txfull_i     (txfifo_full),
 	.fstat_txempty_i    (txfifo_empty),
 	.fstat_txover_i     (txfifo_full && txfifo_wen),
+	.fstat_txover_o     (/* unused */),
 	.fstat_txunder_i    (txfifo_empty && txfifo_ren),
-	.fstat_rxlevel_i    (rxfifo_level | 8'h0),
+	.fstat_rxlevel_i    ({{8-W_FLEVEL{1'b0}}, rxfifo_level}),
 	.fstat_rxfull_i     (rxfifo_full),
 	.fstat_rxempty_i    (rxfifo_empty),
 	.fstat_rxover_i     (rxfifo_full && rxfifo_wen),
+	.fstat_rxover_o     (/* unused */),
 	.fstat_rxunder_i    (rxfifo_empty && rxfifo_ren),
 
 	.tx_o               (txfifo_wdata),
@@ -376,3 +383,7 @@ uart_regs regs (
 );
 
 endmodule
+
+`ifndef YOSYS
+`default_nettype wire
+`endif

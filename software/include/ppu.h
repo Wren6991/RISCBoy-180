@@ -58,8 +58,8 @@ typedef uint32_t ppu_instr_t;
 // PPU hardware accessors
 
 static inline void ppu_set_display_w_h(int w, int h) {
+	(void)w; // PPU does not actually know the width, it just renders into clipped scanbuf regions
 	ppu_hw->dispsize =
-		(((w - 1) << PPU_DISPSIZE_W_LSB) & PPU_DISPSIZE_W_MASK) |
 		(((h - 1) << PPU_DISPSIZE_H_LSB) & PPU_DISPSIZE_H_MASK);
 }
 

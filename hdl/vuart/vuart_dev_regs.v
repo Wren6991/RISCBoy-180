@@ -42,6 +42,7 @@ module vuart_dev_regs (
 	output reg  [1:0]  irqctrl_tx_level_o
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
 reg  [31:0] rdata;
@@ -113,6 +114,7 @@ wire [31:0] __irqctrl_rdata = {28'h0, irqctrl_tx_level_rdata, irqctrl_tx_enable_
 assign irqctrl_rx_enable_rdata = irqctrl_rx_enable_o;
 assign irqctrl_tx_enable_rdata = irqctrl_tx_enable_o;
 assign irqctrl_tx_level_rdata = irqctrl_tx_level_o;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)

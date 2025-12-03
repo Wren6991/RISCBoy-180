@@ -71,37 +71,28 @@ assign spi_miso = padin_gpio[3];
 
 wire [N_GPIO-1:0] out_o;
 wire              out_wen;
-wire [N_GPIO-1:0] out_xor_i;
 wire [N_GPIO-1:0] out_xor_o;
 wire              out_xor_wen;
-wire [N_GPIO-1:0] out_set_i;
 wire [N_GPIO-1:0] out_set_o;
 wire              out_set_wen;
-wire [N_GPIO-1:0] out_clr_i;
 wire [N_GPIO-1:0] out_clr_o;
 wire              out_clr_wen;
 
 wire [N_GPIO-1:0] oen_o;
 wire              oen_wen;
-wire [N_GPIO-1:0] oen_xor_i;
 wire [N_GPIO-1:0] oen_xor_o;
 wire              oen_xor_wen;
-wire [N_GPIO-1:0] oen_set_i;
 wire [N_GPIO-1:0] oen_set_o;
 wire              oen_set_wen;
-wire [N_GPIO-1:0] oen_clr_i;
 wire [N_GPIO-1:0] oen_clr_o;
 wire              oen_clr_wen;
 
 wire [N_GPIO-1:0] fsel_o;
 wire              fsel_wen;
-wire [N_GPIO-1:0] fsel_xor_i;
 wire [N_GPIO-1:0] fsel_xor_o;
 wire              fsel_xor_wen;
-wire [N_GPIO-1:0] fsel_set_i;
 wire [N_GPIO-1:0] fsel_set_o;
 wire              fsel_set_wen;
-wire [N_GPIO-1:0] fsel_clr_i;
 wire [N_GPIO-1:0] fsel_clr_o;
 wire              fsel_clr_wen;
 

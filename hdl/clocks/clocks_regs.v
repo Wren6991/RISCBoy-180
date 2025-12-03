@@ -31,6 +31,7 @@ module clocks_regs (
 	output reg  [5:0]  mtime_tick_o
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
 reg  [31:0] rdata;
@@ -73,6 +74,7 @@ wire [5:0]  mtime_tick_wdata = wdata[5:0];
 wire [5:0]  mtime_tick_rdata;
 wire [31:0] __mtime_tick_rdata = {26'h0, mtime_tick_rdata};
 assign mtime_tick_rdata = mtime_tick_o;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)

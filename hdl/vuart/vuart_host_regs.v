@@ -39,6 +39,7 @@ module vuart_host_regs (
 	output reg         fifo_txrx_ren
 );
 
+/* verilator lint_off UNUSEDSIGNAL */
 // APB adapter
 wire [31:0] wdata = apbs_pwdata;
 reg  [31:0] rdata;
@@ -96,6 +97,7 @@ wire [31:0] __fifo_rdata = {fifo_rxvld_rdata, fifo_txrdy_rdata, 22'h0, fifo_txrx
 assign fifo_rxvld_rdata = fifo_rxvld_i;
 assign fifo_txrdy_rdata = fifo_txrdy_i;
 assign fifo_txrx_rdata = fifo_txrx_i;
+/* verilator lint_on UNUSEDSIGNAL */
 
 always @ (*) begin
 	case (addr)
