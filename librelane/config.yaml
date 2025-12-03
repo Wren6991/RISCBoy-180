@@ -418,6 +418,7 @@ IGNORE_DISCONNECTED_MODULES:
 - gf180mcu_fd_io__bi_t
 - gf180mcu_ws_ip__id
 - gf180mcu_ws_ip__logo
+- gf180mcu_name_plate
 
 # Floorplanning
 FP_SIZING: absolute
@@ -518,6 +519,21 @@ MACROS:
     instances:
       wafer_space_logo:
         location: [3762.75, 4952.75]
+        orientation: N
+
+  gf180mcu_name_plate:
+    gds:
+      - dir::../ip/gf180mcu_name_plate/gds/gf180mcu_name_plate.gds
+    lef:
+      - dir::../ip/gf180mcu_name_plate/lef/gf180mcu_name_plate.lef
+    vh:
+      - dir::../ip/gf180mcu_name_plate/vh/gf180mcu_name_plate.v
+    lib:
+      "*":
+        - dir::../ip/gf180mcu_name_plate/lib/gf180mcu_name_plate.lib
+    instances:
+      name_plate:
+        location: [3762.75, 26]
         orientation: N
 
   gf180mcu_fd_ip_sram__sram128x8m8wm1:
@@ -680,9 +696,11 @@ PDN_HORIZONTAL_HALO: 1
 LVS_FLATTEN_CELLS:
 - gf180mcu_ws_ip__id
 - gf180mcu_ws_ip__logo
+- gf180mcu_name_plate
 
 # gf180mcu_ws_ip__id/logo has no ports and components
 # therefore make it an abstract cell in the layout
 MAGIC_EXT_ABSTRACT_CELLS:
 - gf180mcu_ws_ip__id
 - gf180mcu_ws_ip__logo
+- gf180mcu_name_plate

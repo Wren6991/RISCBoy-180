@@ -578,6 +578,7 @@ chip_core #(
 
 // ----------------------------------------------------------------------------
 // Trinkets
+
 // Chip ID - do not remove, necessary for tapeout
 (* keep *)
 gf180mcu_ws_ip__id chip_id ();
@@ -585,6 +586,9 @@ gf180mcu_ws_ip__id chip_id ();
 // wafer.space logo - can be removed
 (* keep *)
 gf180mcu_ws_ip__logo wafer_space_logo ();
+
+(* keep *)
+gf180mcu_name_plate name_plate ();
 
 endmodule
 
