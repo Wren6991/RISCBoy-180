@@ -877,6 +877,9 @@ async def test_execute_eram(dut, app="hellow"):
             for b in expected_lcd_capture[app]: print(f"{b:03x}")
         assert lcd_capture == expected_lcd_capture[app]
 
+# These tests require you to define BEHAV_SRAM_1RW to get the correct
+# hierarchical paths to initialise the memories. This isn't compatible with
+# gate sim. However the bootrom sim does cover execution from IRAM.
 @cocotb.test()
 @cocotb.parametrize(app=[
     "hellow",
