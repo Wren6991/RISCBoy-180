@@ -1243,3 +1243,21 @@ Verilator lint was mostly fussiness. I did find a width issue in the streaming S
 I noticed the new Hazard3 register file was not gating writeback with the final stage-3 stall, which I _think_ is ok as in this case it will always be rewritten with the correct value when the instruction graduates from stage 3, and younger instructions in the pipeline will get that value. Still I'll fix it up if I can afford the timing.
 
 Adding the SRAM chicken bit felt... dumb. This is not how SRAM works. I guess it's better to have it and not need it, as long as it doesn't mess up the timing too much. One consequence of the new chicken bit is the GWEN is now a function of the per-RAM-blcok address decode, because I can't rely on CEN to deselect RAMs any more.
+
+The SRAM chicken bit has really screwed up the placement and timing of the whole chip. I got one netlist through PnR with -0.8 ns WNS. It was ugly -- some flops from one of the processor register files were jammed into an SRAM routing channel. If I push the density up any further then detailed placement gives up, so I'll try again at the same density with a bit more slew margin and setup margin.
+
+I did see that the TCL passes an argument to the detailed placer for how far it is allowed to move instances to legalise them, and I wonder if it might be worth trying to increase that if it enables an overall denser layout. Not sure if it is brought out to any LibreLane config variables. I generally find denser layouts have better timing if they make it through DPL (maybe because of how good the metal stack is relative to the cells). This is the OpenLane TCL called by the LibreLane TCL:
+
+```tcl
+detailed_placement\
+    -max_displacement [subst { $::env(PL_MAX_DISPLACEMENT_X) $::env(PL_MAX_DISPLACEMENT_Y) }]
+```
+
+Yep, those are in the config.json for the placement step:
+
+```
+    "PL_MAX_DISPLACEMENT_X": 500,
+    "PL_MAX_DISPLACEMENT_Y": 100,
+```
+
+I just had a re-run at the same density with more slew margin fail placement, so let's bump those up a little bit.
