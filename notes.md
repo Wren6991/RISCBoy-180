@@ -9,7 +9,6 @@
 ## "Verification"
 
 * Cover all address decode targets
-	* CPU
 	* APU
 * Toggle every IRQ
 * Dump 4-bit 1.5 MSa/s stream from AOUT, filter it back down to 48 kHz, make sure it sounds good
@@ -1261,3 +1260,5 @@ Yep, those are in the config.json for the placement step:
 ```
 
 I just had a re-run at the same density with more slew margin fail placement, so let's bump those up a little bit.
+
+...That seemed to fix it. I did lose one otherwise clean run because I added a name tag on the corner of the die, and my tag broke DRC because of two corners touching. Oops. I manually fixed it up in klayout, hopefully it's clean this time.

@@ -100,9 +100,9 @@ GRT_RESIZER_HOLD_SLACK_MARGIN: 0.16
 # Apply insane levels of slack margin because I keep seeing a bunch of drive-1
 # cells on my critical paths, just do your job dude
 # Default: 0.05
-PL_RESIZER_SETUP_SLACK_MARGIN: 3.5
+PL_RESIZER_SETUP_SLACK_MARGIN: 3.7
 # Default: 0.025
-GRT_RESIZER_SETUP_SLACK_MARGIN: 3.5
+GRT_RESIZER_SETUP_SLACK_MARGIN: 3.7
 
 # Cmon do something
 PL_RESIZER_FIX_HOLD_FIRST: True
