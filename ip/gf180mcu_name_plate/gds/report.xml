@@ -2,7 +2,7 @@
 <report-database>
  <description>DRC Run Report at</description>
  <original-file/>
- <generator>drc: script='/Users/luke/proj/riscboy-180/ip/gf180mcu_name_plate/../../gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc'</generator>
+ <generator>drc: script='/home/luke/proj/riscboy-180/ip/gf180mcu_name_plate/../../gf180mcu/gf180mcuD/libs.tech/klayout/tech/drc/gf180mcu.drc'</generator>
  <top-cell>gf180mcu_name_plate</top-cell>
  <tags>
  </tags>
@@ -458,53 +458,5 @@
   </cell>
  </cells>
  <items>
-  <item>
-   <tags/>
-   <category>'MT.1'</category>
-   <cell>gf180mcu_name_plate</cell>
-   <visited>false</visited>
-   <multiplicity>1</multiplicity>
-   <comment/>
-   <image/>
-   <values>
-    <value>edge-pair: (106.06,78;106.5,78)|(106.94,78;106.5,78)</value>
-   </values>
-  </item>
-  <item>
-   <tags/>
-   <category>'MT.1'</category>
-   <cell>gf180mcu_name_plate</cell>
-   <visited>false</visited>
-   <multiplicity>1</multiplicity>
-   <comment/>
-   <image/>
-   <values>
-    <value>edge-pair: (106.5,78;106.5,77.56)|(106.5,78;106.5,78.44)</value>
-   </values>
-  </item>
-  <item>
-   <tags/>
-   <category>'MT.2a'</category>
-   <cell>gf180mcu_name_plate</cell>
-   <visited>false</visited>
-   <multiplicity>1</multiplicity>
-   <comment/>
-   <image/>
-   <values>
-    <value>edge-pair: (106.04,78;106.5,78)|(106.96,78;106.5,78)</value>
-   </values>
-  </item>
-  <item>
-   <tags/>
-   <category>'MT.2a'</category>
-   <cell>gf180mcu_name_plate</cell>
-   <visited>false</visited>
-   <multiplicity>1</multiplicity>
-   <comment/>
-   <image/>
-   <values>
-    <value>edge-pair: (106.5,78;106.5,77.54)|(106.5,78;106.5,78.46)</value>
-   </values>
-  </item>
  </items>
 </report-database>
