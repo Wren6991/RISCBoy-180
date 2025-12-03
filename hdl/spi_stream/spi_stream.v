@@ -117,7 +117,7 @@ localparam [3:0] S_TO_PAUSE    = 4'd8;
 localparam [3:0] S_TO_IDLE     = 4'd9;
 
 localparam W_ADDR = 24;
-localparam W_WORD_CTR = 12;
+localparam W_WORD_CTR = 16;
 localparam W_BIT_CTR = 5;
 localparam FIFO_DEPTH = 2;
 
@@ -137,7 +137,7 @@ reg                 cs_n_nxt;
 reg [W_BIT_CTR-1:0] bit_ctr_nxt;
 reg [31:0]          sreg_nxt;
 reg [21:0]          addr_nxt;
-reg [11:0]          count_nxt;
+reg [15:0]          count_nxt;
 
 // Inputs
 reg                 clk_en;
@@ -216,12 +216,12 @@ always @ (*) begin
 					state_nxt = S_FIFO_WAIT;
 				end else if (pause_req) begin
 					fifo_push = 1'b1;
-					count_nxt = count - 12'd1;
+					count_nxt = count - 16'd1;
 					addr_nxt = addr + 22'd1;
 					state_nxt = |count ? S_TO_PAUSE : S_TO_IDLE;
 				end else begin
 					fifo_push = 1'b1;
-					count_nxt = count - 12'd1;
+					count_nxt = count - 16'd1;
 					addr_nxt = addr + 22'd1;
 					state_nxt = |count ? S_SHIFT_DATA : S_TO_IDLE;
 				end
@@ -231,7 +231,7 @@ always @ (*) begin
 	S_FIFO_WAIT: begin
 		if (!fifo_full) begin
 			fifo_push = 1'b1;
-			count_nxt = count - 12'd1;
+			count_nxt = count - 16'd1;
 			addr_nxt = addr + 22'd1;
 			if (pause_req) begin
 				state_nxt = |count ? S_TO_PAUSE : S_TO_IDLE;
