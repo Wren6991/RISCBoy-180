@@ -79,15 +79,15 @@ SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
 # -> Disabled to reduce clock skew (since DFFEs are now a thing via scan flops)
 # USE_LIGHTER: True
 
-PL_TARGET_DENSITY_PCT: 50
+PL_TARGET_DENSITY_PCT: 45
 GRT_ALLOW_CONGESTION: true
 
 # Work harder to legalise during detailed placement. Allows a slightly denser
 # layout which seems to have better overall delay.
 # Default: 500
-PL_MAX_DISPLACEMENT_X: 600
+PL_MAX_DISPLACEMENT_X: 650
 # Default: 100
-PL_MAX_DISPLACEMENT_Y: 120
+PL_MAX_DISPLACEMENT_Y: 130
 
 # Magic incantation from Discord to make the antenna violations go away
 DRT_ANTENNA_REPAIR_ITERS: 10
