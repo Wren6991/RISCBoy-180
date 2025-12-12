@@ -8,8 +8,8 @@ meta:
     #Checker.KLayoutDRC: null
 
     # Disable KLayout antenna check
-    KLayout.Antenna: null
-    Checker.KLayoutAntenna: null
+    #KLayout.Antenna: null
+    #Checker.KLayoutAntenna: null
 
     # Disable KLayout density check
     #KLayout.Density: null
@@ -450,14 +450,15 @@ PDN_CORE_HORIZONTAL_LAYER: Metal3
 #PL_TIME_DRIVEN: False
 #PL_ROUTABILITY_DRIVEN: False
 
+# Do not error on magic DRC violations
+# Note: Passing magic DRC is not required for the submission.
+# However, it is recommended to fix or carefully review all violations.
+ERROR_ON_MAGIC_DRC: False
+
 # Prevent false positive DRC errors in I/O cells
 MAGIC_GDS_FLATGLOB:
 # For contacts
 - "*_CDNS_*"
-# COMP and Poly2 filler cells need to be
-# flattened to form a "filltrans" layer
-- "COMP_fill_cell"
-- "Poly2_fill_cell"
 # Foundry provided SRAMs
 - "*$$*"
 - "M1_N*"
@@ -486,6 +487,13 @@ MAGIC_GDS_FLATGLOB:
 - "xdec16_*"
 - "xdec32_*"
 - "sa_*"
+
+# Since we cannot meet the minimum density limit on Metal2,
+# ignore active metal on previous and subsequent layers
+# (DM.5_DM.7 and DM.4_DM.6). Dummy metal is moved to active
+# metal during the precheck.
+KLAYOUT_FILLER_OPTIONS:
+  Metal2_ignore_active: true
 
 # Because we have multiple power pads for one power domain
 MAGIC_EXT_UNIQUE: notopports
