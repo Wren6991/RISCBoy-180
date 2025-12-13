@@ -274,27 +274,27 @@ always @ (posedge clk or negedge rst_n) begin
 		mosi    <= '0;
 		cs_n    <= 1'b1;
 		bit_ctr <= '0;
-		sreg    <= '0;
-		addr    <= '0;
-		count   <= '0;
 	end else begin
 		state   <= state_nxt;
 		sck     <= sck_nxt;
 		mosi    <= mosi_nxt;
 		cs_n    <= cs_n_nxt;
 		bit_ctr <= bit_ctr_nxt;
-		sreg    <= sreg_nxt;
-		addr    <= addr_nxt;
-		count   <= count_nxt;
+	end
+end
 
-		// Register writes override update
-		if (addr_wen) begin
-			addr <= addr_o;
-		end
-		if (count_wen) begin
-			count <= count_o;
-		end
-
+// Exclude some large registers from reset as they should always be
+// initialised by software before use:
+always @ (posedge clk) begin
+	sreg    <= sreg_nxt;
+	addr    <= addr_nxt;
+	count   <= count_nxt;
+	// Register writes override update
+	if (addr_wen) begin
+		addr <= addr_o;
+	end
+	if (count_wen) begin
+		count <= count_o;
 	end
 end
 

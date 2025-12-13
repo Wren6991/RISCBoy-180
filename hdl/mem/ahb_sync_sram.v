@@ -14,6 +14,7 @@ module ahb_sync_sram #(
 	parameter W_DATA = 32,
 	parameter W_ADDR = 32,
 	parameter DEPTH = 1 << 11,
+	parameter FULL_RESET = 1,
 	parameter PRELOAD_FILE = ""
 ) (
 	// Globals
@@ -80,8 +81,6 @@ wire [W_SRAM_ADDR-1:0] haddr_row = ahbls_haddr[W_BYTEADDR +: W_SRAM_ADDR];
 // AHBL state machine (mainly controlling write buffer)
 always @ (posedge clk or negedge rst_n) begin
 	if (!rst_n) begin
-		addr_saved <= {W_SRAM_ADDR{1'b0}};
-		wdata_saved <= {W_DATA{1'b0}};
 		write_saved <= 1'b0;
 		size_saved <= 3'h0;
 		align_saved <= {W_BYTEADDR{1'b0}};
@@ -91,16 +90,24 @@ always @ (posedge clk or negedge rst_n) begin
 			write_saved <= 1'b1;
 			align_saved <= ahbls_haddr[W_BYTEADDR-1:0];
 			size_saved  <= ahbls_hsize;
-			addr_saved <= haddr_row;
 		end else if (write_retire) begin
 			write_saved <= 1'b0;
 		end
 		if (wdata_capture) begin
 			wbuf_vld <= 1'b1;
-			wdata_saved <= ahbls_hwdata;
 		end else if (write_retire) begin
 			wbuf_vld <= 1'b0;
 		end
+	end
+end
+
+// No reset on datapath flops
+always @ (posedge clk) begin
+	if (ahb_write_aphase) begin
+		addr_saved <= haddr_row;
+	end
+	if (wdata_capture) begin
+		wdata_saved <= ahbls_hwdata;
 	end
 end
 
@@ -141,12 +148,8 @@ assign ahbls_hready_resp = 1'b1;
 // which is preventing a previous write from retiring.)
 
 reg [W_SRAM_ADDR-1:0] haddr_dphase;
-always @ (posedge clk or negedge rst_n) begin
-	if (!rst_n) begin
-		haddr_dphase <= {W_SRAM_ADDR{1'b0}};
-	end else if (ahbls_hready) begin
-		haddr_dphase <= haddr_row;
-	end
+always @ (posedge clk) if (ahbls_hready) begin
+	haddr_dphase <= haddr_row;
 end
 
 wire addr_match = haddr_dphase == addr_saved;
