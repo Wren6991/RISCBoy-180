@@ -43,9 +43,10 @@ STD_CELL_LIBRARY: gf180mcu_fd_sc_mcu9t5v0
 # Force use of chonky bois to reduce clock skew (default list is 2, 4, 8). d20
 # is 9-track only I think
 CTS_CLK_BUFFERS:
+  - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_4"
   - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_8"
   - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_16"
-  - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_20"
+  # - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_20"
 
 # Doesn't seem to achieve much but the docs imply this should be set if you
 # have CG cells on your clock tree (or any cells inserted prior to CTS)
