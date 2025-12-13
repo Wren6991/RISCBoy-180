@@ -49,7 +49,8 @@ CTS_CLK_BUFFERS:
 
 # Doesn't seem to achieve much but the docs imply this should be set if you
 # have CG cells on your clock tree (or any cells inserted prior to CTS)
-CTS_BALANCE_LEVELS: True
+# -> removed as it genuinely does nothing, just emits a warning that it is "obsolete"
+# CTS_BALANCE_LEVELS: True
 
 # Magic, thank you Lofty
 SYNTH_STRATEGY: "AREA 3"

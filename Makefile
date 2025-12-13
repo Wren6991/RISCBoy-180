@@ -33,7 +33,7 @@ librelane-yolo: ## Run full flow, including DRC, but don't quit after DRC errors
 .PHONY: librelane-yolo
 
 librelane-nodrc: ## Run LibreLane flow without DRC checks
-	librelane librelane/slots/slot_${SLOT}.yaml librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --skip KLayout.Antenna --skip KLayout.DRC --skip Magic.DRC
+	librelane librelane/config.yaml --pdk ${PDK} --pdk-root ${PDK_ROOT} --manual-pdk --skip KLayout.Antenna --skip KLayout.DRC --skip Magic.DRC
 .PHONY: librelane-nodrc
 
 librelane-klayoutdrc: ## Run LibreLane flow without magic DRC checks
@@ -57,7 +57,7 @@ librelane-klayout: ## Open the last run in KLayout
 .PHONY: librelane-klayout
 
 librelane-padring: ## Only create the padring
-	PDK_ROOT=${PDK_ROOT} PDK=${PDK} python3 scripts/padring.py librelane/slots/slot_${SLOT}.yaml librelane/config.yaml
+	PDK_ROOT=${PDK_ROOT} PDK=${PDK} python3 scripts/padring.py librelane/config.yaml
 .PHONY: librelane-padring
 
 sim: ## Run RTL simulation with cocotb
