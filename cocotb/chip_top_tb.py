@@ -893,9 +893,6 @@ async def test_execute_eram(dut, app="hellow"):
             for b in expected_lcd_capture[app]: print(f"{b:03x}")
         assert lcd_capture == expected_lcd_capture[app]
 
-# These tests require you to define BEHAV_SRAM_1RW to get the correct
-# hierarchical paths to initialise the memories. This isn't compatible with
-# gate sim. However the bootrom sim does cover execution from IRAM.
 @cocotb.test()
 @cocotb.parametrize(app=[
     "hellow",
@@ -913,8 +910,12 @@ async def test_execute_iram(dut, app="hellow"):
     cocotb.log.info(f"Program size = {len(prog_bytes)}")
     prog_words = list(w[0] for w in struct.iter_unpack("<l", prog_bytes))
     for i, word in enumerate(prog_words):
-        dut.chip_u.i_chip_core.iram_u.sram.mem[i].value = word
-        dut.chip_u.i_chip_core.iram_u.sram.mem[i].value = Release()
+        y = i // 512
+        row = i % 512
+        for x in range(4):
+            data = (word >> (x * 8)) & 0xff
+            dut.chip_u.i_chip_core.iram_u.sram.g_dg512.g_depth[y].g_width[x].ram_u.mem[row].value = data
+            dut.chip_u.i_chip_core.iram_u.sram.g_dg512.g_depth[y].g_width[x].ram_u.mem[row].value = Release()
 
     await start_up(dut)
     await twd_connect(dut)
