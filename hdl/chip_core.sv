@@ -718,9 +718,10 @@ wire [31:0] peri_prdata;
 wire        peri_pslverr;
 
 ahbl_to_apb #(
-    .W_HADDR (20),
-    .W_PADDR (20),
-    .W_DATA  (32)
+    .W_HADDR    (20),
+    .W_PADDR    (20),
+    .W_DATA     (32),
+    .FULL_RESET (0)
 ) inst_ahbl_to_apb (
     .clk               (clk_sys),
     .rst_n             (rst_n_sys),
