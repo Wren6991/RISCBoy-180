@@ -81,7 +81,7 @@ SYNTH_EXTRA_MAPPING_FILE: dir::/gf180_scanflop_map.v
 # -> Disabled to reduce clock skew (since DFFEs are now a thing via scan flops)
 # USE_LIGHTER: True
 
-PL_TARGET_DENSITY_PCT: 45
+PL_TARGET_DENSITY_PCT: 50
 GRT_ALLOW_CONGESTION: true
 
 # Work harder to legalise during detailed placement. Allows a slightly denser
