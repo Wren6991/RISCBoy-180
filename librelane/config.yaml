@@ -93,6 +93,11 @@ PL_MAX_DISPLACEMENT_Y: 130
 
 # Magic incantation from Discord to make the antenna violations go away
 DRT_ANTENNA_REPAIR_ITERS: 10
+# Have seen small failures (area ratio ~405, max 400) on M2, so add some margin:
+# default: 3
+GRT_ANTENNA_REPAIR_ITERS: 5
+# default: 10 (no unit given...)
+GRT_ANTENNA_REPAIR_MARGIN: 15
 
 # Try to avoid occasional hold failures on short paths into SRAM address.
 # Original: PL 0.1 GRT 0.05
