@@ -168,9 +168,6 @@ always @ (posedge clk or negedge rst_n) begin
 		csr_reload_o <= 3'h0;
 		csr_irq <= 3'h0;
 		tick_o <= 8'h17;
-		reload0_o <= 20'h0;
-		reload1_o <= 20'h0;
-		reload2_o <= 20'h0;
 	end else begin
 		if (__csr_wen)
 			csr_en_o <= csr_en_wdata;
@@ -179,13 +176,16 @@ always @ (posedge clk or negedge rst_n) begin
 		csr_irq <= (csr_irq & ~({3{__csr_wen}} & csr_irq_wdata)) | csr_irq_i;
 		if (__tick_wen)
 			tick_o <= tick_wdata;
-		if (__reload0_wen)
-			reload0_o <= reload0_wdata;
-		if (__reload1_wen)
-			reload1_o <= reload1_wdata;
-		if (__reload2_wen)
-			reload2_o <= reload2_wdata;
 	end
+end
+
+always @ (posedge clk) begin
+	if (__reload0_wen)
+		reload0_o <= reload0_wdata;
+	if (__reload1_wen)
+		reload1_o <= reload1_wdata;
+	if (__reload2_wen)
+		reload2_o <= reload2_wdata;
 end
 
 endmodule

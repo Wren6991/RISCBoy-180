@@ -18,9 +18,9 @@ regs:
       for i in range(N_TIMERS):
           _(f'- name: reload{i}')
           _(f'  bits:')
-          _(f'  - {{b: [{W_CTR-1}, 0], access: rw}}')
+          _(f'  - {{b: [{W_CTR-1}, 0], access: rw, norst: True}}')
           _(f'  info: Reload value for counter {i}. The counter takes this value on the next tick after reaching zero, if bit {i} of CSR_EN and CSR_RELOAD are both set.')
           _(f'- name: ctr{i}')
           _(f'  bits:')
-          _(f'  - {{b: [{W_CTR-1}, 0], access: rwv}}')
+          _(f'  - {{b: [{W_CTR-1}, 0], access: rwv, norst: True}}')
           _(f'  info: Counter {i}. Can be read and written by software. Counts down when bit {i} of CSR_EN is set. Raises IRQ {i} upon decrementing to 0.')

@@ -103,17 +103,13 @@ end
 // ----------------------------------------------------------------------------
 // Individual counters and IRQs
 
-always @ (posedge clk or negedge rst_n) begin: count
+always @ (posedge clk) begin: count
 	integer i;
-	if (!rst_n) begin
-		for (i = 0; i < N_TIMERS; i = i + 1) begin
-			ctr[i] <= {W_CTR{1'b0}};
-		end
-	end else if (tick) begin
-		for (i = 0; i < N_TIMERS; i = i + 1) begin
-			if (ctr_wen[i]) begin
-				ctr[i] <= ctr_o[i];
-			end else if (~|ctr[i] && csr_en[i] && csr_reload[i]) begin
+	for (i = 0; i < N_TIMERS; i = i + 1) begin
+		if (ctr_wen[i]) begin
+			ctr[i] <= ctr_o[i];
+		end else if (tick) begin
+			if (~|ctr[i] && csr_en[i] && csr_reload[i]) begin
 				ctr[i] <= reload[i];
 			end else if (|ctr[i] && csr_en[i]) begin
 				ctr[i] <= ctr[i] - CTR_ONE;

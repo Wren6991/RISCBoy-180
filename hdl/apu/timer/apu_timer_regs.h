@@ -78,7 +78,7 @@ typedef struct {
 // after reaching zero, if bit 0 of CSR_EN and CSR_RELOAD are both set.
 
 // Field: RELOAD0  Access: RW
-// Reset: 0x0
+// Reset: this field is not reset.
 #define APU_TIMER_RELOAD0_LSB  0
 #define APU_TIMER_RELOAD0_BITS 20
 #define APU_TIMER_RELOAD0_MASK 0xfffff
@@ -91,7 +91,7 @@ typedef struct {
 // CSR_EN is set. Raises IRQ 0 upon decrementing to 0.
 
 // Field: CTR0  Access: RWV
-// Reset: 0x0
+// Reset: this field is not reset.
 #define APU_TIMER_CTR0_LSB  0
 #define APU_TIMER_CTR0_BITS 20
 #define APU_TIMER_CTR0_MASK 0xfffff
@@ -104,7 +104,7 @@ typedef struct {
 // after reaching zero, if bit 1 of CSR_EN and CSR_RELOAD are both set.
 
 // Field: RELOAD1  Access: RW
-// Reset: 0x0
+// Reset: this field is not reset.
 #define APU_TIMER_RELOAD1_LSB  0
 #define APU_TIMER_RELOAD1_BITS 20
 #define APU_TIMER_RELOAD1_MASK 0xfffff
@@ -117,7 +117,7 @@ typedef struct {
 // CSR_EN is set. Raises IRQ 1 upon decrementing to 0.
 
 // Field: CTR1  Access: RWV
-// Reset: 0x0
+// Reset: this field is not reset.
 #define APU_TIMER_CTR1_LSB  0
 #define APU_TIMER_CTR1_BITS 20
 #define APU_TIMER_CTR1_MASK 0xfffff
@@ -130,7 +130,7 @@ typedef struct {
 // after reaching zero, if bit 2 of CSR_EN and CSR_RELOAD are both set.
 
 // Field: RELOAD2  Access: RW
-// Reset: 0x0
+// Reset: this field is not reset.
 #define APU_TIMER_RELOAD2_LSB  0
 #define APU_TIMER_RELOAD2_BITS 20
 #define APU_TIMER_RELOAD2_MASK 0xfffff
@@ -143,7 +143,7 @@ typedef struct {
 // CSR_EN is set. Raises IRQ 2 upon decrementing to 0.
 
 // Field: CTR2  Access: RWV
-// Reset: 0x0
+// Reset: this field is not reset.
 #define APU_TIMER_CTR2_LSB  0
 #define APU_TIMER_CTR2_BITS 20
 #define APU_TIMER_CTR2_MASK 0xfffff
