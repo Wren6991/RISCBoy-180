@@ -3,6 +3,9 @@ meta:
   flow: Chip
   substituting_steps:
 
+    # Causes INSERT_ECO_DIODES to actually be used
+    "-OpenROAD.DetailedRouting": "Odb.InsertEcoDiodes"
+
     # Disable KLayout DRC
     #KLayout.DRC: null
     #Checker.KLayoutDRC: null
@@ -98,6 +101,11 @@ DRT_ANTENNA_REPAIR_ITERS: 10
 GRT_ANTENNA_REPAIR_ITERS: 5
 # default: 10 (no unit given...)
 GRT_ANTENNA_REPAIR_MARGIN: 15
+
+INSERT_ECO_DIODES:
+  - {target: pad_DIO/PDRV0}
+  - {target: pad_DIO/PDRV1}
+  - {target: pad_DIO/CS}
 
 # Try to avoid occasional hold failures on short paths into SRAM address.
 # Original: PL 0.1 GRT 0.05
