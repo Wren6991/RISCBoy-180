@@ -1,0 +1,11 @@
+extends: default-sans
+title-page:
+  title:
+    top: 90%
+
+codespan:
+  font-color: '#000000'
+
+table:
+  head:
+    background-color: '#F8F8F8'
