@@ -13,9 +13,9 @@ endif::[]
 
 == Introduction
 
-RB180 is a single-chip games console taped out on the cutting-edge GF180MCU planar CMOS process. This process features both thick and thicker oxide, and operates in the _alarmingly high_ core voltage regime. It features:
+RB180 is a single-chip games console taped out on the cutting-edge GF180MCU planar CMOS process. This process features both thick and thicker oxide, and operates in the _alarmingly high_ core voltage regime. RB180 features:
 
-* 5V single-supply operation at up to 24 MHz (post-PnR STA, slow corner).
+* 5V single-supply operation at up to 25 MHz (post-PnR STA, slow corner).
 * Asymmetric dual 32-bit https://github.com/wren6991/hazard3[Hazard3] RISC-V processors (CPU and APU):
 ** Identical processor configurations with asymmetric bus connectivity and responsibilities.
 ** Single-cycle 32-bit multiply.
@@ -34,7 +34,7 @@ RB180 is a single-chip games console taped out on the cutting-edge GF180MCU plan
 ** Custom timers for APU audio sequencing.
 ** Mono audio output pipeline with fixed upsampling and output dithering (48 kSa/s 16-bit -> 1.5 MSa/s 4-bit PWM).
 ** Hardware UART.
-* Minimal sea-of-gates bootrom capable of loading and checksumming a second stage from external SPI flash.
+* Minimal sea-of-gates bootrom: loads and checksums a second stage from external SPI flash.
 
 <<<
 
