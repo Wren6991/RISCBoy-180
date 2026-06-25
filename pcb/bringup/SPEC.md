@@ -1,5 +1,18 @@
 # Bringup Board
 
+Purpose:
+
+* Initial smoke test.
+* Design validation:
+	* Exercise all hardware interfaces at a basic level.
+	* Sweep voltages and get coarse V/F sweeps etc.
+* Early software development.
+
+Non-purposes:
+
+* Device test (ATE).
+* Games console.
+
 ## Requirements
 
 * 4-layer (2 would be adequate but 4 gives peace of mind).
@@ -8,7 +21,7 @@
 * All DUT signals accessible on test points or headers (headers preferred; test points minimise stubs for high-speed signals, mainly SRAM).
 * Power and debug through single USB C socket.
 * Allow running chip at: 5V (VBUS), 3.3V (onboard LDO), external supply, selected by jumper.
-	* External supply for: smoke test soft-start, voltage sweep, and current measurement. Ideally 2x banana plugs..
+	* External supply for: smoke test soft-start, voltage sweep, and current measurement. 0.1" header is fine for power supply connection.
 	* External supply range: 3.0V to 5.5V (3.3 -10%, 5 +10%). Interested in validating 3V3 operation.
 * Built-in debug probe:
 	* RP2040 running modified picoprobe firmware.
@@ -39,4 +52,10 @@
 Trying to stick to JLC basic or preferred parts where possible.
 
 * [ER-TFT020-7 LCD](https://www.buydisplay.com/download/manual/ER-TFT020-7_Datasheet.pdf)
-* [SN74LVC8T245 level shifter](https://www.ti.com/lit/ds/symlink/sn74lvc8t245.pdf) 
+* [SN74LVC8T245 level shifter](https://www.ti.com/lit/ds/symlink/sn74lvc8t245.pdf)
+* [HC-PBB40C-70DS-0.4V-2.0-02 CoB Socket](https://www.lcsc.com/product-detail/C19089262.html)
+* [R1RP0416DI async SRAM](https://www.renesas.com/en/document/dst/r1rp0416di-series-datasheet)
+
+## Other Useful Links
+
+* [wafer.space CoB documentation](https://github.com/wafer-space/chip-on-board-wire-bonded-pcbs)
