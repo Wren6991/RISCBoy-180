@@ -24,7 +24,8 @@ Non-purposes:
 	* External supply for: smoke test soft-start, voltage sweep, and current measurement. 0.1" header is fine for power supply connection.
 	* External supply range: 3.0V to 5.5V (3.3 -10%, 5 +10%). Interested in validating 3V3 operation.
 * Built-in debug probe:
-	* RP2040 running modified picoprobe firmware.
+	* RP2350 running modified picoprobe firmware.
+	* (RP2040 is obviously sufficient but using Hazard3 to debug the second Hazard3 tapeout was evaluated on its technical merits and found to be hella balls to the walls fucking awesome.)
 	* Probe enumerates as CMSIS-DAP with JTAG, plus a CDC UART.
 	* Probe tunnels all traffic through the TWD DAP to internal DMI and VUARTs.
 * DUT clock driven by debug probe (derived from probe's XOSC via internal PLL, just driven as single-ended CMOS clock via level shifter).
@@ -47,7 +48,7 @@ Non-purposes:
 * 8 push buttons connected to LCD D7..D0 with ~1k resistors (sample during vblank)
 	* Make the board reasonably comfortable to pick up, hold, push buttons with two thumbs.
 
-## Datasheets
+## Part Selection
 
 Trying to stick to JLC basic or preferred parts where possible.
 
@@ -55,6 +56,11 @@ Trying to stick to JLC basic or preferred parts where possible.
 * [SN74LVC8T245 level shifter](https://www.ti.com/lit/ds/symlink/sn74lvc8t245.pdf)
 * [HC-PBB40C-70DS-0.4V-2.0-02 CoB Socket](https://www.lcsc.com/product-detail/C19089262.html)
 * [R1RP0416DI async SRAM](https://www.renesas.com/en/document/dst/r1rp0416di-series-datasheet)
+* [NCP115ASN330 3V3 LDO](https://www.lcsc.com/product-detail/C603505.html)
+* [GT-USB-7010B](https://www.lcsc.com/product-detail/USB-Connectors_G-Switch-GT-USB-7010B_C2837092.html)
+* [SHOU HAN PJ-320D 3.5mm socket](https://www.lcsc.com/product-detail/C431535.html)
+* [W25Q128JVSIQ NOR flash](https://jlcpcb.com/partdetail/WinbondElec-W25Q128JVSIQ/C97521)
+* [X322512MSB4SI 12 MHz crystal](https://jlcpcb.com/partdetail/YXC_CrystalOscillators-X322512MSB4SI/C9002)
 
 ## Other Useful Links
 
