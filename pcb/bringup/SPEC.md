@@ -36,7 +36,7 @@ Non-purposes:
 * SPI flash for DUT.
 	* 5V serial NOR flash with decent speed or density is nonexistent.
 	* Therefore use level shifters (SPI stream peripheral is max 12 MHz, clk_sys/2, and can be slower)
-	* Use same device as the RP2040's boot flash.
+	* Use same device as the RP2350's boot flash.
 * LCD connects to a ZIF connector (pick a specific one from BuyDisplay etc) through level shifters; LCD outputs are all 3V3.
 	* Level shifter needs to support 24 MHz operation with reasonable edge rates.
 * LCD lies flat on top surface of the board.
@@ -61,6 +61,43 @@ Trying to stick to JLC basic or preferred parts where possible.
 * [SHOU HAN PJ-320D 3.5mm socket](https://www.lcsc.com/product-detail/C431535.html)
 * [W25Q128JVSIQ NOR flash](https://jlcpcb.com/partdetail/WinbondElec-W25Q128JVSIQ/C97521)
 * [X322512MSB4SI 12 MHz crystal](https://jlcpcb.com/partdetail/YXC_CrystalOscillators-X322512MSB4SI/C9002)
+
+## Level Shifters
+
+### To DUT
+
+From probe:
+
+* Debug: DCK + DO (2)
+* CLK (1)
+* RSTn (1)
+
+From SPI flash:
+
+* MISO (1)
+
+Total: 5. Use spare level shifters to buffer some probe signals to the VDUT domain and bring them out on a header for patching in.
+
+### From DUT
+
+To probe:
+
+* Debug: DI (1)
+
+To LCD:
+
+* BL, DC, CLK (3)
+* DAT0 to DAT7 (8)
+
+To SPI flash:
+
+* SCK, CSn, MOSI (3)
+
+To audio filter:
+
+* AUDIO (1)
+
+Total: 16
 
 ## Other Useful Links
 
