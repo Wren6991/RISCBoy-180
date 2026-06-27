@@ -2289,7 +2289,7 @@
 			(pin bidirectional line
 				(at 21.59 34.29 180)
 				(length 2.54)
-				(name "GPIO0"
+				(name "MOSI/GPIO0"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2307,7 +2307,7 @@
 			(pin bidirectional line
 				(at 21.59 36.83 180)
 				(length 2.54)
-				(name "GPIO1"
+				(name "SCK/GPIO1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2325,7 +2325,7 @@
 			(pin bidirectional line
 				(at 21.59 39.37 180)
 				(length 2.54)
-				(name "GPIO2"
+				(name "~{CS}/GPIO2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -2343,7 +2343,7 @@
 			(pin bidirectional line
 				(at 21.59 41.91 180)
 				(length 2.54)
-				(name "GPIO3"
+				(name "MISO/GPIO3"
 					(effects
 						(font
 							(size 1.27 1.27)
