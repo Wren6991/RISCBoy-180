@@ -1,1 +1,4 @@
 datasheet/
+*.lck
+.history/
+*.kicad_prl
