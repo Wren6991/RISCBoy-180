@@ -622,6 +622,12 @@
           "label": "#",
           "name": "${ITEM_NUMBER}",
           "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Pins",
+          "name": "Sim.Pins",
+          "show": false
         }
       ],
       "filter_string": "",
@@ -672,7 +678,7 @@
         "uuid": "1bad6bfc-132d-43e9-b5a8-61ef217fd921"
       }
     ],
-    "used_designators": "JP1-2,R1-22,R49,R52,L1,U1-9,C1-33,C50-51,SW1-10,D1-2,D5,#PWR1-113,#PWR118,#PWR136,#PWR146-148,Y1,TP1-5,#FLG1-6,J1-9,J15",
+    "used_designators": "JP1-2,R1-23,R49,R52,L1,U1-9,C1-33,C50-51,SW1-10,D1-2,D5,#PWR1-113,#PWR118,#PWR136,#PWR146-148,Y1,TP1-5,#FLG1-6,J1-10,J15",
     "variants": []
   },
   "sheets": [

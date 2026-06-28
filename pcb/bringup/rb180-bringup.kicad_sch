@@ -10,423 +10,6 @@
 		(company "Luke Wren")
 	)
 	(lib_symbols
-		(symbol "+3V3_1"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#PWR"
-				(at 0 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "3V3"
-				(at 0 3.556 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"+3V3\""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "+3V3_1_0_1"
-				(polyline
-					(pts
-						(xy -0.762 1.27) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "+3V3_1_1_1"
-				(pin power_in line
-					(at 0 0 90)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "+3V3_2"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#PWR"
-				(at 0 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "3V3"
-				(at 0 3.556 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"+3V3\""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "+3V3_2_0_1"
-				(polyline
-					(pts
-						(xy -0.762 1.27) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "+3V3_2_1_1"
-				(pin power_in line
-					(at 0 0 90)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "+3V3_3"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#PWR"
-				(at 0 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "3V3"
-				(at 0 3.556 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"+3V3\""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "+3V3_3_0_1"
-				(polyline
-					(pts
-						(xy -0.762 1.27) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "+3V3_3_1_1"
-				(pin power_in line
-					(at 0 0 90)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Connector:TestPoint_2Pole"
 			(pin_names
 				(offset 0.762)
@@ -4021,6 +3604,28 @@
 					)
 				)
 			)
+			(property private "KLC_S3.3" "The rectangle is not a symbol body but a graphical element"
+				(at 0 -12.7 0)
+				(show_name yes)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property private "KLC_S4.1" "Some pins are on 50mil grid to make the symbol small"
+				(at 0 -15.24 0)
+				(show_name yes)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
 			(property "ki_keywords" "quartz ceramic resonator oscillator"
 				(at 0 0 0)
 				(show_name no)
@@ -4105,18 +3710,6 @@
 				)
 				(polyline
 					(pts
-						(xy 0 3.556) (xy 0 3.81)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
 						(xy 0 -3.81) (xy 0 -3.556)
 					)
 					(stroke
@@ -4172,9 +3765,9 @@
 					)
 				)
 				(pin passive line
-					(at 0 5.08 270)
+					(at 0 -5.08 90)
 					(length 1.27)
-					(name "2"
+					(name "G"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4210,7 +3803,8 @@
 				(pin passive line
 					(at 0 -5.08 90)
 					(length 1.27)
-					(name "4"
+					(hide yes)
+					(name "G"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4284,6 +3878,17 @@
 				)
 			)
 			(property "Description" "Light emitting diode"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Sim.Pins" "1=K 2=A"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4612,25 +4217,23 @@
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
 			(property "Reference" "R"
-				(at 0.762 0.508 0)
+				(at 0 0 90)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
 					(font
-						(size 1.27 1.27)
+						(size 1.016 1.016)
 					)
-					(justify left)
 				)
 			)
 			(property "Value" "R_Small"
-				(at 0.762 -1.016 0)
+				(at 1.778 0 90)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left)
 				)
 			)
 			(property "Footprint" ""
@@ -6247,7 +5850,7 @@
 					)
 				)
 			)
-			(property "Footprint" "Package_SO:SOIC-8_5.23x5.23mm_P1.27mm"
+			(property "Footprint" "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -6269,7 +5872,7 @@
 					)
 				)
 			)
-			(property "Description" "32Mb Serial Flash Memory, Standard/Dual/Quad SPI, SOIC-8"
+			(property "Description" "32Mbit / 4MiB Serial Flash Memory, Standard/Dual/Quad SPI, 2.7-3.6V, SOIC-8 (208 mil)"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -6291,7 +5894,7 @@
 					)
 				)
 			)
-			(property "ki_fp_filters" "SOIC*5.23x5.23mm*P1.27mm*"
+			(property "ki_fp_filters" "*SOIC*5.3x5.3mm*P1.27mm*"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -6305,7 +5908,7 @@
 			(symbol "W25Q32JVSS_0_1"
 				(rectangle
 					(start -7.62 10.16)
-					(end 7.62 -10.16)
+					(end 10.16 -10.16)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -6337,7 +5940,7 @@
 				(pin bidirectional line
 					(at -10.16 0 0)
 					(length 2.54)
-					(name "DO(IO1)"
+					(name "DO/IO_{1}"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -6355,7 +5958,7 @@
 				(pin bidirectional line
 					(at -10.16 -2.54 0)
 					(length 2.54)
-					(name "IO2"
+					(name "~{WP}/IO_{2}"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -6391,7 +5994,7 @@
 				(pin bidirectional line
 					(at -10.16 2.54 0)
 					(length 2.54)
-					(name "DI(IO0)"
+					(name "DI/IO_{0}"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -6427,7 +6030,7 @@
 				(pin bidirectional line
 					(at -10.16 -5.08 0)
 					(length 2.54)
-					(name "IO3"
+					(name "~{HOLD}/~{RESET}/IO_{3}"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -6453,1214 +6056,6 @@
 						)
 					)
 					(number "8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "RP2350-QFN60_1"
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "U"
-				(at -7.62 1.27 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" ""
-				(at 0 -44.45 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 -44.45 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 -44.45 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_locked" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "RP2350-QFN60_1_1_1"
-				(rectangle
-					(start -13.97 0)
-					(end 0 -68.58)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -17.78 180)
-					(length 2.54)
-					(name "IOVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -38.1 180)
-					(length 2.54)
-					(name "DVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -20.32 180)
-					(length 2.54)
-					(name "IOVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "11"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -22.86 180)
-					(length 2.54)
-					(name "IOVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "20"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -40.64 180)
-					(length 2.54)
-					(name "DVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "23"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -25.4 180)
-					(length 2.54)
-					(name "IOVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "30"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -27.94 180)
-					(length 2.54)
-					(name "IOVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "38"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -43.18 180)
-					(length 2.54)
-					(name "DVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "39"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -7.62 180)
-					(length 2.54)
-					(name "ADC_IOVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "44"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -30.48 180)
-					(length 2.54)
-					(name "IOVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "45"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 2.54 -55.88 180)
-					(length 2.54)
-					(name "VREG_AVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "46"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -63.5 180)
-					(length 2.54)
-					(name "VREG_PGND"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "47"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_out line
-					(at 2.54 -48.26 180)
-					(length 2.54)
-					(name "VREG_LX"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "48"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -53.34 180)
-					(length 2.54)
-					(name "VREG_VIN"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "49"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at 2.54 -50.8 180)
-					(length 2.54)
-					(name "VREG_FB"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "50"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -12.7 180)
-					(length 2.54)
-					(name "USB_OTP_VDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "53"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 2.54 -2.54 180)
-					(length 2.54)
-					(name "QSPI_IOVDD"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "54"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 2.54 -66.04 180)
-					(length 2.54)
-					(name "GND"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "61"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(symbol "RP2350-QFN60_1_2_1"
-				(rectangle
-					(start -15.24 0)
-					(end 0 -78.74)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -2.54 180)
-					(length 2.54)
-					(name "GPIO0"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -5.08 180)
-					(length 2.54)
-					(name "GPIO1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -7.62 180)
-					(length 2.54)
-					(name "GPIO2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -10.16 180)
-					(length 2.54)
-					(name "GPIO3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -12.7 180)
-					(length 2.54)
-					(name "GPIO4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -15.24 180)
-					(length 2.54)
-					(name "GPIO5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -17.78 180)
-					(length 2.54)
-					(name "GPIO6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -20.32 180)
-					(length 2.54)
-					(name "GPIO7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "10"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -22.86 180)
-					(length 2.54)
-					(name "GPIO8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "12"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -25.4 180)
-					(length 2.54)
-					(name "GPIO9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "13"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -27.94 180)
-					(length 2.54)
-					(name "GPIO10"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "14"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -30.48 180)
-					(length 2.54)
-					(name "GPIO11"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "15"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -33.02 180)
-					(length 2.54)
-					(name "GPIO12"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "16"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -35.56 180)
-					(length 2.54)
-					(name "GPIO13"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "17"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -38.1 180)
-					(length 2.54)
-					(name "GPIO14"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "18"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -40.64 180)
-					(length 2.54)
-					(name "GPIO15"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "19"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -43.18 180)
-					(length 2.54)
-					(name "GPIO16"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "27"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -45.72 180)
-					(length 2.54)
-					(name "GPIO17"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "28"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -48.26 180)
-					(length 2.54)
-					(name "GPIO18"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "29"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -50.8 180)
-					(length 2.54)
-					(name "GPIO19"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "31"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -53.34 180)
-					(length 2.54)
-					(name "GPIO20"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "32"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -55.88 180)
-					(length 2.54)
-					(name "GPIO21"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "33"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -58.42 180)
-					(length 2.54)
-					(name "GPIO22"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "34"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -60.96 180)
-					(length 2.54)
-					(name "GPIO23"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "35"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -63.5 180)
-					(length 2.54)
-					(name "GPIO24"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "36"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -66.04 180)
-					(length 2.54)
-					(name "GPIO25"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "37"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -68.58 180)
-					(length 2.54)
-					(name "ADC0/GPIO26"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "40"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -71.12 180)
-					(length 2.54)
-					(name "ADC1/GPIO27"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "41"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -73.66 180)
-					(length 2.54)
-					(name "ADC2/GPIO28"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "42"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -76.2 180)
-					(length 2.54)
-					(name "ADC3/GPIO29"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "43"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(symbol "RP2350-QFN60_1_3_1"
-				(rectangle
-					(start -12.7 0)
-					(end 0 -45.72)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(pin passive line
-					(at 2.54 -40.64 180)
-					(length 2.54)
-					(name "XIN"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "21"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin output line
-					(at 2.54 -43.18 180)
-					(length 2.54)
-					(name "XOUT"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "22"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at 2.54 -27.94 180)
-					(length 2.54)
-					(name "SWCLK"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "24"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -30.48 180)
-					(length 2.54)
-					(name "SWDIO"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "25"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at 2.54 -35.56 180)
-					(length 2.54)
-					(name "RUN"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "26"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -20.32 180)
-					(length 2.54)
-					(name "USB_DM"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "51"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -22.86 180)
-					(length 2.54)
-					(name "USB_DP"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "52"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -15.24 180)
-					(length 2.54)
-					(name "QSPI_SD3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "55"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -5.08 180)
-					(length 2.54)
-					(name "QSPI_SCK"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "56"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -7.62 180)
-					(length 2.54)
-					(name "QSPI_SD0"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "57"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -12.7 180)
-					(length 2.54)
-					(name "QSPI_SD2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "58"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -10.16 180)
-					(length 2.54)
-					(name "QSPI_SD1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "59"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin bidirectional line
-					(at 2.54 -2.54 180)
-					(length 2.54)
-					(name "QSPI_~{CS}"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "60"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -8601,7 +6996,7 @@
 				(pin power_out line
 					(at 0 0 90)
 					(length 0)
-					(name "pwr"
+					(name ""
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -10931,7 +9326,7 @@
 			(symbol "RP2350-QFN60_1_1"
 				(rectangle
 					(start -13.97 0)
-					(end 0 -66.04)
+					(end 0 -68.58)
 					(stroke
 						(width 0)
 						(type default)
@@ -10959,7 +9354,7 @@
 					)
 				)
 				(pin power_in line
-					(at 2.54 -35.56 180)
+					(at 2.54 -38.1 180)
 					(length 2.54)
 					(name "DVDD"
 						(effects
@@ -11013,7 +9408,7 @@
 					)
 				)
 				(pin power_in line
-					(at 2.54 -38.1 180)
+					(at 2.54 -40.64 180)
 					(length 2.54)
 					(name "DVDD"
 						(effects
@@ -11067,7 +9462,7 @@
 					)
 				)
 				(pin power_in line
-					(at 2.54 -40.64 180)
+					(at 2.54 -43.18 180)
 					(length 2.54)
 					(name "DVDD"
 						(effects
@@ -11121,7 +9516,7 @@
 					)
 				)
 				(pin passive line
-					(at 2.54 -53.34 180)
+					(at 2.54 -55.88 180)
 					(length 2.54)
 					(name "VREG_AVDD"
 						(effects
@@ -11139,7 +9534,7 @@
 					)
 				)
 				(pin power_in line
-					(at 2.54 -60.96 180)
+					(at 2.54 -63.5 180)
 					(length 2.54)
 					(name "VREG_PGND"
 						(effects
@@ -11157,7 +9552,7 @@
 					)
 				)
 				(pin power_out line
-					(at 2.54 -45.72 180)
+					(at 2.54 -48.26 180)
 					(length 2.54)
 					(name "VREG_LX"
 						(effects
@@ -11175,7 +9570,7 @@
 					)
 				)
 				(pin power_in line
-					(at 2.54 -50.8 180)
+					(at 2.54 -53.34 180)
 					(length 2.54)
 					(name "VREG_VIN"
 						(effects
@@ -11193,7 +9588,7 @@
 					)
 				)
 				(pin input line
-					(at 2.54 -48.26 180)
+					(at 2.54 -50.8 180)
 					(length 2.54)
 					(name "VREG_FB"
 						(effects
@@ -11247,7 +9642,7 @@
 					)
 				)
 				(pin passive line
-					(at 2.54 -63.5 180)
+					(at 2.54 -66.04 180)
 					(length 2.54)
 					(name "GND"
 						(effects
@@ -12507,6 +10902,17 @@
 		)
 		(uuid "09146556-f942-4889-8eb4-3c19a7dec03a")
 	)
+	(text "LCD_IM0"
+		(exclude_from_sim no)
+		(at 201.93 231.14 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "18a9149b-c817-4ee8-a844-6e0cb1b55720")
+	)
 	(text "Level Shifters"
 		(exclude_from_sim no)
 		(at 328.93 15.24 0)
@@ -12674,6 +11080,17 @@
 		)
 		(uuid "6b9a8444-1646-4983-a524-2c81f996afdc")
 	)
+	(text "LCD_LED_K"
+		(exclude_from_sim no)
+		(at 201.93 223.52 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "6d053728-4618-4a59-bd2e-41c18687e1cd")
+	)
 	(text "DAT0 mirrored onto SDA:"
 		(exclude_from_sim no)
 		(at 179.07 274.32 0)
@@ -12726,6 +11143,17 @@
 			(justify left)
 		)
 		(uuid "bff6b98e-ffb4-422e-9f63-65c8632786ae")
+	)
+	(text "LCD_RDX"
+		(exclude_from_sim no)
+		(at 201.93 256.54 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c1fed8c9-d0ea-4caa-b389-93dfa0d7f12a")
 	)
 	(text "Debug Headers"
 		(exclude_from_sim no)
@@ -12939,12 +11367,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "5d2fd9af-150c-4c91-8151-1758784c6c2b")
-	)
-	(junction
-		(at 138.43 77.47)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "5ed5c91f-6062-4a7f-b852-c225347b584a")
 	)
 	(junction
 		(at 39.37 81.28)
@@ -13305,10 +11727,6 @@
 	(no_connect
 		(at 81.28 78.74)
 		(uuid "c34b7546-91dc-41b9-8cb0-2965377ee9c1")
-	)
-	(no_connect
-		(at 201.93 266.7)
-		(uuid "c7edd32c-85ea-432f-bd48-200f7fa2e39a")
 	)
 	(no_connect
 		(at 81.28 99.06)
@@ -14048,6 +12466,16 @@
 	)
 	(wire
 		(pts
+			(xy 280.67 118.11) (xy 281.94 118.11)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "205149b9-3637-4f2a-83dc-abdb2735f607")
+	)
+	(wire
+		(pts
 			(xy 386.08 189.23) (xy 386.08 168.91)
 		)
 		(stroke
@@ -14518,6 +12946,16 @@
 	)
 	(wire
 		(pts
+			(xy 265.43 118.11) (xy 267.97 118.11)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "34f4cafb-a0a2-493c-b676-47d2834e2b71")
+	)
+	(wire
+		(pts
 			(xy 76.2 246.38) (xy 77.47 246.38)
 		)
 		(stroke
@@ -14815,16 +13253,6 @@
 			(type default)
 		)
 		(uuid "3e88507b-cad3-43af-aaf2-c0b1e9d137ae")
-	)
-	(wire
-		(pts
-			(xy 143.51 63.5) (xy 138.43 63.5)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3f7eaaf1-50c6-4398-9edd-811af14584a0")
 	)
 	(wire
 		(pts
@@ -17958,6 +16386,16 @@
 	)
 	(wire
 		(pts
+			(xy 265.43 115.57) (xy 267.97 115.57)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c94a627f-de31-42c9-8bb7-51b90fd38247")
+	)
+	(wire
+		(pts
 			(xy 195.58 116.84) (xy 194.31 116.84)
 		)
 		(stroke
@@ -18398,7 +16836,7 @@
 	)
 	(wire
 		(pts
-			(xy 138.43 77.47) (xy 143.51 77.47)
+			(xy 135.89 77.47) (xy 143.51 77.47)
 		)
 		(stroke
 			(width 0)
@@ -18638,16 +17076,6 @@
 	)
 	(wire
 		(pts
-			(xy 138.43 63.5) (xy 138.43 77.47)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e3dbfea1-9336-4897-a93c-d21be62e88ef")
-	)
-	(wire
-		(pts
 			(xy 38.1 245.11) (xy 44.45 245.11)
 		)
 		(stroke
@@ -18808,6 +17236,16 @@
 	)
 	(wire
 		(pts
+			(xy 281.94 118.11) (xy 281.94 119.38)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e9806c2c-8379-4c1b-a987-488c75fd63aa")
+	)
+	(wire
+		(pts
 			(xy 383.54 189.23) (xy 386.08 189.23)
 		)
 		(stroke
@@ -18885,6 +17323,16 @@
 			(type default)
 		)
 		(uuid "ec7efba0-2ce1-430b-99fd-9879a31e777d")
+	)
+	(wire
+		(pts
+			(xy 280.67 115.57) (xy 283.21 115.57)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eca1c768-4864-4c49-8951-5eeb4fac874b")
 	)
 	(wire
 		(pts
@@ -19225,16 +17673,6 @@
 			(type default)
 		)
 		(uuid "f97c8763-2770-413c-aee6-0950f943e848")
-	)
-	(wire
-		(pts
-			(xy 135.89 77.47) (xy 138.43 77.47)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fa7c27bb-a2d3-4428-aafc-15611410562c")
 	)
 	(wire
 		(pts
@@ -20016,16 +18454,6 @@
 		)
 		(uuid "3c117071-6712-4592-b3b9-334b846ddd1b")
 	)
-	(label "LCD_IM0"
-		(at 201.93 231.14 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "3ce694d2-f50e-48fc-94be-f9ac226ad9f1")
-	)
 	(label "QSPI_SD1"
 		(at 124.46 132.08 180)
 		(effects
@@ -20167,12 +18595,12 @@
 		(uuid "4c257e57-73ee-441a-8454-a83192a91ed9")
 	)
 	(label "DUT_SPARE2"
-		(at 287.02 63.5 0)
+		(at 265.43 118.11 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "4c2b7258-908b-40ec-911d-b70078722b3f")
 	)
@@ -20386,16 +18814,6 @@
 		)
 		(uuid "6ab6e4a1-ee54-44b1-a734-c2aa960a1554")
 	)
-	(label "LCD_LED_K"
-		(at 201.93 223.52 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "6c5844af-b89c-4ce2-b057-cb7b6f13eea9")
-	)
 	(label "LCD_DAT1"
 		(at 201.93 251.46 180)
 		(effects
@@ -20465,6 +18883,16 @@
 			(justify left bottom)
 		)
 		(uuid "7832996e-5330-4d69-8940-e5335e9842b6")
+	)
+	(label "DUT_SPARE1"
+		(at 283.21 115.57 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "79c04cbf-b7e0-4bda-aca8-37a2c3b79fb0")
 	)
 	(label "LCD_DAT3"
 		(at 365.76 68.58 180)
@@ -21026,7 +19454,7 @@
 		)
 		(uuid "ad150e98-c41c-4826-a8c3-764475d5176b")
 	)
-	(label "~{DUT_RST}"
+	(label "DUT_~{RST}"
 		(at 389.89 199.39 0)
 		(effects
 			(font
@@ -21235,6 +19663,16 @@
 			(justify right bottom)
 		)
 		(uuid "bae49ece-2493-4415-aeb9-0e612acb0d6b")
+	)
+	(label "DUT_SPARE2"
+		(at 287.02 63.5 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "bbaa33c7-38fe-4dae-8362-f558398ced94")
 	)
 	(label "DUT_LCD_DAT6"
 		(at 391.16 83.82 0)
@@ -21485,6 +19923,16 @@
 			(justify left bottom)
 		)
 		(uuid "d10d906b-5496-4241-b9f6-edc63931a9c6")
+	)
+	(label "DUT_SPARE0"
+		(at 265.43 115.57 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "d219c359-4e35-445a-8ce6-bd4be8d37a3e")
 	)
 	(label "PROBE_~{RST}"
 		(at 97.79 133.35 180)
@@ -21876,16 +20324,6 @@
 		)
 		(uuid "f9d08c59-91a3-4eb6-a64d-7a0ddfc6fa3b")
 	)
-	(label "LCD_RDX"
-		(at 201.93 256.54 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "fbc2cc53-b570-4073-97c8-1b820cd34d2c")
-	)
 	(label "SRAM_A11"
 		(at 300.99 167.64 0)
 		(effects
@@ -21937,7 +20375,6 @@
 		(uuid "fd639194-02c6-4725-89f8-529c41452a1c")
 	)
 	(symbol
-		(lib_name "+3V3_1")
 		(lib_id "power:+3V3")
 		(at 375.92 35.56 0)
 		(unit 1)
@@ -21948,7 +20385,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0025ef6e-e50c-4ecb-8684-d5bb0535b89e")
-		(property "Reference" "#PWR066"
+		(property "Reference" "#PWR0102"
 			(at 375.92 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -22008,7 +20445,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR066")
+					(reference "#PWR0102")
 					(unit 1)
 				)
 			)
@@ -22026,7 +20463,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "012dfe46-a7af-4e67-a33c-ce85c3b8f954")
-		(property "Reference" "J2"
+		(property "Reference" "J3"
 			(at 69.85 237.49 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22100,7 +20537,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "J2")
+					(reference "J3")
 					(unit 1)
 				)
 			)
@@ -22118,7 +20555,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "02201a9c-555d-46e7-ac8b-46ac453a983f")
-		(property "Reference" "R7"
+		(property "Reference" "R22"
 			(at 293.37 82.55 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22160,7 +20597,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 289.56 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -22191,7 +20628,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R7")
+					(reference "R22")
 					(unit 1)
 				)
 			)
@@ -22209,7 +20646,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "028bfd3c-c131-439e-a256-8b154e73b3fe")
-		(property "Reference" "TP2"
+		(property "Reference" "TP3"
 			(at 107.95 193.04 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22253,7 +20690,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "2-polar test point"
 			(at 105.41 193.04 0)
 			(hide yes)
 			(show_name no)
@@ -22284,7 +20721,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "TP2")
+					(reference "TP3")
 					(unit 1)
 				)
 			)
@@ -22302,7 +20739,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "02f5578f-a28e-4e8f-9bd9-21190528ad21")
-		(property "Reference" "R3"
+		(property "Reference" "R5"
 			(at 113.03 181.61 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22344,7 +20781,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 113.03 186.69 0)
 			(hide yes)
 			(show_name no)
@@ -22375,14 +20812,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R3")
+					(reference "R5")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 55.88 234.95 0)
 		(unit 1)
@@ -22393,7 +20829,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "03e1e76a-fd14-4125-acda-8a1adafe4e1f")
-		(property "Reference" "#PWR095"
+		(property "Reference" "#PWR025"
 			(at 55.88 238.76 0)
 			(hide yes)
 			(show_name no)
@@ -22453,7 +20889,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR095")
+					(reference "#PWR025")
 					(unit 1)
 				)
 			)
@@ -22470,7 +20906,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0593b057-2d93-46b8-a7e1-1894f1fbdf23")
-		(property "Reference" "#FLG02"
+		(property "Reference" "#FLG03"
 			(at 43.18 65.405 0)
 			(hide yes)
 			(show_name no)
@@ -22513,7 +20949,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Special symbol for telling ERC where power comes from"
 			(at 43.18 67.31 0)
 			(hide yes)
 			(show_name no)
@@ -22530,7 +20966,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#FLG02")
+					(reference "#FLG03")
 					(unit 1)
 				)
 			)
@@ -22591,7 +21027,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 35.56 120.65 0)
 			(hide yes)
 			(show_name no)
@@ -22683,7 +21119,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 26.67 120.65 0)
 			(hide yes)
 			(show_name no)
@@ -22732,7 +21168,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "0696d099-ba16-4986-afa4-e3246ca43e14")
-		(property "Reference" "J3"
+		(property "Reference" "J2"
 			(at 33.02 251.4599 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22796,7 +21232,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "J3")
+					(reference "J2")
 					(unit 1)
 				)
 			)
@@ -22813,7 +21249,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "07afb313-1df5-42b2-8a3f-2ae8d32d4c28")
-		(property "Reference" "#PWR091"
+		(property "Reference" "#PWR065"
 			(at 209.55 58.42 0)
 			(hide yes)
 			(show_name no)
@@ -22873,7 +21309,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR091")
+					(reference "#PWR065")
 					(unit 1)
 				)
 			)
@@ -22890,7 +21326,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0890cdf5-5b7f-44c8-98f4-7fda94078c31")
-		(property "Reference" "R16"
+		(property "Reference" "R14"
 			(at 242.57 251.46 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22932,7 +21368,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 238.76 252.73 0)
 			(hide yes)
 			(show_name no)
@@ -22963,7 +21399,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R16")
+					(reference "R14")
 					(unit 1)
 				)
 			)
@@ -22981,7 +21417,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "099f2075-ddc0-4ec1-b91b-a7e921351d4b")
-		(property "Reference" "J5"
+		(property "Reference" "J4"
 			(at 160.02 246.38 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23049,7 +21485,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "J5")
+					(reference "J4")
 					(unit 1)
 				)
 			)
@@ -23067,7 +21503,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "09c99e7c-438c-4a17-ba8c-30ef7ab3ea39")
-		(property "Reference" "C21"
+		(property "Reference" "C25"
 			(at 274.32 185.4263 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23111,7 +21547,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 271.78 186.69 0)
 			(hide yes)
 			(show_name no)
@@ -23142,7 +21578,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C21")
+					(reference "C25")
 					(unit 1)
 				)
 			)
@@ -23160,7 +21596,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "0ab30f8d-adf8-4dda-a4cf-1fa981241a84")
-		(property "Reference" "C31"
+		(property "Reference" "C19"
 			(at 161.29 181.6163 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23204,7 +21640,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 158.75 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -23235,7 +21671,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C31")
+					(reference "C19")
 					(unit 1)
 				)
 			)
@@ -23253,7 +21689,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0e06807f-a5c1-4f28-a7d8-24f03180a6e9")
-		(property "Reference" "C27"
+		(property "Reference" "C24"
 			(at 261.62 38.1 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23297,7 +21733,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 262.89 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -23328,7 +21764,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C27")
+					(reference "C24")
 					(unit 1)
 				)
 			)
@@ -23346,7 +21782,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0e1c5375-a89c-4398-9e34-8c4279eadf35")
-		(property "Reference" "C23"
+		(property "Reference" "C30"
 			(at 365.76 38.1 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23390,7 +21826,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 367.03 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -23421,7 +21857,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C23")
+					(reference "C30")
 					(unit 1)
 				)
 			)
@@ -23483,7 +21919,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 248.92 264.16 0)
 			(hide yes)
 			(show_name no)
@@ -23531,7 +21967,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0f5593d4-7b93-4c11-b10e-bae1e68b1cca")
-		(property "Reference" "#PWR019"
+		(property "Reference" "#PWR021"
 			(at 44.45 156.21 0)
 			(hide yes)
 			(show_name no)
@@ -23574,7 +22010,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 44.45 149.86 0)
 			(hide yes)
 			(show_name no)
@@ -23591,7 +22027,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR019")
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -23609,7 +22045,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1034e534-3fe8-49c2-a921-21c44a2eb630")
-		(property "Reference" "D1"
+		(property "Reference" "D2"
 			(at 124.46 193.3574 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23653,7 +22089,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Light emitting diode"
 			(at 120.65 193.04 0)
 			(hide yes)
 			(show_name no)
@@ -23675,6 +22111,17 @@
 				)
 			)
 		)
+		(property "Sim.Pins" "1=K 2=A"
+			(at 120.65 193.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "6ba74b49-d45b-4dbf-a762-c123029c2ad3")
 		)
@@ -23684,7 +22131,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "D1")
+					(reference "D2")
 					(unit 1)
 				)
 			)
@@ -23701,7 +22148,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "11081e35-1e97-4349-b76e-5e6edf6681ce")
-		(property "Reference" "#PWR014"
+		(property "Reference" "#PWR016"
 			(at 38.1 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -23761,7 +22208,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR014")
+					(reference "#PWR016")
 					(unit 1)
 				)
 			)
@@ -23778,7 +22225,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "11557624-ab6b-4af8-adf4-9e5a5e090158")
-		(property "Reference" "#FLG06"
+		(property "Reference" "#FLG02"
 			(at 38.1 241.935 0)
 			(hide yes)
 			(show_name no)
@@ -23838,7 +22285,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#FLG06")
+					(reference "#FLG02")
 					(unit 1)
 				)
 			)
@@ -23855,7 +22302,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "11f82a6d-547e-4bed-86d4-de5ff1fcdb48")
-		(property "Reference" "R5"
+		(property "Reference" "R7"
 			(at 137.16 50.8 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23897,7 +22344,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 139.7 48.26 0)
 			(hide yes)
 			(show_name no)
@@ -23928,7 +22375,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R5")
+					(reference "R7")
 					(unit 1)
 				)
 			)
@@ -23945,7 +22392,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "12bdf0cb-78a7-4fa2-8362-cec5f892227a")
-		(property "Reference" "#PWR031"
+		(property "Reference" "#PWR032"
 			(at 72.39 187.96 0)
 			(hide yes)
 			(show_name no)
@@ -24005,7 +22452,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR031")
+					(reference "#PWR032")
 					(unit 1)
 				)
 			)
@@ -24065,7 +22512,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Special symbol for telling ERC where power comes from"
 			(at 36.83 224.79 0)
 			(hide yes)
 			(show_name no)
@@ -24099,7 +22546,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "15d54ade-a51f-4ef3-8055-3bd861031a0f")
-		(property "Reference" "#PWR09"
+		(property "Reference" "#PWR08"
 			(at 26.67 156.21 0)
 			(hide yes)
 			(show_name no)
@@ -24142,7 +22589,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 26.67 149.86 0)
 			(hide yes)
 			(show_name no)
@@ -24159,7 +22606,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR09")
+					(reference "#PWR08")
 					(unit 1)
 				)
 			)
@@ -24176,7 +22623,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "16f6f56a-1583-466e-bcda-766a5b00b1ea")
-		(property "Reference" "#PWR081"
+		(property "Reference" "#PWR053"
 			(at 160.02 240.03 0)
 			(hide yes)
 			(show_name no)
@@ -24236,7 +22683,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR081")
+					(reference "#PWR053")
 					(unit 1)
 				)
 			)
@@ -24296,7 +22743,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Four pin crystal, GND on pins 2 and 4"
 			(at 143.51 68.58 0)
 			(hide yes)
 			(show_name no)
@@ -24394,7 +22841,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 100.33 140.97 0)
 			(hide yes)
 			(show_name no)
@@ -24443,7 +22890,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1cb67c4f-1dfb-49c7-8b27-3f3bd27598d4")
-		(property "Reference" "#PWR032"
+		(property "Reference" "#PWR033"
 			(at 72.39 205.74 0)
 			(hide yes)
 			(show_name no)
@@ -24486,7 +22933,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 72.39 199.39 0)
 			(hide yes)
 			(show_name no)
@@ -24503,7 +22950,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR032")
+					(reference "#PWR033")
 					(unit 1)
 				)
 			)
@@ -24520,7 +22967,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "1cd65a9d-8951-4bff-8dd7-166fc463a4fd")
-		(property "Reference" "#PWR020"
+		(property "Reference" "#PWR054"
 			(at 173.99 194.31 0)
 			(hide yes)
 			(show_name no)
@@ -24580,7 +23027,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR020")
+					(reference "#PWR054")
 					(unit 1)
 				)
 			)
@@ -24598,7 +23045,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "21d1b1a3-b557-46db-9bc1-6a3121639830")
-		(property "Reference" "R9"
+		(property "Reference" "R3"
 			(at 99.06 86.36 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24640,7 +23087,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 99.06 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -24671,14 +23118,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R9")
+					(reference "R3")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 35.56 137.16 0)
 		(unit 1)
@@ -24689,7 +23135,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "22049f70-7875-492a-88f4-83b7007c2268")
-		(property "Reference" "#PWR0100"
+		(property "Reference" "#PWR014"
 			(at 35.56 140.97 0)
 			(hide yes)
 			(show_name no)
@@ -24749,7 +23195,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0100")
+					(reference "#PWR014")
 					(unit 1)
 				)
 			)
@@ -24766,7 +23212,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "224305f3-b6b5-421f-a833-8081f25afd74")
-		(property "Reference" "#PWR018"
+		(property "Reference" "#PWR051"
 			(at 158.75 194.31 0)
 			(hide yes)
 			(show_name no)
@@ -24826,7 +23272,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR018")
+					(reference "#PWR051")
 					(unit 1)
 				)
 			)
@@ -24844,7 +23290,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2283463b-2380-46eb-98c9-ce2f233c7272")
-		(property "Reference" "C20"
+		(property "Reference" "C18"
 			(at 153.67 130.8163 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24888,7 +23334,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 151.13 132.08 0)
 			(hide yes)
 			(show_name no)
@@ -24919,7 +23365,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C20")
+					(reference "C18")
 					(unit 1)
 				)
 			)
@@ -24936,7 +23382,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "22f7ac04-b68e-40bf-acd3-576c22933171")
-		(property "Reference" "C33"
+		(property "Reference" "C20"
 			(at 170.18 170.18 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24980,7 +23426,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 166.37 172.72 0)
 			(hide yes)
 			(show_name no)
@@ -25011,7 +23457,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C33")
+					(reference "C20")
 					(unit 1)
 				)
 			)
@@ -25028,7 +23474,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "23580070-76a5-4e15-b204-9d4cf8f5ca1f")
-		(property "Reference" "#PWR043"
+		(property "Reference" "#PWR011"
 			(at 30.48 267.97 0)
 			(hide yes)
 			(show_name no)
@@ -25071,7 +23517,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 30.48 261.62 0)
 			(hide yes)
 			(show_name no)
@@ -25088,7 +23534,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR043")
+					(reference "#PWR011")
 					(unit 1)
 				)
 			)
@@ -25105,7 +23551,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "24103c2b-8b61-47d5-9349-3ed5a1502a40")
-		(property "Reference" "#PWR073"
+		(property "Reference" "#PWR094"
 			(at 327.66 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -25165,7 +23611,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR073")
+					(reference "#PWR094")
 					(unit 1)
 				)
 			)
@@ -25226,7 +23672,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 151.13 73.66 0)
 			(hide yes)
 			(show_name no)
@@ -25264,7 +23710,6 @@
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 95.25 184.15 0)
 		(unit 1)
@@ -25275,7 +23720,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "28aa9379-caf4-43f2-a00a-1e1752a1d19d")
-		(property "Reference" "#PWR098"
+		(property "Reference" "#PWR036"
 			(at 95.25 187.96 0)
 			(hide yes)
 			(show_name no)
@@ -25335,14 +23780,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR098")
+					(reference "#PWR036")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 219.71 187.96 0)
 		(unit 1)
@@ -25353,7 +23797,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "28af34c0-dfd7-4fe2-a7a2-c2591384b684")
-		(property "Reference" "#PWR0106"
+		(property "Reference" "#PWR070"
 			(at 219.71 191.77 0)
 			(hide yes)
 			(show_name no)
@@ -25413,7 +23857,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0106")
+					(reference "#PWR070")
 					(unit 1)
 				)
 			)
@@ -25430,7 +23874,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "28c1ac43-8482-479c-88a3-bbd4a658ab82")
-		(property "Reference" "#PWR064"
+		(property "Reference" "#PWR0103"
 			(at 378.46 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -25490,7 +23934,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR064")
+					(reference "#PWR0103")
 					(unit 1)
 				)
 			)
@@ -25507,7 +23951,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "29b6965f-30bb-40a1-b9e7-a31acf7f4bc9")
-		(property "Reference" "#PWR069"
+		(property "Reference" "#PWR064"
 			(at 204.47 283.21 0)
 			(hide yes)
 			(show_name no)
@@ -25567,7 +24011,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR069")
+					(reference "#PWR064")
 					(unit 1)
 				)
 			)
@@ -25584,7 +24028,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2b519207-d6f4-4686-9e4f-fa48d92abd2a")
-		(property "Reference" "#PWR047"
+		(property "Reference" "#PWR041"
 			(at 105.41 238.76 0)
 			(hide yes)
 			(show_name no)
@@ -25644,7 +24088,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR047")
+					(reference "#PWR041")
 					(unit 1)
 				)
 			)
@@ -25661,7 +24105,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2c92e42d-5dff-4ba6-a72e-72baf6dad277")
-		(property "Reference" "C18"
+		(property "Reference" "C13"
 			(at 73.66 255.27 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25705,7 +24149,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 80.01 256.54 0)
 			(hide yes)
 			(show_name no)
@@ -25736,7 +24180,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C18")
+					(reference "C13")
 					(unit 1)
 				)
 			)
@@ -25754,7 +24198,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2ce56500-2578-48f8-bf35-d6356a420376")
-		(property "Reference" "#PWR086"
+		(property "Reference" "#PWR069"
 			(at 217.17 241.3 0)
 			(hide yes)
 			(show_name no)
@@ -25797,7 +24241,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 217.17 234.95 0)
 			(hide yes)
 			(show_name no)
@@ -25814,7 +24258,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR086")
+					(reference "#PWR069")
 					(unit 1)
 				)
 			)
@@ -25875,7 +24319,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 35.56 143.51 0)
 			(hide yes)
 			(show_name no)
@@ -25923,7 +24367,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "318c4b09-5993-4bff-84a6-096ba860ca17")
-		(property "Reference" "#FLG05"
+		(property "Reference" "#FLG06"
 			(at 114.3 233.045 0)
 			(hide yes)
 			(show_name no)
@@ -25983,7 +24427,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#FLG05")
+					(reference "#FLG06")
 					(unit 1)
 				)
 			)
@@ -26092,7 +24536,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "325219fa-ebbe-495b-86c5-f7a5365306b1")
-		(property "Reference" "C26"
+		(property "Reference" "C29"
 			(at 340.36 38.1 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26136,7 +24580,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 339.09 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -26167,7 +24611,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C26")
+					(reference "C29")
 					(unit 1)
 				)
 			)
@@ -26184,7 +24628,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "3438f820-10fd-48fe-bcf7-a76d1c4001c4")
-		(property "Reference" "#PWR072"
+		(property "Reference" "#PWR095"
 			(at 330.2 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -26244,7 +24688,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR072")
+					(reference "#PWR095")
 					(unit 1)
 				)
 			)
@@ -26303,7 +24747,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 238.76 248.92 0)
 			(hide yes)
 			(show_name no)
@@ -26352,7 +24796,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "34dd6998-f2aa-403e-b524-0604cf92e8a7")
-		(property "Reference" "U3"
+		(property "Reference" "U8"
 			(at 361.95 140.97 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26621,7 +25065,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "U3")
+					(reference "U8")
 					(unit 1)
 				)
 			)
@@ -26638,7 +25082,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "3631acdf-5468-4b59-9643-579469b59a17")
-		(property "Reference" "#PWR049"
+		(property "Reference" "#PWR042"
 			(at 105.41 269.24 0)
 			(hide yes)
 			(show_name no)
@@ -26698,7 +25142,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR049")
+					(reference "#PWR042")
 					(unit 1)
 				)
 			)
@@ -26760,7 +25204,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 248.92 275.59 0)
 			(hide yes)
 			(show_name no)
@@ -26798,7 +25242,6 @@
 		)
 	)
 	(symbol
-		(lib_name "+3V3_1")
 		(lib_id "power:+3V3")
 		(at 325.12 35.56 0)
 		(unit 1)
@@ -26809,7 +25252,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "376d3f99-2d9a-458e-ab7a-0b2670666db3")
-		(property "Reference" "#PWR074"
+		(property "Reference" "#PWR093"
 			(at 325.12 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -26869,7 +25312,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR074")
+					(reference "#PWR093")
 					(unit 1)
 				)
 			)
@@ -26930,7 +25373,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 135.89 73.66 0)
 			(hide yes)
 			(show_name no)
@@ -26968,7 +25411,6 @@
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 250.19 168.91 0)
 		(unit 1)
@@ -26979,7 +25421,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "39772893-335c-4b4f-ac01-04a928f7fb73")
-		(property "Reference" "#PWR0104"
+		(property "Reference" "#PWR073"
 			(at 250.19 172.72 0)
 			(hide yes)
 			(show_name no)
@@ -27039,7 +25481,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0104")
+					(reference "#PWR073")
 					(unit 1)
 				)
 			)
@@ -27056,7 +25498,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "3b279eb7-2003-441e-8c88-6d1f5b88ef7d")
-		(property "Reference" "TP1"
+		(property "Reference" "TP2"
 			(at 63.5 199.39 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27100,7 +25542,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "2-polar test point"
 			(at 62.23 195.58 0)
 			(hide yes)
 			(show_name no)
@@ -27131,7 +25573,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "TP1")
+					(reference "TP2")
 					(unit 1)
 				)
 			)
@@ -27266,7 +25708,6 @@
 		)
 	)
 	(symbol
-		(lib_name "+3V3_3")
 		(lib_id "power:+3V3")
 		(at 160.02 218.44 0)
 		(unit 1)
@@ -27277,7 +25718,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "40cb16c5-23a3-4835-9cb5-e9337b7084b0")
-		(property "Reference" "#PWR088"
+		(property "Reference" "#PWR052"
 			(at 160.02 222.25 0)
 			(hide yes)
 			(show_name no)
@@ -27337,7 +25778,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR088")
+					(reference "#PWR052")
 					(unit 1)
 				)
 			)
@@ -27354,7 +25795,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "413c0c43-f13f-4cb1-b6d7-d40daaa32240")
-		(property "Reference" "#PWR084"
+		(property "Reference" "#PWR088"
 			(at 285.75 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -27414,7 +25855,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR084")
+					(reference "#PWR088")
 					(unit 1)
 				)
 			)
@@ -27431,7 +25872,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "47539db8-d05f-45eb-9f7b-19c77b4a393b")
-		(property "Reference" "#PWR041"
+		(property "Reference" "#PWR0105"
 			(at 386.08 246.38 0)
 			(hide yes)
 			(show_name no)
@@ -27491,7 +25932,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR041")
+					(reference "#PWR0105")
 					(unit 1)
 				)
 			)
@@ -27508,7 +25949,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "477df3b8-61c4-4e49-8ceb-b0047615ffd5")
-		(property "Reference" "#PWR070"
+		(property "Reference" "#PWR091"
 			(at 314.96 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -27568,7 +26009,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR070")
+					(reference "#PWR091")
 					(unit 1)
 				)
 			)
@@ -27586,7 +26027,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "47e0fbf6-f47b-42cc-a549-58ce31481eb7")
-		(property "Reference" "TP3"
+		(property "Reference" "TP1"
 			(at 60.96 120.65 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27630,7 +26071,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "2-polar test point"
 			(at 58.42 120.65 0)
 			(hide yes)
 			(show_name no)
@@ -27661,14 +26102,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "TP3")
+					(reference "TP1")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 17.78 137.16 0)
 		(unit 1)
@@ -27679,7 +26119,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "48792fb1-02c9-4be8-8530-fad2b0a1a7b4")
-		(property "Reference" "#PWR0101"
+		(property "Reference" "#PWR03"
 			(at 17.78 140.97 0)
 			(hide yes)
 			(show_name no)
@@ -27739,7 +26179,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0101")
+					(reference "#PWR03")
 					(unit 1)
 				)
 			)
@@ -27756,7 +26196,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4a70a772-680d-4407-92ba-d0a1a5a2c2d7")
-		(property "Reference" "#PWR029"
+		(property "Reference" "#PWR038"
 			(at 100.33 157.48 0)
 			(hide yes)
 			(show_name no)
@@ -27799,7 +26239,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 100.33 151.13 0)
 			(hide yes)
 			(show_name no)
@@ -27816,7 +26256,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR029")
+					(reference "#PWR038")
 					(unit 1)
 				)
 			)
@@ -27834,7 +26274,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4b492950-e0bf-4e16-8698-971ad414d739")
-		(property "Reference" "R12"
+		(property "Reference" "R8"
 			(at 153.67 173.99 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27876,7 +26316,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 151.13 175.26 0)
 			(hide yes)
 			(show_name no)
@@ -27907,7 +26347,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R12")
+					(reference "R8")
 					(unit 1)
 				)
 			)
@@ -27924,7 +26364,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4c58f16e-7c5e-4473-98f0-c1d483308a1d")
-		(property "Reference" "#PWR062"
+		(property "Reference" "#PWR039"
 			(at 104.14 110.49 0)
 			(hide yes)
 			(show_name no)
@@ -27967,7 +26407,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 104.14 104.14 0)
 			(hide yes)
 			(show_name no)
@@ -27984,7 +26424,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR062")
+					(reference "#PWR039")
 					(unit 1)
 				)
 			)
@@ -28001,7 +26441,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4cdf528b-dbb6-4c74-907d-d5eca14b981a")
-		(property "Reference" "#PWR068"
+		(property "Reference" "#PWR0107"
 			(at 389.89 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -28061,7 +26501,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR068")
+					(reference "#PWR0107")
 					(unit 1)
 				)
 			)
@@ -28123,7 +26563,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 248.92 256.54 0)
 			(hide yes)
 			(show_name no)
@@ -28171,7 +26611,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4fbbdff0-3915-46af-a9f8-4d5583b284fd")
-		(property "Reference" "#PWR089"
+		(property "Reference" "#PWR057"
 			(at 186.69 240.03 0)
 			(hide yes)
 			(show_name no)
@@ -28231,7 +26671,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR089")
+					(reference "#PWR057")
 					(unit 1)
 				)
 			)
@@ -28248,7 +26688,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "50098609-e70d-4445-beff-16de32f69634")
-		(property "Reference" "#PWR012"
+		(property "Reference" "#PWR027"
 			(at 58.42 118.11 0)
 			(hide yes)
 			(show_name no)
@@ -28308,7 +26748,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR012")
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
@@ -28325,7 +26765,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5100ab35-f5a7-4b2d-abdb-84324ebbbedf")
-		(property "Reference" "#PWR0108"
+		(property "Reference" "#PWR061"
 			(at 194.31 99.06 0)
 			(hide yes)
 			(show_name no)
@@ -28385,7 +26825,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0108")
+					(reference "#PWR061")
 					(unit 1)
 				)
 			)
@@ -28445,7 +26885,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 17.78 149.86 0)
 			(hide yes)
 			(show_name no)
@@ -28523,7 +26963,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 52.07 85.09 0)
 			(hide yes)
 			(show_name no)
@@ -28719,7 +27159,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "54981129-c90d-44e4-8bca-33b6e196bddd")
-		(property "Reference" "#PWR038"
+		(property "Reference" "#PWR096"
 			(at 336.55 143.51 0)
 			(hide yes)
 			(show_name no)
@@ -28779,7 +27219,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR038")
+					(reference "#PWR096")
 					(unit 1)
 				)
 			)
@@ -28796,7 +27236,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5a2d06dd-cbce-4f3c-b9cd-6cc8be631f1e")
-		(property "Reference" "#PWR030"
+		(property "Reference" "#PWR031"
 			(at 62.23 208.28 0)
 			(hide yes)
 			(show_name no)
@@ -28839,7 +27279,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 62.23 201.93 0)
 			(hide yes)
 			(show_name no)
@@ -28856,7 +27296,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR030")
+					(reference "#PWR031")
 					(unit 1)
 				)
 			)
@@ -28873,7 +27313,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5c244ca0-a064-4025-b57e-45bd1704c5f1")
-		(property "Reference" "R4"
+		(property "Reference" "R6"
 			(at 137.16 43.18 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28915,7 +27355,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 139.7 45.72 0)
 			(hide yes)
 			(show_name no)
@@ -28946,7 +27386,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R4")
+					(reference "R6")
 					(unit 1)
 				)
 			)
@@ -28963,7 +27403,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5dee043c-0229-4b01-bf12-dcad9f31797f")
-		(property "Reference" "C29"
+		(property "Reference" "C22"
 			(at 219.71 227.33 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29007,7 +27447,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 217.17 228.6 0)
 			(hide yes)
 			(show_name no)
@@ -29038,7 +27478,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C29")
+					(reference "C22")
 					(unit 1)
 				)
 			)
@@ -29055,7 +27495,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5e46d7c8-bcb3-4a66-995c-ee371af4858c")
-		(property "Reference" "C32"
+		(property "Reference" "C21"
 			(at 170.18 176.53 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29099,7 +27539,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 166.37 179.07 0)
 			(hide yes)
 			(show_name no)
@@ -29130,7 +27570,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C32")
+					(reference "C21")
 					(unit 1)
 				)
 			)
@@ -29147,7 +27587,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5f4ba857-6c8c-48d3-99d1-0db1eb665167")
-		(property "Reference" "#PWR040"
+		(property "Reference" "#PWR099"
 			(at 361.95 246.38 0)
 			(hide yes)
 			(show_name no)
@@ -29207,7 +27647,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR040")
+					(reference "#PWR099")
 					(unit 1)
 				)
 			)
@@ -29266,7 +27706,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 50.8 194.31 0)
 			(hide yes)
 			(show_name no)
@@ -29314,7 +27754,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6437208c-2c4c-4c69-80cc-453708c15ca6")
-		(property "Reference" "#PWR057"
+		(property "Reference" "#PWR085"
 			(at 276.86 140.97 0)
 			(hide yes)
 			(show_name no)
@@ -29374,7 +27814,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR057")
+					(reference "#PWR085")
 					(unit 1)
 				)
 			)
@@ -29391,7 +27831,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "68358d4a-f361-4dd6-b857-9310daf4912f")
-		(property "Reference" "#PWR017"
+		(property "Reference" "#PWR019"
 			(at 44.45 133.35 0)
 			(hide yes)
 			(show_name no)
@@ -29434,7 +27874,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 44.45 127 0)
 			(hide yes)
 			(show_name no)
@@ -29451,7 +27891,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR017")
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
@@ -29510,7 +27950,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Inductor, small symbol"
 			(at 40.64 73.66 0)
 			(hide yes)
 			(show_name no)
@@ -29569,7 +28009,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6e4def70-7964-4459-9e0e-7f6aac7aaba7")
-		(property "Reference" "R10"
+		(property "Reference" "R11"
 			(at 172.72 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29613,7 +28053,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 177.8 86.36 0)
 			(hide yes)
 			(show_name no)
@@ -29644,7 +28084,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R10")
+					(reference "R11")
 					(unit 1)
 				)
 			)
@@ -29661,7 +28101,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6f4e09d0-f614-4567-8aa6-d9d326f398bc")
-		(property "Reference" "R22"
+		(property "Reference" "R20"
 			(at 242.57 274.32 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29703,7 +28143,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 238.76 275.59 0)
 			(hide yes)
 			(show_name no)
@@ -29734,7 +28174,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R22")
+					(reference "R20")
 					(unit 1)
 				)
 			)
@@ -29751,7 +28191,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6f89c32c-bfa0-4983-9643-1125a800cc1a")
-		(property "Reference" "C14"
+		(property "Reference" "C12"
 			(at 66.04 191.77 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29795,7 +28235,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 72.39 193.04 0)
 			(hide yes)
 			(show_name no)
@@ -29826,14 +28266,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C14")
+					(reference "C12")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 217.17 222.25 0)
 		(unit 1)
@@ -29844,7 +28283,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7115f772-c1f4-4386-850c-65b1d585566c")
-		(property "Reference" "#PWR087"
+		(property "Reference" "#PWR068"
 			(at 217.17 226.06 0)
 			(hide yes)
 			(show_name no)
@@ -29904,7 +28343,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR087")
+					(reference "#PWR068")
 					(unit 1)
 				)
 			)
@@ -30001,7 +28440,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "73ac6446-9914-470f-8ec0-d7d87c42b0b7")
-		(property "Reference" "#PWR08"
+		(property "Reference" "#PWR067"
 			(at 212.09 123.19 0)
 			(hide yes)
 			(show_name no)
@@ -30061,7 +28500,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR08")
+					(reference "#PWR067")
 					(unit 1)
 				)
 			)
@@ -30078,7 +28517,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "749c7e64-8b95-4adc-a849-aac960d59d4d")
-		(property "Reference" "#PWR071"
+		(property "Reference" "#PWR092"
 			(at 316.23 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -30138,7 +28577,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR071")
+					(reference "#PWR092")
 					(unit 1)
 				)
 			)
@@ -30155,7 +28594,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "74c5f513-61e8-4d41-80af-e50ade580736")
-		(property "Reference" "#PWR035"
+		(property "Reference" "#PWR040"
 			(at 105.41 205.74 0)
 			(hide yes)
 			(show_name no)
@@ -30198,7 +28637,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 105.41 199.39 0)
 			(hide yes)
 			(show_name no)
@@ -30215,7 +28654,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR035")
+					(reference "#PWR040")
 					(unit 1)
 				)
 			)
@@ -30277,7 +28716,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 248.92 271.78 0)
 			(hide yes)
 			(show_name no)
@@ -30315,7 +28754,6 @@
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 26.67 137.16 0)
 		(unit 1)
@@ -30326,7 +28764,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7902479e-5830-442b-b885-f2d65126307a")
-		(property "Reference" "#PWR099"
+		(property "Reference" "#PWR07"
 			(at 26.67 140.97 0)
 			(hide yes)
 			(show_name no)
@@ -30386,7 +28824,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR099")
+					(reference "#PWR07")
 					(unit 1)
 				)
 			)
@@ -30403,7 +28841,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "79f9c3c8-0f73-40bf-b52c-7c16bcf2e8c7")
-		(property "Reference" "C15"
+		(property "Reference" "C14"
 			(at 97.79 191.77 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -30447,7 +28885,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 95.25 193.04 0)
 			(hide yes)
 			(show_name no)
@@ -30478,7 +28916,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C15")
+					(reference "C14")
 					(unit 1)
 				)
 			)
@@ -30539,7 +28977,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 44.45 120.65 0)
 			(hide yes)
 			(show_name no)
@@ -30587,7 +29025,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7e0a6bde-dc95-4718-9907-721d77c5a641")
-		(property "Reference" "J9"
+		(property "Reference" "J5"
 			(at 193.04 174.498 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -30668,7 +29106,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "J9")
+					(reference "J5")
 					(unit 1)
 				)
 			)
@@ -30730,7 +29168,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 248.92 267.97 0)
 			(hide yes)
 			(show_name no)
@@ -30779,7 +29217,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7eb2d38c-cb9a-48a0-b03f-445e3e029e9c")
-		(property "Reference" "C22"
+		(property "Reference" "C26"
 			(at 274.32 207.0163 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -30823,7 +29261,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 271.78 208.28 0)
 			(hide yes)
 			(show_name no)
@@ -30854,14 +29292,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C22")
+					(reference "C26")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 139.7 118.11 0)
 		(unit 1)
@@ -30872,7 +29309,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7ed00f9f-301e-431e-bdeb-5602c005d4c8")
-		(property "Reference" "#PWR092"
+		(property "Reference" "#PWR045"
 			(at 139.7 121.92 0)
 			(hide yes)
 			(show_name no)
@@ -30932,7 +29369,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR092")
+					(reference "#PWR045")
 					(unit 1)
 				)
 			)
@@ -30949,7 +29386,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7ed3d30a-6ac8-4127-922e-58bd1aa62382")
-		(property "Reference" "#PWR060"
+		(property "Reference" "#PWR079"
 			(at 271.78 185.42 0)
 			(hide yes)
 			(show_name no)
@@ -31009,7 +29446,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR060")
+					(reference "#PWR079")
 					(unit 1)
 				)
 			)
@@ -31026,7 +29463,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7efd558c-3070-4b48-ba87-83b957cad4ba")
-		(property "Reference" "#PWR056"
+		(property "Reference" "#PWR086"
 			(at 276.86 250.19 0)
 			(hide yes)
 			(show_name no)
@@ -31086,7 +29523,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR056")
+					(reference "#PWR086")
 					(unit 1)
 				)
 			)
@@ -31103,7 +29540,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "81b81f4e-5c5f-42a4-bd2a-763ca7f0583c")
-		(property "Reference" "#PWR011"
+		(property "Reference" "#PWR013"
 			(at 35.56 133.35 0)
 			(hide yes)
 			(show_name no)
@@ -31146,7 +29583,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 35.56 127 0)
 			(hide yes)
 			(show_name no)
@@ -31163,14 +29600,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR011")
+					(reference "#PWR013")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 151.13 118.11 0)
 		(unit 1)
@@ -31181,7 +29617,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "81ce2943-e13c-4ad0-8e84-ca5caeeb4930")
-		(property "Reference" "#PWR0102"
+		(property "Reference" "#PWR048"
 			(at 151.13 121.92 0)
 			(hide yes)
 			(show_name no)
@@ -31241,7 +29677,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0102")
+					(reference "#PWR048")
 					(unit 1)
 				)
 			)
@@ -31258,7 +29694,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "846df179-a921-4e35-91e6-8ab4249dafa6")
-		(property "Reference" "#PWR042"
+		(property "Reference" "#PWR0106"
 			(at 387.35 143.51 0)
 			(hide yes)
 			(show_name no)
@@ -31318,7 +29754,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR042")
+					(reference "#PWR0106")
 					(unit 1)
 				)
 			)
@@ -31335,7 +29771,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "848adce2-80f1-43c4-b9ec-6cba89adfddd")
-		(property "Reference" "R11"
+		(property "Reference" "R12"
 			(at 180.34 223.52 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -31377,7 +29813,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 182.88 220.98 0)
 			(hide yes)
 			(show_name no)
@@ -31408,7 +29844,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R11")
+					(reference "R12")
 					(unit 1)
 				)
 			)
@@ -31425,7 +29861,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "886a39a3-1b86-4c94-ad1d-d9110d03541c")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR012"
 			(at 35.56 118.11 0)
 			(hide yes)
 			(show_name no)
@@ -31485,7 +29921,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR010")
+					(reference "#PWR012")
 					(unit 1)
 				)
 			)
@@ -31502,7 +29938,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "88fc2b0c-c559-4b86-9fba-3c46f59e4a29")
-		(property "Reference" "#FLG04"
+		(property "Reference" "#FLG05"
 			(at 88.9 233.045 0)
 			(hide yes)
 			(show_name no)
@@ -31562,7 +29998,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#FLG04")
+					(reference "#FLG05")
 					(unit 1)
 				)
 			)
@@ -31579,7 +30015,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "897ea3eb-211b-4487-b26f-82a7cf9604b9")
-		(property "Reference" "#PWR045"
+		(property "Reference" "#PWR030"
 			(at 60.96 238.76 0)
 			(hide yes)
 			(show_name no)
@@ -31639,7 +30075,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR045")
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)
@@ -31701,7 +30137,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 248.92 252.73 0)
 			(hide yes)
 			(show_name no)
@@ -31739,7 +30175,6 @@
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 46.99 25.4 0)
 		(unit 1)
@@ -31750,7 +30185,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "8b406f20-16e3-4f18-acdc-afb4bc03d1d5")
-		(property "Reference" "#PWR094"
+		(property "Reference" "#PWR022"
 			(at 46.99 29.21 0)
 			(hide yes)
 			(show_name no)
@@ -31810,7 +30245,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR094")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
@@ -31827,7 +30262,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "8b8688ef-3e88-4a8d-90bf-cd89106be2b9")
-		(property "Reference" "#PWR063"
+		(property "Reference" "#PWR0100"
 			(at 365.76 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -31887,7 +30322,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR063")
+					(reference "#PWR0100")
 					(unit 1)
 				)
 			)
@@ -31904,7 +30339,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "8cd38f37-7ba1-4118-ab6a-47c2d8cffb87")
-		(property "Reference" "#PWR075"
+		(property "Reference" "#PWR098"
 			(at 339.09 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -31964,7 +30399,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR075")
+					(reference "#PWR098")
 					(unit 1)
 				)
 			)
@@ -32118,7 +30553,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8f2148c5-8fce-4b2e-909e-1102e745104c")
-		(property "Reference" "D2"
+		(property "Reference" "D1"
 			(at 107.95 98.1074 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -32162,7 +30597,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Light emitting diode"
 			(at 104.14 97.79 0)
 			(hide yes)
 			(show_name no)
@@ -32184,6 +30619,17 @@
 				)
 			)
 		)
+		(property "Sim.Pins" "1=K 2=A"
+			(at 104.14 97.79 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "60d67093-7149-4c46-bb24-3357f6d949fa")
 		)
@@ -32193,7 +30639,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "D2")
+					(reference "D1")
 					(unit 1)
 				)
 			)
@@ -32210,7 +30656,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9196fe27-8255-4a4f-92af-a44bbf70009e")
-		(property "Reference" "#PWR0113"
+		(property "Reference" "#PWR076"
 			(at 256.54 284.48 0)
 			(hide yes)
 			(show_name no)
@@ -32270,7 +30716,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0113")
+					(reference "#PWR076")
 					(unit 1)
 				)
 			)
@@ -32287,7 +30733,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9211208c-ef04-4064-a34a-57d392dbc134")
-		(property "Reference" "#PWR050"
+		(property "Reference" "#PWR028"
 			(at 58.42 133.35 0)
 			(hide yes)
 			(show_name no)
@@ -32330,7 +30776,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 58.42 127 0)
 			(hide yes)
 			(show_name no)
@@ -32347,7 +30793,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR050")
+					(reference "#PWR028")
 					(unit 1)
 				)
 			)
@@ -32407,7 +30853,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 17.78 127 0)
 			(hide yes)
 			(show_name no)
@@ -32441,7 +30887,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9337c810-954c-4172-80e5-d7ff6ee140a1")
-		(property "Reference" "#PWR080"
+		(property "Reference" "#PWR083"
 			(at 274.32 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -32501,7 +30947,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR080")
+					(reference "#PWR083")
 					(unit 1)
 				)
 			)
@@ -32518,7 +30964,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "93c5e40b-90e8-4243-b003-d941582ece15")
-		(property "Reference" "R8"
+		(property "Reference" "R21"
 			(at 254 93.98 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -32562,7 +31008,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 259.08 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -32593,14 +31039,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R8")
+					(reference "R21")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 238.76 168.91 0)
 		(unit 1)
@@ -32611,7 +31056,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9457c5be-84e9-4f0c-ad69-0d06cea14c56")
-		(property "Reference" "#PWR0103"
+		(property "Reference" "#PWR071"
 			(at 238.76 172.72 0)
 			(hide yes)
 			(show_name no)
@@ -32671,14 +31116,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0103")
+					(reference "#PWR071")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 44.45 137.16 0)
 		(unit 1)
@@ -32689,7 +31133,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "95209de4-8f2c-4fcb-b162-e743e50b249f")
-		(property "Reference" "#PWR097"
+		(property "Reference" "#PWR020"
 			(at 44.45 140.97 0)
 			(hide yes)
 			(show_name no)
@@ -32749,7 +31193,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR097")
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -32766,7 +31210,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "955b1cf2-cc33-4080-9d15-38b2bc5ea5fc")
-		(property "Reference" "#PWR055"
+		(property "Reference" "#PWR090"
 			(at 300.99 250.19 0)
 			(hide yes)
 			(show_name no)
@@ -32826,7 +31270,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR055")
+					(reference "#PWR090")
 					(unit 1)
 				)
 			)
@@ -32843,7 +31287,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "99931b84-c41b-4a2e-a433-cf7b8f59c1e6")
-		(property "Reference" "#PWR065"
+		(property "Reference" "#PWR0104"
 			(at 381 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -32903,7 +31347,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR065")
+					(reference "#PWR0104")
 					(unit 1)
 				)
 			)
@@ -32920,7 +31364,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9a4bcaa6-ba44-43eb-80e4-e8ed48fb178d")
-		(property "Reference" "#PWR082"
+		(property "Reference" "#PWR072"
 			(at 238.76 203.2 0)
 			(hide yes)
 			(show_name no)
@@ -32963,7 +31407,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 238.76 196.85 0)
 			(hide yes)
 			(show_name no)
@@ -32980,7 +31424,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR082")
+					(reference "#PWR072")
 					(unit 1)
 				)
 			)
@@ -32997,7 +31441,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9aaa402e-8e4f-43d1-a2cb-d33e1b35569a")
-		(property "Reference" "#PWR015"
+		(property "Reference" "#PWR017"
 			(at 39.37 101.6 0)
 			(hide yes)
 			(show_name no)
@@ -33040,7 +31484,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 39.37 95.25 0)
 			(hide yes)
 			(show_name no)
@@ -33057,7 +31501,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR015")
+					(reference "#PWR017")
 					(unit 1)
 				)
 			)
@@ -33074,7 +31518,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9c7eef45-11fc-4f5c-a3db-fb8204ae8ae2")
-		(property "Reference" "#PWR090"
+		(property "Reference" "#PWR059"
 			(at 194.31 57.15 0)
 			(hide yes)
 			(show_name no)
@@ -33134,14 +31578,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR090")
+					(reference "#PWR059")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_1")
 		(lib_id "power:+3V3")
 		(at 271.78 35.56 0)
 		(unit 1)
@@ -33152,7 +31595,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9c9a33f5-1b37-4d57-9772-eb44a2d7164e")
-		(property "Reference" "#PWR079"
+		(property "Reference" "#PWR078"
 			(at 271.78 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -33212,7 +31655,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR079")
+					(reference "#PWR078")
 					(unit 1)
 				)
 			)
@@ -33274,7 +31717,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 248.92 260.35 0)
 			(hide yes)
 			(show_name no)
@@ -33322,7 +31765,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9fcea7a9-8448-479c-87c3-f41c5b387279")
-		(property "Reference" "C24"
+		(property "Reference" "C31"
 			(at 391.16 38.1 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -33366,7 +31809,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 389.89 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -33397,7 +31840,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C24")
+					(reference "C31")
 					(unit 1)
 				)
 			)
@@ -33414,7 +31857,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a17f3e27-a88c-4093-a3ea-03bae532cc18")
-		(property "Reference" "#PWR053"
+		(property "Reference" "#PWR046"
 			(at 139.7 152.4 0)
 			(hide yes)
 			(show_name no)
@@ -33457,7 +31900,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 139.7 146.05 0)
 			(hide yes)
 			(show_name no)
@@ -33474,7 +31917,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR053")
+					(reference "#PWR046")
 					(unit 1)
 				)
 			)
@@ -33492,7 +31935,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a1d54232-04f9-4042-85db-633d27a21f27")
-		(property "Reference" "U6"
+		(property "Reference" "U9"
 			(at 380.6033 99.06 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -33622,7 +32065,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "U6")
+					(reference "U9")
 					(unit 1)
 				)
 			)
@@ -33639,7 +32082,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a25db37b-e2df-46ee-8cee-d9057b5fc42f")
-		(property "Reference" "#PWR054"
+		(property "Reference" "#PWR089"
 			(at 300.99 189.23 0)
 			(hide yes)
 			(show_name no)
@@ -33699,7 +32142,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR054")
+					(reference "#PWR089")
 					(unit 1)
 				)
 			)
@@ -33717,7 +32160,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a47d312e-2d25-4406-8a79-f48557456c1d")
-		(property "Reference" "U5"
+		(property "Reference" "U6"
 			(at 288.29 134.62 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -33905,14 +32348,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "U5")
+					(reference "U6")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 44.45 114.3 0)
 		(unit 1)
@@ -33923,7 +32365,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a5b185c6-4dca-4aca-8832-da412693ca74")
-		(property "Reference" "#PWR096"
+		(property "Reference" "#PWR018"
 			(at 44.45 118.11 0)
 			(hide yes)
 			(show_name no)
@@ -33983,7 +32425,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR096")
+					(reference "#PWR018")
 					(unit 1)
 				)
 			)
@@ -34000,7 +32442,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a5b9e477-032b-4df1-a8d9-33d710e18245")
-		(property "Reference" "J4"
+		(property "Reference" "J9"
 			(at 210.82 218.44 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -34124,7 +32566,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "J4")
+					(reference "J9")
 					(unit 1)
 				)
 			)
@@ -34141,7 +32583,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a5f90c40-756b-4cd2-b168-5392415ba5c3")
-		(property "Reference" "#PWR078"
+		(property "Reference" "#PWR077"
 			(at 262.89 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -34201,7 +32643,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR078")
+					(reference "#PWR077")
 					(unit 1)
 				)
 			)
@@ -34218,7 +32660,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a5f999da-1899-449e-a1d8-15ce0ca7c9d4")
-		(property "Reference" "#PWR013"
+		(property "Reference" "#PWR015"
 			(at 35.56 156.21 0)
 			(hide yes)
 			(show_name no)
@@ -34261,7 +32703,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 35.56 149.86 0)
 			(hide yes)
 			(show_name no)
@@ -34278,7 +32720,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR013")
+					(reference "#PWR015")
 					(unit 1)
 				)
 			)
@@ -34295,7 +32737,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a6c84ede-8c3c-4754-a64a-ffae5c530334")
-		(property "Reference" "#PWR076"
+		(property "Reference" "#PWR084"
 			(at 276.86 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -34355,7 +32797,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR076")
+					(reference "#PWR084")
 					(unit 1)
 				)
 			)
@@ -34372,7 +32814,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "aa489a4c-3d00-4205-b18f-d4aa383b894a")
-		(property "Reference" "#PWR0109"
+		(property "Reference" "#PWR066"
 			(at 209.55 99.06 0)
 			(hide yes)
 			(show_name no)
@@ -34432,14 +32874,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0109")
+					(reference "#PWR066")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 186.69 256.54 0)
 		(unit 1)
@@ -34450,7 +32891,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "ac9a78bd-479b-4a15-ab07-5541e1898087")
-		(property "Reference" "#PWR0107"
+		(property "Reference" "#PWR058"
 			(at 186.69 260.35 0)
 			(hide yes)
 			(show_name no)
@@ -34510,7 +32951,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0107")
+					(reference "#PWR058")
 					(unit 1)
 				)
 			)
@@ -34527,7 +32968,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "acb0737f-b5cb-4eff-bcf7-2f4a017a681c")
-		(property "Reference" "#PWR022"
+		(property "Reference" "#PWR023"
 			(at 52.07 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -34587,7 +33028,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR022")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -34604,7 +33045,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "adb04a68-9ae7-4be6-bfa7-981b6af2a003")
-		(property "Reference" "#PWR036"
+		(property "Reference" "#PWR047"
 			(at 143.51 85.09 0)
 			(hide yes)
 			(show_name no)
@@ -34647,7 +33088,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 143.51 78.74 0)
 			(hide yes)
 			(show_name no)
@@ -34664,7 +33105,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR036")
+					(reference "#PWR047")
 					(unit 1)
 				)
 			)
@@ -34725,7 +33166,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 17.78 143.51 0)
 			(hide yes)
 			(show_name no)
@@ -34773,7 +33214,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "b4d255c0-6bd5-44e6-b068-4b7a74553887")
-		(property "Reference" "#PWR021"
+		(property "Reference" "#PWR026"
 			(at 57.15 199.39 0)
 			(hide yes)
 			(show_name no)
@@ -34816,7 +33257,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 57.15 193.04 0)
 			(hide yes)
 			(show_name no)
@@ -34833,7 +33274,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR021")
+					(reference "#PWR026")
 					(unit 1)
 				)
 			)
@@ -34892,7 +33333,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 50.8 191.77 0)
 			(hide yes)
 			(show_name no)
@@ -34940,7 +33381,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "b55ff21f-2da7-40bd-a06a-69a070ba07ec")
-		(property "Reference" "#PWR023"
+		(property "Reference" "#PWR024"
 			(at 52.07 101.6 0)
 			(hide yes)
 			(show_name no)
@@ -34983,7 +33424,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 52.07 95.25 0)
 			(hide yes)
 			(show_name no)
@@ -35000,7 +33441,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR023")
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)
@@ -35103,7 +33544,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "ba64336a-72b5-4aec-bf02-d8873ebb15e3")
-		(property "Reference" "U9"
+		(property "Reference" "U4"
 			(at 240.03 171.45 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -35125,7 +33566,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+		(property "Footprint" "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
 			(at 238.76 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -35147,7 +33588,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "32Mbit / 4MiB Serial Flash Memory, Standard/Dual/Quad SPI, 2.7-3.6V, SOIC-8 (208 mil)"
 			(at 238.76 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -35196,7 +33637,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "U9")
+					(reference "U4")
 					(unit 1)
 				)
 			)
@@ -35213,7 +33654,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "bd7cf8de-2700-4442-af35-51da72e334fa")
-		(property "Reference" "#PWR046"
+		(property "Reference" "#PWR034"
 			(at 80.01 238.76 0)
 			(hide yes)
 			(show_name no)
@@ -35273,7 +33714,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR046")
+					(reference "#PWR034")
 					(unit 1)
 				)
 			)
@@ -35592,7 +34033,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 248.92 248.92 0)
 			(hide yes)
 			(show_name no)
@@ -35640,7 +34081,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c4e2f0e3-4bf3-49ab-9977-9a491651766c")
-		(property "Reference" "#PWR039"
+		(property "Reference" "#PWR097"
 			(at 337.82 246.38 0)
 			(hide yes)
 			(show_name no)
@@ -35700,7 +34141,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR039")
+					(reference "#PWR097")
 					(unit 1)
 				)
 			)
@@ -35717,7 +34158,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c53a0eb6-0eaa-4989-a61e-e217f6f8421c")
-		(property "Reference" "#PWR083"
+		(property "Reference" "#PWR049"
 			(at 151.13 152.4 0)
 			(hide yes)
 			(show_name no)
@@ -35760,7 +34201,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 151.13 146.05 0)
 			(hide yes)
 			(show_name no)
@@ -35777,7 +34218,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR083")
+					(reference "#PWR049")
 					(unit 1)
 				)
 			)
@@ -35794,7 +34235,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c67be7a4-f0f4-486b-93bf-4384ab336ccc")
-		(property "Reference" "R21"
+		(property "Reference" "R19"
 			(at 242.57 270.51 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -35836,7 +34277,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 238.76 271.78 0)
 			(hide yes)
 			(show_name no)
@@ -35867,7 +34308,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R21")
+					(reference "R19")
 					(unit 1)
 				)
 			)
@@ -36098,7 +34539,6 @@
 		)
 	)
 	(symbol
-		(lib_name "RP2350-QFN60_1")
 		(lib_id "rb180:RP2350-QFN60")
 		(at 33.02 25.4 0)
 		(unit 1)
@@ -36410,7 +34850,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 45.72 85.09 0)
 			(hide yes)
 			(show_name no)
@@ -36458,7 +34898,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "cf68b91a-c033-4e17-a5d4-2f3ba431c166")
-		(property "Reference" "#PWR016"
+		(property "Reference" "#PWR050"
 			(at 151.13 194.31 0)
 			(hide yes)
 			(show_name no)
@@ -36518,7 +34958,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR016")
+					(reference "#PWR050")
 					(unit 1)
 				)
 			)
@@ -36579,7 +35019,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 44.45 143.51 0)
 			(hide yes)
 			(show_name no)
@@ -36628,7 +35068,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "cffb0c9f-78f9-4454-a27d-7b3b9cce5530")
-		(property "Reference" "C30"
+		(property "Reference" "C23"
 			(at 252.73 181.6163 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -36672,7 +35112,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 250.19 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -36703,7 +35143,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C30")
+					(reference "C23")
 					(unit 1)
 				)
 			)
@@ -36967,7 +35407,6 @@
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 204.47 217.17 0)
 		(unit 1)
@@ -36978,7 +35417,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "d4201ede-a061-48f4-9be5-98506b9ffa68")
-		(property "Reference" "#PWR077"
+		(property "Reference" "#PWR063"
 			(at 204.47 220.98 0)
 			(hide yes)
 			(show_name no)
@@ -37038,7 +35477,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR077")
+					(reference "#PWR063")
 					(unit 1)
 				)
 			)
@@ -37055,7 +35494,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "d4269b6c-648b-4997-9e11-c798e16e59ee")
-		(property "Reference" "#PWR0111"
+		(property "Reference" "#PWR055"
 			(at 177.8 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -37115,7 +35554,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0111")
+					(reference "#PWR055")
 					(unit 1)
 				)
 			)
@@ -37132,7 +35571,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "d56914d8-7199-44f5-a59e-871e927c2a89")
-		(property "Reference" "#PWR0105"
+		(property "Reference" "#PWR074"
 			(at 250.19 203.2 0)
 			(hide yes)
 			(show_name no)
@@ -37175,7 +35614,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 250.19 196.85 0)
 			(hide yes)
 			(show_name no)
@@ -37192,7 +35631,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0105")
+					(reference "#PWR074")
 					(unit 1)
 				)
 			)
@@ -37209,7 +35648,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "d66681d8-de09-450b-a41e-d2d98eedcedb")
-		(property "Reference" "R6"
+		(property "Reference" "R4"
 			(at 104.14 128.27 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -37253,7 +35692,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 109.22 130.81 0)
 			(hide yes)
 			(show_name no)
@@ -37284,7 +35723,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R6")
+					(reference "R4")
 					(unit 1)
 				)
 			)
@@ -37301,7 +35740,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "da89f255-21dc-452e-a007-1bab2712f464")
-		(property "Reference" "#PWR0112"
+		(property "Reference" "#PWR056"
 			(at 184.15 194.31 0)
 			(hide yes)
 			(show_name no)
@@ -37344,7 +35783,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 184.15 187.96 0)
 			(hide yes)
 			(show_name no)
@@ -37361,7 +35800,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0112")
+					(reference "#PWR056")
 					(unit 1)
 				)
 			)
@@ -37378,7 +35817,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "daa03865-9638-4e9b-9624-adb0257fef8e")
-		(property "Reference" "R20"
+		(property "Reference" "R18"
 			(at 242.57 266.7 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -37420,7 +35859,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 238.76 267.97 0)
 			(hide yes)
 			(show_name no)
@@ -37451,7 +35890,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R20")
+					(reference "R18")
 					(unit 1)
 				)
 			)
@@ -37468,7 +35907,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "dc04b62d-222a-4af2-a662-83e9e0acb441")
-		(property "Reference" "U4"
+		(property "Reference" "U3"
 			(at 140.97 120.65 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -37490,7 +35929,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+		(property "Footprint" "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
 			(at 139.7 132.08 0)
 			(hide yes)
 			(show_name no)
@@ -37512,7 +35951,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "32Mbit / 4MiB Serial Flash Memory, Standard/Dual/Quad SPI, 2.7-3.6V, SOIC-8 (208 mil)"
 			(at 139.7 132.08 0)
 			(hide yes)
 			(show_name no)
@@ -37561,7 +36000,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "U4")
+					(reference "U3")
 					(unit 1)
 				)
 			)
@@ -37578,7 +36017,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "dc13b36a-39b4-4992-b5c1-2afedec8099a")
-		(property "Reference" "#PWR067"
+		(property "Reference" "#PWR0101"
 			(at 367.03 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -37638,7 +36077,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR067")
+					(reference "#PWR0101")
 					(unit 1)
 				)
 			)
@@ -37699,7 +36138,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Push button switch, generic, two pins"
 			(at 109.22 140.97 0)
 			(hide yes)
 			(show_name no)
@@ -37748,7 +36187,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "e111902e-2398-4d69-b9e2-66e6212fbc81")
-		(property "Reference" "U8"
+		(property "Reference" "U5"
 			(at 276.4633 99.06 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -37878,7 +36317,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "U8")
+					(reference "U5")
 					(unit 1)
 				)
 			)
@@ -37895,7 +36334,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e18e1a11-895e-400f-b12b-a283d3e99da8")
-		(property "Reference" "#PWR06"
+		(property "Reference" "#PWR05"
 			(at 26.67 118.11 0)
 			(hide yes)
 			(show_name no)
@@ -37955,7 +36394,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR06")
+					(reference "#PWR05")
 					(unit 1)
 				)
 			)
@@ -37973,7 +36412,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "e1b1d770-17cf-49af-bcb4-d25dfb0887c5")
-		(property "Reference" "#PWR034"
+		(property "Reference" "#PWR037"
 			(at 95.25 205.74 0)
 			(hide yes)
 			(show_name no)
@@ -38016,7 +36455,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 95.25 199.39 0)
 			(hide yes)
 			(show_name no)
@@ -38033,7 +36472,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR034")
+					(reference "#PWR037")
 					(unit 1)
 				)
 			)
@@ -38050,7 +36489,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e1f62bf9-af25-4822-832d-636faf7c7ab9")
-		(property "Reference" "R15"
+		(property "Reference" "R10"
 			(at 179.07 185.42 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -38094,7 +36533,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 173.99 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -38125,7 +36564,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R15")
+					(reference "R10")
 					(unit 1)
 				)
 			)
@@ -38142,7 +36581,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e3233373-6fdf-4bb4-9081-b497a5c3324a")
-		(property "Reference" "#PWR07"
+		(property "Reference" "#PWR06"
 			(at 26.67 133.35 0)
 			(hide yes)
 			(show_name no)
@@ -38185,7 +36624,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 26.67 127 0)
 			(hide yes)
 			(show_name no)
@@ -38202,7 +36641,84 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR07")
+					(reference "#PWR06")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 281.94 119.38 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "e400ec8d-fd6a-4dc0-beb4-d09eff4c6e2a")
+		(property "Reference" "#PWR087"
+			(at 281.94 125.73 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 281.94 123.19 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 281.94 119.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 281.94 119.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 281.94 119.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0dfcbb7f-6297-414e-aa67-f69b59d8bde0")
+		)
+		(instances
+			(project "rb180-bringup"
+				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
+					(reference "#PWR087")
 					(unit 1)
 				)
 			)
@@ -38219,7 +36735,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e5762703-2ee6-45b1-97b3-a6cf093b042a")
-		(property "Reference" "C28"
+		(property "Reference" "C27"
 			(at 287.02 38.1 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -38263,7 +36779,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 285.75 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -38294,14 +36810,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C28")
+					(reference "C27")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 59.69 67.31 0)
 		(unit 1)
@@ -38312,7 +36827,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e5d41605-6f45-46dd-8c50-dc4fdcbceaf4")
-		(property "Reference" "#PWR093"
+		(property "Reference" "#PWR029"
 			(at 59.69 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -38372,7 +36887,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR093")
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
@@ -38389,7 +36904,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e6163a32-d49b-45cf-be6b-ab043c4b4e20")
-		(property "Reference" "R19"
+		(property "Reference" "R17"
 			(at 242.57 262.89 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -38431,7 +36946,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 238.76 264.16 0)
 			(hide yes)
 			(show_name no)
@@ -38462,7 +36977,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R19")
+					(reference "R17")
 					(unit 1)
 				)
 			)
@@ -38479,7 +36994,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e788216a-6fcc-446e-9c62-5f27997717a6")
-		(property "Reference" "#PWR059"
+		(property "Reference" "#PWR082"
 			(at 271.78 219.71 0)
 			(hide yes)
 			(show_name no)
@@ -38539,7 +37054,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR059")
+					(reference "#PWR082")
 					(unit 1)
 				)
 			)
@@ -38556,7 +37071,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e8041a23-db4b-4e5a-a1c4-5e4428a7ab9c")
-		(property "Reference" "#PWR051"
+		(property "Reference" "#PWR043"
 			(at 109.22 157.48 0)
 			(hide yes)
 			(show_name no)
@@ -38599,7 +37114,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 109.22 151.13 0)
 			(hide yes)
 			(show_name no)
@@ -38616,14 +37131,99 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR051")
+					(reference "#PWR043")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_1")
+		(lib_id "Connector_Generic:Conn_02x02_Counter_Clockwise")
+		(at 273.05 115.57 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e827d770-1be6-4599-b348-c0da514457b6")
+		(property "Reference" "J10"
+			(at 274.32 109.22 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Conn_02x02_Counter_Clockwise"
+			(at 274.32 111.76 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 273.05 115.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 273.05 115.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, double row, 02x02, counter clockwise pin numbering scheme (similar to DIP package numbering), script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 273.05 115.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "3"
+			(uuid "461d91e8-e2d1-4c0c-966d-67e03fda08f0")
+		)
+		(pin "4"
+			(uuid "dd0c8a81-2f84-4bba-97c3-f7c34c82a0bf")
+		)
+		(pin "1"
+			(uuid "3527a610-7734-439f-bac5-948db86234bf")
+		)
+		(pin "2"
+			(uuid "47bf4661-59ec-404e-8a92-a87bf8e02b04")
+		)
+		(instances
+			(project "rb180-bringup"
+				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
+					(reference "J10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+3V3")
 		(at 251.46 99.06 0)
 		(unit 1)
@@ -38634,7 +37234,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "ef76cb2a-5884-4e6c-af5c-c9f3034d4040")
-		(property "Reference" "#PWR085"
+		(property "Reference" "#PWR075"
 			(at 251.46 102.87 0)
 			(hide yes)
 			(show_name no)
@@ -38694,7 +37294,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR085")
+					(reference "#PWR075")
 					(unit 1)
 				)
 			)
@@ -38711,7 +37311,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "eff3d9bd-80d5-4042-a0a1-c5de949b3718")
-		(property "Reference" "C19"
+		(property "Reference" "C15"
 			(at 99.06 255.27 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -38755,7 +37355,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 105.41 256.54 0)
 			(hide yes)
 			(show_name no)
@@ -38786,7 +37386,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C19")
+					(reference "C15")
 					(unit 1)
 				)
 			)
@@ -38847,7 +37447,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 17.78 120.65 0)
 			(hide yes)
 			(show_name no)
@@ -38895,7 +37495,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f0c1fedc-4d91-47b9-9325-cc7b2138e264")
-		(property "Reference" "R18"
+		(property "Reference" "R16"
 			(at 242.57 259.08 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -38937,7 +37537,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 238.76 260.35 0)
 			(hide yes)
 			(show_name no)
@@ -38968,7 +37568,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R18")
+					(reference "R16")
 					(unit 1)
 				)
 			)
@@ -38985,7 +37585,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f14f98e2-8914-45cd-99bd-f6d1552fcfdc")
-		(property "Reference" "#FLG03"
+		(property "Reference" "#FLG04"
 			(at 58.42 180.975 0)
 			(hide yes)
 			(show_name no)
@@ -39028,7 +37628,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Special symbol for telling ERC where power comes from"
 			(at 58.42 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -39045,7 +37645,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#FLG03")
+					(reference "#FLG04")
 					(unit 1)
 				)
 			)
@@ -39062,7 +37662,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f2917fa5-1aeb-4b8f-a6dc-27d9e5f0e5d8")
-		(property "Reference" "#PWR03"
+		(property "Reference" "#PWR062"
 			(at 194.31 124.46 0)
 			(hide yes)
 			(show_name no)
@@ -39122,7 +37722,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR03")
+					(reference "#PWR062")
 					(unit 1)
 				)
 			)
@@ -39139,7 +37739,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f3107675-1f5b-4282-8599-826f87a3c0df")
-		(property "Reference" "R14"
+		(property "Reference" "R9"
 			(at 153.67 181.61 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -39181,7 +37781,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 151.13 182.88 0)
 			(hide yes)
 			(show_name no)
@@ -39212,14 +37812,13 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R14")
+					(reference "R9")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_name "+3V3_2")
 		(lib_id "power:+3V3")
 		(at 194.31 66.04 0)
 		(unit 1)
@@ -39230,7 +37829,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f4440be0-743b-45eb-b725-53d9291307d4")
-		(property "Reference" "#PWR0110"
+		(property "Reference" "#PWR060"
 			(at 194.31 69.85 0)
 			(hide yes)
 			(show_name no)
@@ -39290,7 +37889,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR0110")
+					(reference "#PWR060")
 					(unit 1)
 				)
 			)
@@ -39307,7 +37906,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f5e917ec-7a79-40b0-943a-3341196474ff")
-		(property "Reference" "#PWR058"
+		(property "Reference" "#PWR080"
 			(at 271.78 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -39367,7 +37966,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR058")
+					(reference "#PWR080")
 					(unit 1)
 				)
 			)
@@ -39461,7 +38060,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f6574570-223f-41e1-bfbc-093721471bec")
-		(property "Reference" "#PWR05"
+		(property "Reference" "#PWR09"
 			(at 30.48 236.22 0)
 			(hide yes)
 			(show_name no)
@@ -39504,7 +38103,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 30.48 229.87 0)
 			(hide yes)
 			(show_name no)
@@ -39521,7 +38120,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR05")
+					(reference "#PWR09")
 					(unit 1)
 				)
 			)
@@ -39538,7 +38137,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f85ea7a9-e505-40ac-b304-60a71d7c3685")
-		(property "Reference" "R17"
+		(property "Reference" "R15"
 			(at 242.57 255.27 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -39580,7 +38179,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Resistor, small symbol"
 			(at 238.76 256.54 0)
 			(hide yes)
 			(show_name no)
@@ -39611,7 +38210,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "R17")
+					(reference "R15")
 					(unit 1)
 				)
 			)
@@ -39672,7 +38271,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 26.67 143.51 0)
 			(hide yes)
 			(show_name no)
@@ -39720,7 +38319,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f904448e-b381-4a2d-9598-e37c8f3ef1a9")
-		(property "Reference" "#PWR048"
+		(property "Reference" "#PWR035"
 			(at 80.01 269.24 0)
 			(hide yes)
 			(show_name no)
@@ -39780,7 +38379,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR048")
+					(reference "#PWR035")
 					(unit 1)
 				)
 			)
@@ -39798,7 +38397,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f966cc2a-5cda-4500-a941-09cf04198159")
-		(property "Reference" "C25"
+		(property "Reference" "C28"
 			(at 314.96 38.1 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -39842,7 +38441,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 316.23 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -39873,7 +38472,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "C25")
+					(reference "C28")
 					(unit 1)
 				)
 			)
@@ -39934,7 +38533,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Unpolarized capacitor, small symbol"
 			(at 39.37 85.09 0)
 			(hide yes)
 			(show_name no)
@@ -39982,7 +38581,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "fad5a9cb-ec5a-4d5d-a839-e3900c078145")
-		(property "Reference" "#PWR061"
+		(property "Reference" "#PWR081"
 			(at 271.78 207.01 0)
 			(hide yes)
 			(show_name no)
@@ -40042,7 +38641,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR061")
+					(reference "#PWR081")
 					(unit 1)
 				)
 			)
@@ -40059,7 +38658,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "fe6531e3-c5e7-4544-8436-e5f5d96af4de")
-		(property "Reference" "#PWR044"
+		(property "Reference" "#PWR010"
 			(at 30.48 247.65 0)
 			(hide yes)
 			(show_name no)
@@ -40119,7 +38718,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR044")
+					(reference "#PWR010")
 					(unit 1)
 				)
 			)
@@ -40136,7 +38735,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "ffb3c499-5078-43ea-b2d6-19e45bff595f")
-		(property "Reference" "#PWR037"
+		(property "Reference" "#PWR044"
 			(at 120.65 205.74 0)
 			(hide yes)
 			(show_name no)
@@ -40179,7 +38778,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
 			(at 120.65 199.39 0)
 			(hide yes)
 			(show_name no)
@@ -40196,7 +38795,7 @@
 		(instances
 			(project "rb180-bringup"
 				(path "/1bad6bfc-132d-43e9-b5a8-61ef217fd921"
-					(reference "#PWR037")
+					(reference "#PWR044")
 					(unit 1)
 				)
 			)
